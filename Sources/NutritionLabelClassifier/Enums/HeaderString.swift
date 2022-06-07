@@ -53,7 +53,7 @@ struct Rx {
 extension HeaderString {
     struct Regex {
         static let per100 =
-#"^((serve |)(per|pour) |)100[ ]*(?:g|ml)$"#
+#"^((serve |average |)(per|pour) |)100[ ]*(?:g|ml)$"#
         
         static let perServing =
 #"^(?=^.*(amount|)[ ]*((per|par|por) |\/)(serv(ing|e)|portion|porção).*$)(?!^.*100[ ]*(?:g|ml).*$).*$"#

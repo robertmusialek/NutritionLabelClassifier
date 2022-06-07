@@ -73,6 +73,14 @@ class EdgeCasesClassifier: Classifier {
         
         /// Look for a `Value` within brackets such as `(170g)` (that hasn't been used already) and assign that.
         for recognizedText in recognizedTexts {
+            
+            /// First make sure this doesn't start with any nutrient attribute artefacts
+            /// Test Case: *DE38ABA0-A8D7-46A5-8DBB-7E2DE983F9F4*
+            let artefacts = recognizedText.getNutrientArtefacts()
+            guard artefacts.first?.attribute?.isNutrientAttribute != true else {
+                continue
+            }
+            
             let regex = #"\(([0-9]*)[ ]*g\)"#
 //            let regex = #"([0-9]*)g"#
             let groups = recognizedText.string.capturedGroups(using: regex)
