@@ -77,7 +77,7 @@ public enum NutritionUnit: Int, CaseIterable {
         case .cup:
             return "^cup(s|)$"
         case .ml:
-            return "^ml$"
+            return "^(ml|mi)$"
         case .tbsp:
             return "^(tbsp|tablespoon(s|))$"
         }
@@ -102,7 +102,7 @@ public enum NutritionUnit: Int, CaseIterable {
         case .cup:
             return ["cup", "cups"]
         case .ml:
-            return ["ml", "mL"]
+            return ["ml", "mL", "mi"]
         case .tbsp:
             return ["tbsp", "tablespoon", "tablespoons"]
         }
