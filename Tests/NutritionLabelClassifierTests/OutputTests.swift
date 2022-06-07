@@ -17,8 +17,8 @@ let CurrentTestCase = UUID(uuidString: "0E6CBF93-F98E-4922-8058-CE987BBD9617")!
 //let CurrentTestCase = UUID(uuidString: "21AB8151-540A-41A9-BAB2-8674FD3A46E7")!
 //let CurrentTestCase = UUID(uuidString: "02CE7C0B-CA9C-4E63-8E42-5D8C105FE320")!
 
-//let SingledOutTestCaseId: UUID? = nil
-let SingledOutTestCaseId: UUID? = CurrentTestCase
+let SingledOutTestCaseId: UUID? = nil
+//let SingledOutTestCaseId: UUID? = CurrentTestCase
 //let SingledOutTestCaseId: UUID? = UUID(uuidString: "6BAD0EB1-8BED-4DD9-8FD8-C9861A267A3D")
 
 let IgnoredTests: [UUID] = []

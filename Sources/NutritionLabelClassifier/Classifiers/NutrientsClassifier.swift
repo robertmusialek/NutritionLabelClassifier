@@ -133,14 +133,29 @@ class NutrientsClassifier: Classifier {
                 }
                 attributeTextBeingExtracted = AttributeText(attribute: extractedAttribute, textId: recognizedText.id)
                 
-                if let savedValue = savedValueDueToIncludesPreposition, let attributeText = attributeTextBeingExtracted {
-                    observations.append(Observation(
-                        attributeText: attributeText,
-                        valueText1: ValueText(value: savedValue, textId: id),
-                        valueText2: nil)
-                    )
-                    attributeTextBeingExtracted = nil
-                    savedValueDueToIncludesPreposition = nil
+                if let attributeText = attributeTextBeingExtracted {
+                    
+                    if let savedValue = savedValueDueToIncludesPreposition
+                    {
+                        observations.append(Observation(
+                            attributeText: attributeText,
+                            valueText1: ValueText(value: savedValue, textId: id),
+                            valueText2: nil)
+                        )
+                        attributeTextBeingExtracted = nil
+                        savedValueDueToIncludesPreposition = nil
+                    }
+                    else if extractedAttribute == .addedSugar,
+                            i > 0,
+                            let value = artefacts[i-1].value
+                    {
+                        observations.append(Observation(
+                            attributeText: attributeText,
+                            valueText1: ValueText(value: value, textId: id),
+                            valueText2: nil)
+                        )
+                        attributeTextBeingExtracted = nil
+                    }
                 }
                 
             } else if let value = artefact.value {

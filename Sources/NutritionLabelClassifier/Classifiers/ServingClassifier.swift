@@ -72,14 +72,6 @@ class ServingClassifier: Classifier {
         }
         return observations
     }
-
-    func extractPrecedingInlineValueForServingsPerContainerAmount(of recognizedText: RecognizedText, for observation: Observation) -> Bool {
-        let inlineTextColumns = recognizedTexts.inlineTextColumns(as: recognizedText, preceding: true, ignoring: discarded)
-        
-        print("We here")
-        
-        return false
-    }
     
     func extractInlineObservations(of recognizedText: RecognizedText, for observation: Observation, preceding: Bool = false) -> Bool {
         
