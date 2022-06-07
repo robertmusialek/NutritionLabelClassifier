@@ -52,6 +52,15 @@ class ServingClassifier: Classifier {
                     continue
                 }
 
+                /// ** Heuristic** If this is `.servingsPerContainerAmount`, look for it inline preceding, before checking the columns
+                if observation.attribute == .servingsPerContainerAmount {
+                    if extractInlineObservations(of: recognizedText, for: observation, preceding: true) {
+//                    if extractPrecedingInlineValueForServingsPerContainerAmount(
+//                        of: recognizedText, for: observation) {
+                        continue
+                    }
+                }
+
                 let didExtractInColumn = extractInColumnObservations(
                     of: recognizedText,
                     for: observation)
@@ -63,8 +72,16 @@ class ServingClassifier: Classifier {
         }
         return observations
     }
+
+    func extractPrecedingInlineValueForServingsPerContainerAmount(of recognizedText: RecognizedText, for observation: Observation) -> Bool {
+        let inlineTextColumns = recognizedTexts.inlineTextColumns(as: recognizedText, preceding: true, ignoring: discarded)
+        
+        print("We here")
+        
+        return false
+    }
     
-    func extractInlineObservations(of recognizedText: RecognizedText, for observation: Observation) -> Bool {
+    func extractInlineObservations(of recognizedText: RecognizedText, for observation: Observation, preceding: Bool = false) -> Bool {
         
         //TODO: Handle array of recognized texts
         /// **Copy across what we're doing here, of:**
@@ -75,7 +92,7 @@ class ServingClassifier: Classifier {
         ///     - If this is any faster, by measuring how long it takes
         
         for recognizedTexts in arrayOfRecognizedTexts {
-            let inlineTextColumns = recognizedTexts.inlineTextColumns(as: recognizedText, ignoring: discarded)
+            let inlineTextColumns = recognizedTexts.inlineTextColumns(as: recognizedText, preceding: preceding, ignoring: discarded)
             for column in inlineTextColumns {
 
                 guard let inlineText = pickInlineText(fromColumn: column, for: observation.attributeText.attribute) else {
@@ -178,12 +195,17 @@ extension RecognizedText {
     //TODO: Build on this, as we're currently naively checking the horizontal distance
     func isNotTooFarFrom(_ recognizedText: RecognizedText) -> Bool {
         let HorizontalThreshold = 0.3
-        let horizontalDistance = recognizedText.boundingBox.minX - boundingBox.maxX
+        let horizontalDistance: Double
+        if recognizedText.boundingBox.minX < boundingBox.minX {
+            horizontalDistance = abs(boundingBox.minY - recognizedText.boundingBox.maxY)
+        } else {
+            horizontalDistance = abs(recognizedText.boundingBox.minX - boundingBox.maxX)
+        }
         
         /// Make sure the `RecognizedText` we're checking is to the right of this
-        guard horizontalDistance > 0 else {
-            return false
-        }
+//        guard horizontalDistance > 0 else {
+//            return false
+//        }
         
         /// Returns true if the distance between them is less than the `HorizontalThreshold` value which is in terms of the bounding box. So a value of `0.3` would mean that it's considered "not too far" if it's less than 30% of the width of the bounding box.
         return horizontalDistance < HorizontalThreshold
