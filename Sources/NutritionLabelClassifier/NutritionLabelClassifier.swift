@@ -2,7 +2,7 @@ import Foundation
 import VisionSugar
 import TabularData
 
-public let NutritionLabelClassifierVersion = "0.0.151"
+public let NutritionLabelClassifierVersion = "0.0.152"
 
 //TODO: Rename this to
 /// `NutritionLabelRecognizer`
@@ -39,16 +39,23 @@ public class NutritionLabelClassifier {
     
     public func dataFrameOfObservations() -> DataFrame {
         for recognizedTexts in arrayOfRecognizedTexts {
-            observations = NutrientsClassifier.observations(from: recognizedTexts,
-                                                            priorObservations: observations)
+            
+            observations = NutrientsClassifier.observations(
+                from: recognizedTexts,
+                priorObservations: observations)
+            
             observations = ServingClassifier.observations(
                 from: recognizedTexts,
                 arrayOfRecognizedTexts: arrayOfRecognizedTexts,
                 priorObservations: observations)
-            observations = HeaderClassifier.observations(from: recognizedTexts,
-                                                          priorObservations: observations)
-            observations = EdgeCasesClassifier.observations(from: recognizedTexts,
-                                                            priorObservations: observations)
+            
+            observations = HeaderClassifier.observations(
+                from: recognizedTexts,
+                priorObservations: observations)
+            
+            observations = EdgeCasesClassifier.observations(
+                from: recognizedTexts,
+                priorObservations: observations)
         }
         return Self.dataFrameOfNutrients(from: observations)
     }

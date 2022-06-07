@@ -31,6 +31,11 @@ extension RecognizedText {
         
         var isExpectingCalories: Bool = false
         
+        /// ** Heuristic ** if string is simply a capital O `O`, treat it as a 0
+        if string == "O" {
+            string = "0"
+        }
+        
         while string.count > 0 {
             /// First check if we have a value at the start of the string
             if let valueSubstring = string.valueSubstringAtStart,

@@ -60,7 +60,9 @@ class NutrientsClassifier: Classifier {
                 let inlineTextColumns = recognizedTexts.inlineTextColumns(as: recognizedText, ignoring: discarded)
                 for column in inlineTextColumns {
                     
-                    guard let inlineText = pickInlineText(fromColumn: column, for: observation.attributeText.attribute) else { continue }
+                    guard let inlineText = pickInlineText(fromColumn: column, for: observation.attributeText.attribute) else {
+                        continue
+                    }
                     
                     let result = extractNutrientObservation(&observationBeingExtracted, from: inlineText)
                     
@@ -236,7 +238,7 @@ class NutrientsClassifier: Classifier {
 //           observationBeingExtracted.value1 == nil,
 //           observationBeingExtracted.value2 == nil
 //        {
-//            
+//
 //            let emptyValueText = ValueText(value: Value(amount: 0, unit: .g), textId: defaultUUID)
 //            let emptyObservation = Observation(
 //                attributeText: observationBeingExtracted.attributeText,
@@ -305,7 +307,8 @@ class NutrientsClassifier: Classifier {
         
         /// **Heuristic** In order to account for slightly curved labels that may pick up both a `kJ` and `kcal` `Value` when looking for energy—always pick the `kJ` one (as its larger in value) regardless of how far away it is from the observation (as the curvature can sometimes skew this)
         if column.contains(where: { Value(fromString: $0.string)?.unit == .kcal }),
-           column.contains(where: { Value(fromString: $0.string)?.unit == .kj }) {
+           column.contains(where: { Value(fromString: $0.string)?.unit == .kj })
+        {
             return column.first(where: { Value(fromString: $0.string)?.unit == .kj })
         }
         

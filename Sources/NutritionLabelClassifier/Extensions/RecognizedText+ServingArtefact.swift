@@ -53,12 +53,18 @@ extension RecognizedText {
                     let previousArtefact = array.last
                     let previousIndex = array.count - 1
                     
-                    /// **Heuristic** If this is the `.servingsPerContainerAmount`, also try and grab the `.servingsPerContainerName` from the substring, and add that as an artefact before proceeding
                     if attribute == .servingsPerContainerAmount {
+                        /// **Heuristic** If this is the `.servingsPerContainerAmount`, also try and grab the `.servingsPerContainerName` from the substring, and add that as an artefact before proceeding
                         if let containerName = string.servingsPerContainerName {
                             array.append(ServingArtefact(attribute: .servingsPerContainerName, textId: id))
                             array.append(ServingArtefact(string: containerName, textId: id))
                         }
+                     
+//                        /// If we have a double as the previous artefact, add it as the serving amount and stop searching for it
+//                        if let double = previousArtefact?.double {
+//
+//                        }
+//                        let previous = previousArtefact
                     }
 
                     let artefact = ServingArtefact(attribute: attribute, textId: id)
@@ -70,7 +76,7 @@ extension RecognizedText {
                     if attribute == .servingsPerContainerAmount,
                        let previousArtefact = previousArtefact,
                        previousArtefact.double != nil,
-                       previousIndex > 0
+                       previousIndex >= 0
                     {
                         array.insert(artefact, at: previousIndex)
                     } else {
