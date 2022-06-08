@@ -85,6 +85,9 @@ extension RecognizedText {
                     
                     
 //                    string = string.replacingFirstOccurrence(of: attributeSubstring, with: "").trimmingWhitespaces
+                    if attribute == .servingsPerContainerAmount {
+                        print("🤖 \(substring)")
+                    }
                     string = string.replacingFirstOccurrence(of: substring, with: "").trimmingWhitespaces
                 }
                 /// Otherwise, if the substring contains letters, add it as a string attribute

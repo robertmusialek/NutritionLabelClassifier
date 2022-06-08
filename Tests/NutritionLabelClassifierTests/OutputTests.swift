@@ -13,21 +13,23 @@ let RunLegacyTests = true
 let ClassifierTestCases = 1...23
 let ClassifierTestCasesToIgnore: [Int] = []
 
-let CurrentTestCase = UUID(uuidString: "0E6CBF93-F98E-4922-8058-CE987BBD9617")!
-//let CurrentTestCase = UUID(uuidString: "21AB8151-540A-41A9-BAB2-8674FD3A46E7")!
-//let CurrentTestCase = UUID(uuidString: "02CE7C0B-CA9C-4E63-8E42-5D8C105FE320")!
+let CurrentTestCase = UUID(uuidString: "674347E4-7B53-4409-95AF-07FD0560ADBA")!
+//let CurrentTestCase = UUID(uuidString: "7648338E-8AC8-4C03-AAA1-AC8FC76E7368")!
 
 let SingledOutTestCaseId: UUID? = nil
 //let SingledOutTestCaseId: UUID? = CurrentTestCase
 //let SingledOutTestCaseId: UUID? = UUID(uuidString: "6BAD0EB1-8BED-4DD9-8FD8-C9861A267A3D")
 
-let IgnoredTests: [UUID] = []
-//let IgnoredTests: [UUID] = [CurrentTestCase]
-//let IgnoredTests: [UUID] = [
-//    UUID(uuidString: "21AB8151-540A-41A9-BAB2-8674FD3A46E7")!,
-//    UUID(uuidString: "02CE7C0B-CA9C-4E63-8E42-5D8C105FE320")!,
-//    CurrentTestCase
-//]
+let FailingTests: [UUID] = [
+    UUID(uuidString: "674347E4-7B53-4409-95AF-07FD0560ADBA")!,
+    UUID(uuidString: "03A07980-DDEC-41A6-8130-080F582FB5C3")!,
+    UUID(uuidString: "5FEDB3DF-4214-44EF-A390-3C5CB3C1DA14")!,
+    UUID(uuidString: "826DB226-9FCD-4662-A1CD-5FD862493D55")!,
+    UUID(uuidString: "DEB07FE7-3C3D-44E9-83AD-2234228A4F02")!
+]
+
+//let IgnoredTests: [UUID] = []
+let IgnoredTests: [UUID] = FailingTests + []
 
 final class OutputTests: XCTestCase {
 

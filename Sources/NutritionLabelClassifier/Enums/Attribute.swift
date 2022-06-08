@@ -253,7 +253,7 @@ public enum Attribute: String, CaseIterable {
             return #"(protein|proteine)"#
             
         case .carbohydrate:
-            return #".*(carb|glucides|hydrate).*"#
+            return #".*(carb|glucides|h(y|v)drate).*"#
         case .dietaryFibre:
             return #"(dietary |)fib(re|er)"#
         case .gluten:

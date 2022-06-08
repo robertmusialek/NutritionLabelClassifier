@@ -109,6 +109,9 @@ extension EdgeCasesClassifier {
                 continue
             }
             
+            guard value2 > 0 else {
+                continue
+            }
             let ratio = value1/value2
             guard ratio > 0 else {
                 continue
