@@ -34,12 +34,15 @@ public enum Attribute: String, CaseIterable {
     case protein
     
     case carbohydrate
-    case dietaryFibre
     case gluten
     case sugar
     case addedSugar
     case starch
-    
+
+    case dietaryFibre
+    case solubleFibre
+    case insolubleFibre
+
     case fat
     case saturatedFat
     case polyunsaturatedFat
@@ -515,6 +518,10 @@ extension Attribute: CustomStringConvertible {
             return "Vitamin B1"
         case .vitaminB12:
             return "Vitamin B12"
+        case .solubleFibre:
+            return "Soluble Fibre"
+        case .insolubeFibre:
+            return "Insoluble Fibre"
         }
     }
 }
