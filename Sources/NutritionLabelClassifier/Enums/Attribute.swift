@@ -520,7 +520,7 @@ extension Attribute: CustomStringConvertible {
             return "Vitamin B12"
         case .solubleFibre:
             return "Soluble Fibre"
-        case .insolubeFibre:
+        case .insolubleFibre:
             return "Insoluble Fibre"
         }
     }
