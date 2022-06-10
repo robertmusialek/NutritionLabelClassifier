@@ -54,11 +54,20 @@ public enum Attribute: String, CaseIterable {
     case potassium
     case cobalamin
     case magnesium
+    case thiamin
+    case riboflavin
+    case niacin
+    case zinc
+    
+    case folate
+    case folicAcid
     
     case vitaminA
     case vitaminC
     case vitaminD
+    case vitaminB1
     case vitaminB6
+    case vitaminB12
     
     
     public var conflictingAttributes: [Attribute] {
@@ -489,6 +498,23 @@ extension Attribute: CustomStringConvertible {
             return "Vitamin D"
         case .vitaminB6:
             return "Vitamin B6"
+            
+        case .thiamin:
+            return "Thiamin"
+        case .riboflavin:
+            return "Riboflavin"
+        case .niacin:
+            return "Niacin"
+        case .zinc:
+            return "Zinc"
+        case .folate:
+            return "Folate"
+        case .folicAcid:
+            return "Folic Acid"
+        case .vitaminB1:
+            return "Vitamin B1"
+        case .vitaminB12:
+            return "Vitamin B12"
         }
     }
 }
