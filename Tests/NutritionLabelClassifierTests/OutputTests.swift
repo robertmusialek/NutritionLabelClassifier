@@ -20,13 +20,17 @@ let SingledOutTestCaseId: UUID? = nil
 //let SingledOutTestCaseId: UUID? = CurrentTestCase
 //let SingledOutTestCaseId: UUID? = UUID(uuidString: "6BAD0EB1-8BED-4DD9-8FD8-C9861A267A3D")
 
-let FailingTests: [UUID] = [
-    UUID(uuidString: "674347E4-7B53-4409-95AF-07FD0560ADBA")!,
-    UUID(uuidString: "03A07980-DDEC-41A6-8130-080F582FB5C3")!,
-    UUID(uuidString: "5FEDB3DF-4214-44EF-A390-3C5CB3C1DA14")!,
-    UUID(uuidString: "826DB226-9FCD-4662-A1CD-5FD862493D55")!,
-    UUID(uuidString: "DEB07FE7-3C3D-44E9-83AD-2234228A4F02")!
+let FailingTestUUIDStrings = [
+    "674347E4-7B53-4409-95AF-07FD0560ADBA",
+    "03A07980-DDEC-41A6-8130-080F582FB5C3",
+    "5FEDB3DF-4214-44EF-A390-3C5CB3C1DA14",
+    "826DB226-9FCD-4662-A1CD-5FD862493D55",
+    "DEB07FE7-3C3D-44E9-83AD-2234228A4F02",
+    "DD77C26D-4004-4071-B2B1-D228B258A893",
+    "81840F7C-B156-4A21-AE5B-A55531AA6B2D"
 ]
+
+let FailingTests: [UUID] = FailingTestUUIDStrings.map { UUID(uuidString: $0)! }
 
 //let IgnoredTests: [UUID] = []
 let IgnoredTests: [UUID] = FailingTests + []
