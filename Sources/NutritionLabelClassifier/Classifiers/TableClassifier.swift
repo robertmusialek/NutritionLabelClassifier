@@ -37,12 +37,97 @@ class TableClassifier {
         /// Identify column of labels
         if let nutrientLabelTexts = getNutrientLabelTexts() {
             let attributes = getUniqueAttributesFrom(nutrientLabelTexts)
+            
+            let valueTexts = getValueLabelTexts()
             print("Here we go")
         }
+        
+        
+        
         
         return observations
     }
     
+    //MARK: - Values
+    func getValueLabelTexts() -> ([RecognizedText]?, [RecognizedText]?) {
+
+        var candidates: [[RecognizedText]] = [[]]
+        
+        for recognizedTexts in arrayOfRecognizedTexts {
+            for text in recognizedTexts {
+                guard let _ = Value(fromString: text.string) else {
+                    continue
+                }
+                
+                let columnOfTexts = getColumnOfValueLabelTexts(startingFrom: text)
+                    .sorted(by: { $0.rect.minY < $1.rect.minY })
+                
+                candidates.append(columnOfTexts)
+            }
+        }
+        
+        /// Now that we've parsed all the nutrient-label columns, pick the one with the most elements
+        let sorted = candidates.sorted(by: { $0.count > $1.count })
+        if let first = sorted.first {
+            if candidates.count > 2 {
+                return (first, candidates[1])
+            } else {
+                return (first, nil)
+            }
+        } else {
+            return (nil, nil)
+        }
+    }
+    
+    func getColumnOfValueLabelTexts(startingFrom startingText: RecognizedText) -> [RecognizedText] {
+        
+        let BoundingBoxMaxXDeltaThreshold = 0.05
+        var array: [RecognizedText] = [startingText]
+        
+        //TODO: Remove using only first array of texts
+        for recognizedTexts in [arrayOfRecognizedTexts.first ?? []] {
+            /// Now go upwards to get nutrient-attribute texts in same column as it
+            let textsAbove = recognizedTexts.filterSameColumn(as: startingText, preceding: true, removingOverlappingTexts: false).filter { !$0.string.isEmpty }.reversed()
+            
+            for text in textsAbove {
+                let delta = abs(text.boundingBox.maxX - startingText.boundingBox.maxX)
+                
+                /// Ignore `text`s that are clearly not in-line with the `startingText`, in terms of its `boundingBox.minX` being more than `0.05` from the `startingText`s
+                guard delta < BoundingBoxMaxXDeltaThreshold else {
+                    continue
+                }
+
+                /// Until we reach a non-nutrient-attribute text
+                guard let _ = Value(fromString: text.string) else {
+                    break
+                }
+                
+                /// Insert these into the start of our column of labels as we read them in
+                array.insert(text, at: 0)
+            }
+
+            /// Now do the same thing downwards
+            let textsBelow = recognizedTexts.filterSameColumn(as: startingText, preceding: false, removingOverlappingTexts: false).filter { !$0.string.isEmpty }
+            for text in textsBelow {
+                let delta = abs(text.boundingBox.maxX - startingText.boundingBox.maxX)
+                
+                /// Ignore `text`s that are clearly not in-line with the `startingText`, in terms of its `boundingBox.minX` being more than `0.05` from the `startingText`s
+                guard delta < BoundingBoxMaxXDeltaThreshold else {
+                    continue
+                }
+
+                guard let _ = Value(fromString: text.string) else {
+                    break
+                }
+                
+                array.append(text)
+            }
+        }
+
+        return array
+    }
+    
+    //MARK: - Attributes
     func getUniqueAttributesFrom(_ texts: [RecognizedText]) -> [Attribute]? {
         texts.compactMap({ Attribute(fromString: $0.string) }).uniqued()
     }
@@ -69,7 +154,6 @@ class TableClassifier {
         /// Now that we've parsed all the nutrient-label columns, pick the one with the most elements
         return candidates.sorted(by: { $0.count > $1.count }).first
     }
-    
     func getColumnOfNutrientLabelTexts(startingFrom startingText: RecognizedText) -> [RecognizedText] {
         
 //        print("Getting column starting from: \(startingText.string)")

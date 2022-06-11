@@ -4,8 +4,8 @@ import TabularData
 
 public let NutritionLabelClassifierVersion = "0.0.161"
 
-let IsTestingNewAlgorithm = true
-//let IsTestingNewAlgorithm = false
+//let IsTestingNewAlgorithm = true
+let IsTestingNewAlgorithm = false
 
 //TODO: Rename this to
 /// `NutritionLabelRecognizer`

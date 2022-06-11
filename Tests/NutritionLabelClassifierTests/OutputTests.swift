@@ -14,13 +14,13 @@ let ClassifierTestCases = 1...23
 let ClassifierTestCasesToIgnore: [Int] = []
 
 /// Cookie Butter
-let CurrentTestCase = UUID(uuidString: "00DC2D0A-2C55-4633-B5AE-DF2BA90C4249")!
-
-/// Shredded Cheese
-//let CurrentTestCase = UUID(uuidString: "E84F7C80-50C4-4237-BAAD-BD5C1B958B84")!
+//let CurrentTestCase = UUID(uuidString: "00DC2D0A-2C55-4633-B5AE-DF2BA90C4249")!
 
 /// Sliced Cheese
-//let CurrentTestCase = UUID(uuidString: "3EDD65E5-6363-42E3-8358-21A520ED21CC")!
+//let CurrentTestCase = UUID(uuidString: "E84F7C80-50C4-4237-BAAD-BD5C1B958B84")!
+
+/// Shredded Cheese
+let CurrentTestCase = UUID(uuidString: "3EDD65E5-6363-42E3-8358-21A520ED21CC")!
 //let CurrentTestCase = UUID(uuidString: "7648338E-8AC8-4C03-AAA1-AC8FC76E7368")!
 
 let SingledOutTestCaseId: UUID? = IsTestingNewAlgorithm ? CurrentTestCase : nil
