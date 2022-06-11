@@ -29,7 +29,7 @@ extension RecognizedText {
             {
                 string = string.replacingFirstOccurrence(of: numberSubstring, with: "").trimmingWhitespaces
 
-                let artefact = ServingArtefact(double: double, textId: id)
+                let artefact = ServingArtefact(double: double, text: self)
                 array.append(artefact)
             }
             /// Otherwise if we have a unit at the start of the string
@@ -38,7 +38,7 @@ extension RecognizedText {
             {
                 string = string.replacingFirstOccurrence(of: unitSubstring, with: "").trimmingWhitespaces
                 
-                let artefact = ServingArtefact(unit: unit, textId: id)
+                let artefact = ServingArtefact(unit: unit, text: self)
                 array.append(artefact)
             }
             /// Finally get the next substring up to the first numeral
@@ -56,8 +56,8 @@ extension RecognizedText {
                     if attribute == .servingsPerContainerAmount {
                         /// **Heuristic** If this is the `.servingsPerContainerAmount`, also try and grab the `.servingsPerContainerName` from the substring, and add that as an artefact before proceeding
                         if let containerName = string.servingsPerContainerName {
-                            array.append(ServingArtefact(attribute: .servingsPerContainerName, textId: id))
-                            array.append(ServingArtefact(string: containerName, textId: id))
+                            array.append(ServingArtefact(attribute: .servingsPerContainerName, text: self))
+                            array.append(ServingArtefact(string: containerName, text: self))
                         }
                      
 //                        /// If we have a double as the previous artefact, add it as the serving amount and stop searching for it
@@ -67,7 +67,7 @@ extension RecognizedText {
 //                        let previous = previousArtefact
                     }
 
-                    let artefact = ServingArtefact(attribute: attribute, textId: id)
+                    let artefact = ServingArtefact(attribute: attribute, text: self)
                     
                     /// If this was the `.servingsPerContainerAmount` attribute,
                     ///     and we have a unit-less value before it
@@ -93,7 +93,7 @@ extension RecognizedText {
                 /// Otherwise, if the substring contains letters, add it as a string attribute
                 else if substring.containsWords
                 {
-                    let artefact = ServingArtefact(string: substring, textId: id)
+                    let artefact = ServingArtefact(string: substring, text: self)
                     array.append(artefact)
                     string = string.replacingFirstOccurrence(of: substring, with: "").trimmingWhitespaces
                 }

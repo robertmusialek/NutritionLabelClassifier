@@ -3,13 +3,13 @@ import Foundation
 extension DoubleText {
     public init(_ valueText: ValueText) {
         self.double = valueText.value.amount
-        self.textId = valueText.textId
-        self.attributeTextId = valueText.textId
+        self.text = valueText.text
+        self.attributeText = valueText.text
     }
     public init(_ doubleText: DoubleText) {
         self.double = doubleText.double
-        self.textId = doubleText.textId
-        self.attributeTextId = doubleText.textId
+        self.text = doubleText.text
+        self.attributeText = doubleText.text
     }
 }
 
@@ -19,16 +19,16 @@ extension UnitText {
             return nil
         }
         self.unit = unit
-        self.textId = valueText.textId
-        self.attributeTextId = valueText.textId
+        self.text = valueText.text
+        self.attributeText = valueText.text
     }
     public init?(_ stringText: StringText) {
         guard let unit = NutritionUnit(string: stringText.string) else {
             return nil
         }
         self.unit = unit
-        self.textId = stringText.textId
-        self.attributeTextId = stringText.textId
+        self.text = stringText.text
+        self.attributeText = stringText.text
     }
 }
 

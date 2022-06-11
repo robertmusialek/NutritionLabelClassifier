@@ -183,7 +183,7 @@ class EdgeCasesClassifier: Classifier {
     
     //TODO: Modularize both of these
     func pickAnotherCandidateForValue1Of(_ observation: Observation, lessThanOrEqualTo parentAmount: Double) {
-        guard let id = observation.valueText1?.textId,
+        guard let id = observation.valueText1?.text.id,
               let recognizedText = recognizedTexts.withId(id),
               let validValue = recognizedText.value(lessThanOrEqualTo: parentAmount)
         else {
@@ -194,7 +194,7 @@ class EdgeCasesClassifier: Classifier {
         observations.modifyObservation(observation, withValue1: newValue)
     }
     func pickAnotherCandidateForValue2Of(_ observation: Observation, lessThanOrEqualTo parentAmount: Double) {
-        guard let id = observation.valueText2?.textId,
+        guard let id = observation.valueText2?.text.id,
               let recognizedText = recognizedTexts.withId(id),
               let validValue = recognizedText.value(lessThanOrEqualTo: parentAmount)
         else {
@@ -240,7 +240,7 @@ extension Array where Element == Observation {
         let newObservation = Observation(
             attributeText: observation.attributeText,
             valueText1: ValueText(value: newValue1,
-                                  textId: observation.valueText1?.textId ?? defaultUUID),
+                                  text: observation.valueText1?.text ?? defaultText),
             valueText2: observation.valueText2,
             doubleText: nil, stringText: nil)
         self[index] = newObservation
@@ -251,7 +251,7 @@ extension Array where Element == Observation {
             attributeText: observation.attributeText,
             valueText1: observation.valueText1,
             valueText2: ValueText(value: newValue2,
-                                  textId: observation.valueText2?.textId ?? defaultUUID),
+                                  text: observation.valueText2?.text ?? defaultText),
             doubleText: nil, stringText: nil)
         self[index] = newObservation
     }
@@ -276,10 +276,10 @@ extension Observation {
     
     var textIds: [UUID] {
         [attributeText.text.id,
-         valueText1?.textId,
-         valueText2?.textId,
-         doubleText?.textId,
-         stringText?.textId]
+         valueText1?.text.id,
+         valueText2?.text.id,
+         doubleText?.text.id,
+         stringText?.text.id]
             .compactMap { $0 }
     }
     

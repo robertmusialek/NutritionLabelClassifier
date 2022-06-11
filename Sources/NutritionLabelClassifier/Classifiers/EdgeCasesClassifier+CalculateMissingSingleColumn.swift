@@ -38,7 +38,7 @@ extension EdgeCasesClassifier {
         let attributeText = AttributeText(attribute: .energy, text: recognizedText)
         let observation = Observation(
             attributeText: attributeText,
-            valueText1: ValueText(value: Value(amount: kcal, unit: .kcal), textId: recognizedText.id),
+            valueText1: ValueText(value: Value(amount: kcal, unit: .kcal), text: recognizedText),
             valueText2: nil, doubleText: nil, stringText: nil
         )
         observations.append(observation)
@@ -71,7 +71,7 @@ extension EdgeCasesClassifier {
         let attributeText = AttributeText(attribute: .carbohydrate, text: recognizedText)
         let observation = Observation(
             attributeText: attributeText,
-            valueText1: ValueText(value: Value(amount: amount, unit: .g), textId: recognizedText.id),
+            valueText1: ValueText(value: Value(amount: amount, unit: .g), text: recognizedText),
             valueText2: nil, doubleText: nil, stringText: nil
         )
         observations.append(observation)
@@ -103,7 +103,7 @@ extension EdgeCasesClassifier {
         let attributeText = AttributeText(attribute: .fat, text: recognizedText)
         let observation = Observation(
             attributeText: attributeText,
-            valueText1: ValueText(value: Value(amount: amount, unit: .g), textId: recognizedText.id),
+            valueText1: ValueText(value: Value(amount: amount, unit: .g), text: recognizedText),
             valueText2: nil, doubleText: nil, stringText: nil
         )
         observations.append(observation)
@@ -135,7 +135,7 @@ extension EdgeCasesClassifier {
         let attributeText = AttributeText(attribute: .protein, text: recognizedText)
         let observation = Observation(
             attributeText: attributeText,
-            valueText1: ValueText(value: Value(amount: amount, unit: .g), textId: recognizedText.id),
+            valueText1: ValueText(value: Value(amount: amount, unit: .g), text: recognizedText),
             valueText2: nil, doubleText: nil, stringText: nil
         )
         observations.append(observation)

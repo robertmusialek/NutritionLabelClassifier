@@ -1,38 +1,39 @@
 import Foundation
+import VisionSugar
 
 public struct ServingArtefact {
-    let textId: UUID
+    let text: RecognizedText
     let attribute: Attribute?
     let double: Double?
     let string: String?
     let unit: NutritionUnit?
     
-    init(attribute: Attribute, textId: UUID) {
-        self.textId = textId
+    init(attribute: Attribute, text: RecognizedText) {
+        self.text = text
         self.attribute = attribute
         self.double = nil
         self.string = nil
         self.unit = nil
     }
     
-    init(double: Double, textId: UUID) {
-        self.textId = textId
+    init(double: Double, text: RecognizedText) {
+        self.text = text
         self.double = double
         self.attribute = nil
         self.string = nil
         self.unit = nil
     }
     
-    init(string: String, textId: UUID) {
-        self.textId = textId
+    init(string: String, text: RecognizedText) {
+        self.text = text
         self.string = string
         self.double = nil
         self.attribute = nil
         self.unit = nil
     }
     
-    init(unit: NutritionUnit, textId: UUID) {
-        self.textId = textId
+    init(unit: NutritionUnit, text: RecognizedText) {
+        self.text = text
         self.unit = unit
         self.string = nil
         self.double = nil
@@ -42,7 +43,7 @@ public struct ServingArtefact {
 
 extension ServingArtefact: Equatable {
     public static func ==(lhs: ServingArtefact, rhs: ServingArtefact) -> Bool {
-        lhs.textId == rhs.textId
+        lhs.text == rhs.text
         && lhs.attribute == rhs.attribute
         && lhs.double == rhs.double
         && lhs.string == rhs.string

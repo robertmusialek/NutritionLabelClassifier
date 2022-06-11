@@ -42,8 +42,8 @@ extension DataFrame {
         }
         return UnitText(
             unit: unit,
-            textId: stringText.textId,
-            attributeTextId: stringText.attributeTextId
+            text: stringText.text,
+            attributeText: stringText.attributeText
         )
     }
 }
@@ -100,14 +100,14 @@ extension DataFrame {
         guard type == .perServing else {
             return HeaderText(
                 type: type,
-                textId: stringText.textId,
-                attributeTextId: stringText.attributeTextId,
+                text: stringText.text,
+                attributeText: stringText.attributeText,
                 serving: nil)
         }
         return HeaderText(
             type: .perServing,
-            textId: stringText.textId,
-            attributeTextId: stringText.attributeTextId,
+            text: stringText.text,
+            attributeText: stringText.attributeText,
             serving: headerServing)
     }
     

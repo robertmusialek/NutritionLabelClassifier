@@ -238,7 +238,7 @@ class HeaderClassifier: Classifier {
     }
     
     var value1RecognizedTextIds: [UUID] {
-        observations.filterContainingSeparateValue1.compactMap { $0.valueText1?.textId }
+        observations.filterContainingSeparateValue1.compactMap { $0.valueText1?.text.id }
     }
     
     var topMostValue2RecognizedText: RecognizedText? {
@@ -252,7 +252,7 @@ class HeaderClassifier: Classifier {
     }
     
     var value2RecognizedTextIds: [UUID] {
-        observations.filterContainingSeparateValue2.compactMap { $0.valueText2?.textId }
+        observations.filterContainingSeparateValue2.compactMap { $0.valueText2?.text.id }
     }
 
 }

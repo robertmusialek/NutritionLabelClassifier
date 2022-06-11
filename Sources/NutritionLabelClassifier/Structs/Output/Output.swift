@@ -49,55 +49,54 @@ extension Output {
 public struct AttributeText {
     public let attribute: Attribute
     public let text: RecognizedText
-//    public let textId: UUID
 }
 
 public struct ValueText {
     public var value: Value
-    public let textId: UUID
-    public let attributeTextId: UUID? = nil
+    public let text: RecognizedText
+    public let attributeText: RecognizedText? = nil
 }
 
 public struct DoubleText {
     public let double: Double
-    public let textId: UUID
-    public let attributeTextId: UUID
+    public let text: RecognizedText
+    public let attributeText: RecognizedText
     
-    public init(double: Double, textId: UUID, attributeTextId: UUID) {
+    public init(double: Double, text: RecognizedText, attributeText: RecognizedText) {
         self.double = double
-        self.textId = textId
-        self.attributeTextId = attributeTextId
+        self.text = text
+        self.attributeText = attributeText
     }
 }
 
 public struct UnitText {
     public let unit: NutritionUnit
-    public let textId: UUID
-    public let attributeTextId: UUID
+    public let text: RecognizedText
+    public let attributeText: RecognizedText
     
-    public init(unit: NutritionUnit, textId: UUID, attributeTextId: UUID) {
+    public init(unit: NutritionUnit, text: RecognizedText, attributeText: RecognizedText) {
         self.unit = unit
-        self.textId = textId
-        self.attributeTextId = attributeTextId
+        self.text = text
+        self.attributeText = attributeText
     }
 }
 
 public struct StringText {
     public let string: String
-    public let textId: UUID
-    public let attributeTextId: UUID
+    public let text: RecognizedText
+    public let attributeText: RecognizedText
     
-    public init(string: String, textId: UUID, attributeTextId: UUID) {
+    public init(string: String, text: RecognizedText, attributeText: RecognizedText) {
         self.string = string
-        self.textId = textId
-        self.attributeTextId = attributeTextId
+        self.text = text
+        self.attributeText = attributeText
     }
 }
 
 public struct HeaderText {
     public let type: HeaderType
-    public let textId: UUID
-    public let attributeTextId: UUID
+    public let text: RecognizedText
+    public let attributeText: RecognizedText
     public let serving: Serving?
     
     public struct Serving {

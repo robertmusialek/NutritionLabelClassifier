@@ -25,14 +25,14 @@ extension Observation {
         if let unit = servingArtefact.unit {
             self.stringText = StringText(
                 string: unit.description,
-                textId: servingArtefact.textId,
-                attributeTextId: attributeText.text.id
+                text: servingArtefact.text,
+                attributeText: attributeText.text
             )
         } else if let string = servingArtefact.string {
             self.stringText = StringText(
                 string: string.cleanedUnitString,
-                textId: servingArtefact.textId,
-                attributeTextId: attributeText.text.id
+                text: servingArtefact.text,
+                attributeText: attributeText.text
             )
         } else {
             self.stringText = nil
@@ -40,8 +40,8 @@ extension Observation {
         if let double = servingArtefact.double {
             self.doubleText = DoubleText(
                 double: double,
-                textId: servingArtefact.textId,
-                attributeTextId: attributeText.text.id
+                text: servingArtefact.text,
+                attributeText: attributeText.text
             )
         } else {
             self.doubleText = nil

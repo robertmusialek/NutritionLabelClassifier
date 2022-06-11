@@ -45,8 +45,8 @@ class NutrientsClassifier: Classifier {
             if let observation = observationBeingExtracted {
                 
                 /// If we have a value1 for this observation, make sure we add the recognized text it was added from to the discarded list before checking the inline ones
-                if let value1Id = observation.valueText1?.textId,
-                    let recognizedTextForValue1 = recognizedTexts.first(where: { $0.id == value1Id })
+                if let value1Text = observation.valueText1?.text,
+                   let recognizedTextForValue1 = recognizedTexts.first(where: { $0.id == value1Text.id })
                 {
                     discarded.append(recognizedTextForValue1)
                 }
@@ -110,7 +110,7 @@ class NutrientsClassifier: Classifier {
     private func extractObservations(of recognizedText: RecognizedText) {
         
         let artefacts = recognizedText.getNutrientArtefacts(extractedObservations: observations)
-        let id = recognizedText.id
+//        let id = recognizedText.id
 
         var observations: [Observation] = []
         var attributeTextBeingExtracted: AttributeText? = nil
@@ -127,7 +127,7 @@ class NutrientsClassifier: Classifier {
                 /// if we're in the process of extracting a value, save it as an observation
                 if let attributeBeingExtracted = attributeTextBeingExtracted, let valueBeingExtracted = value1BeingExtracted {
                     observations.append(Observation(attributeText: attributeBeingExtracted,
-                                            valueText1: ValueText(value: valueBeingExtracted, textId: id),
+                                            valueText1: ValueText(value: valueBeingExtracted, text: recognizedText),
                                             valueText2: nil))
                     value1BeingExtracted = nil
                 }
@@ -139,7 +139,7 @@ class NutrientsClassifier: Classifier {
                     {
                         observations.append(Observation(
                             attributeText: attributeText,
-                            valueText1: ValueText(value: savedValue, textId: id),
+                            valueText1: ValueText(value: savedValue, text: recognizedText),
                             valueText2: nil)
                         )
                         attributeTextBeingExtracted = nil
@@ -151,7 +151,7 @@ class NutrientsClassifier: Classifier {
                     {
                         observations.append(Observation(
                             attributeText: attributeText,
-                            valueText1: ValueText(value: value, textId: id),
+                            valueText1: ValueText(value: value, text: recognizedText),
                             valueText2: nil)
                         )
                         attributeTextBeingExtracted = nil
@@ -202,8 +202,8 @@ class NutrientsClassifier: Classifier {
                         }
                     }
                     observations.append(Observation(attributeText: attributeWithId,
-                                            valueText1: ValueText(value: value1, textId: id),
-                                            valueText2: ValueText(value: value, textId: id)))
+                                            valueText1: ValueText(value: value1, text: recognizedText),
+                                            valueText2: ValueText(value: value, text: recognizedText)))
                     attributeTextBeingExtracted = nil
                     value1BeingExtracted = nil
                 } else {
@@ -233,7 +233,7 @@ class NutrientsClassifier: Classifier {
                     /// If the attribute doesn't support multiple units (such as `servingsPerContainerAmount`), add the observation and clear the variables now
                     if !attributeWithId.attribute.supportsMultipleColumns {
                         observations.append(Observation(attributeText: attributeWithId,
-                                                valueText1: ValueText(value: value, textId: id),
+                                                valueText1: ValueText(value: value, text: recognizedText),
                                                 valueText2: nil))
                         value1BeingExtracted = nil
                         attributeTextBeingExtracted = nil
@@ -267,7 +267,7 @@ class NutrientsClassifier: Classifier {
                 pendingObservations = observations
                 observationBeingExtracted =  Observation(
                     attributeText: attributeBeingExtracted,
-                    valueText1: ValueText(value: value1BeingExtracted, textId: id),
+                    valueText1: ValueText(value: value1BeingExtracted, text: recognizedText),
                     valueText2: nil
                 )
             } else {
@@ -276,7 +276,7 @@ class NutrientsClassifier: Classifier {
                     pendingObservations = observations
                     observationBeingExtracted = Observation(
                         attributeText: attributeBeingExtracted,
-                        valueText1: ValueText(value: value, textId: id),
+                        valueText1: ValueText(value: value, text: recognizedText),
                         valueText2: nil
                     )
                 } else {
@@ -393,13 +393,13 @@ class NutrientsClassifier: Classifier {
                         continue
                     }
                     
-                    observation.valueText2 = ValueText(value: value, textId: recognizedText.id)
+                    observation.valueText2 = ValueText(value: value, text: recognizedText)
                     
                     didExtract = true
                     /// Send `false` for algorithm to stop searching inline texts once we have completed the observation
                     return (didExtract: didExtract, shouldContinue: false)
                 } else if observation.attributeText.attribute.supportsUnit(unit) {
-                    observation.valueText1 = ValueText(value: value, textId: recognizedText.id)
+                    observation.valueText1 = ValueText(value: value, text: recognizedText)
                     didExtract = true
                 }
             } else if let _ = artefact.attribute {

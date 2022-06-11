@@ -12,25 +12,25 @@ extension Output {
 
 extension DoubleText {
     init(fromExpectedDouble double: Double) {
-        self.init(double: double, textId: defaultUUID, attributeTextId: defaultUUID)
+        self.init(double: double, text: defaultText, attributeText: defaultText)
     }
 }
 
 extension UnitText {
     init(fromExpectedUnit unit: NutritionUnit) {
-        self.init(unit: unit, textId: defaultUUID, attributeTextId: defaultUUID)
+        self.init(unit: unit, text: defaultText, attributeText: defaultText)
     }
 }
 
 extension StringText {
     init(fromExpectedString string: String) {
-        self.init(string: string, textId: defaultUUID, attributeTextId: defaultUUID)
+        self.init(string: string, text: defaultText, attributeText: defaultText)
     }
 }
 
 extension HeaderText {
     init(fromExpectedType type: HeaderType, serving: HeaderText.Serving?) {
-        self.init(type: type, textId: defaultUUID, attributeTextId: defaultUUID, serving: serving)
+        self.init(type: type, text: defaultText, attributeText: defaultText, serving: serving)
     }
 }
 
@@ -223,7 +223,7 @@ extension Output.Nutrients {
                     print("Failed to convert value1String: \(value1String)")
                     continue
                 }
-                valueText1 = ValueText(value: value, textId: defaultUUID)
+                valueText1 = ValueText(value: value, text: defaultText)
             }
             
             var valueText2: ValueText? = nil
@@ -232,7 +232,7 @@ extension Output.Nutrients {
                     print("Failed to convert value2String: \(value2String)")
                     continue
                 }
-                valueText2 = ValueText(value: value, textId: defaultUUID)
+                valueText2 = ValueText(value: value, text: defaultText)
             }
             
             let nutrientRow = Row(

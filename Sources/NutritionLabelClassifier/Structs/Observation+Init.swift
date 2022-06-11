@@ -13,8 +13,8 @@ extension Observation {
                 text: attributeText ?? recognizedText),
             stringText: StringText(
                 string: headerType.rawValue,
-                textId: recognizedText.id,
-                attributeTextId: attributeText?.id ?? recognizedText.id)
+                text: recognizedText,
+                attributeText: attributeText ?? recognizedText)
         )
     }
     
@@ -26,8 +26,8 @@ extension Observation {
                 text: attributeText ?? recognizedText),
             doubleText: DoubleText(
                 double: double,
-                textId: recognizedText.id,
-                attributeTextId: attributeText?.id ?? recognizedText.id))
+                text: recognizedText,
+                attributeText: attributeText ?? recognizedText))
     }
     
     init?(unit: NutritionUnit, attribute: Attribute, attributeText: RecognizedText? = nil, recognizedText: RecognizedText) {
@@ -38,8 +38,8 @@ extension Observation {
                 text: attributeText ?? recognizedText),
             stringText: StringText(
                 string: unit.description,
-                textId: recognizedText.id,
-                attributeTextId: attributeText?.id ?? recognizedText.id))
+                text: recognizedText,
+                attributeText: attributeText ?? recognizedText))
     }
 
     init?(string: String, attribute: Attribute, attributeText: RecognizedText? = nil, recognizedText: RecognizedText) {
@@ -50,7 +50,7 @@ extension Observation {
                 text: attributeText ?? recognizedText),
             stringText: StringText(
                 string: string,
-                textId: recognizedText.id,
-                attributeTextId: attributeText?.id ?? recognizedText.id))
+                text: recognizedText,
+                attributeText: attributeText ?? recognizedText))
     }
 }

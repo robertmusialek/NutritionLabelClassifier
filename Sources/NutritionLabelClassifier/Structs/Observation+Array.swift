@@ -88,7 +88,7 @@ extension Array where Element == Observation {
     
     /// Filters out observations that contains separate `recognizedText`s for value 1 and 2 (if present)
     var filterContainingSeparateValues: [Observation] {
-        filter { $0.valueText1?.textId != $0.valueText2?.textId }
+        filter { $0.valueText1?.text.id != $0.valueText2?.text.id }
     }
     /// Filters out observations that contains a separate value 1 observation (that is not the same as value 2)
     var filterContainingSeparateValue1: [Observation] {
