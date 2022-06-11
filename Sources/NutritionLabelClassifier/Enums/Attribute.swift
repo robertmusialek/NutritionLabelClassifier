@@ -364,14 +364,18 @@ public enum Attribute: String, CaseIterable {
 
         static let calories = #"calories"#
         
-        static let sugar = #"^(?=^.*(sugar|sucres|zucker|zuccheri).*$)(?!^.*\#(addedSugar).*$).*$"#
-        static let addedSugar = #"added sugar(s|)"#
+        static let totalSugar = #"^.*(sugar|sucres|zucker|zuccheri).*$"#
+        static let addedSugar = #"^.*added sugar(s|).*$"#
+        static let sugar = #"^(?=\#(totalSugar))(?!\#(addedSugar)).*$"#
         
-        static let fat = #"^(?=^.*(fa(t|i)|fett|grassi|lípidos).*$)(?!\#(saturatedFat))(?!\#(transFat))(?!\#(polyunsaturatedFat))(?!\#(monounsaturatedFat)).*$"#
+        static let totalFat = #"^.*(fa(t|i)|fett|grassi|lípidos|grasa total).*$"#
         static let saturatedFat = #"^.*(saturated|of which saturates|saturi|saturados).*$"#
         static let transFat = #"^.*trans.*$"#
         static let monounsaturatedFat = #"^.*mono(-|)unsaturat.*$"#
         static let polyunsaturatedFat = #"^.*poly(-|)unsaturat.*$"#
+        
+        static let fat = #"^(?=\#(totalFat))(?!\#(saturatedFat))(?!\#(transFat))(?!\#(polyunsaturatedFat))(?!\#(monounsaturatedFat)).*$"#
+
         static let cholesterol = #"cholesterol"#
         
         static func vitamin(_ letter: String) -> String {

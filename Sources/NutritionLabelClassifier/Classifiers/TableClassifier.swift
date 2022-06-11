@@ -51,7 +51,7 @@ class TableClassifier: Classifier {
     
     func getColumnOfNutrientLabelTexts(startingFrom startingText: RecognizedText) -> [RecognizedText] {
         
-        print("Getting column starting from: \(startingText.string)")
+//        print("Getting column starting from: \(startingText.string)")
 
         let BoundingBoxMinXDeltaThreshold = 0.05
         var array: [RecognizedText] = [startingText]
@@ -93,8 +93,8 @@ class TableClassifier: Classifier {
             array.append(text)
         }
 
-        print(array.description)
-        print(" ")
+//        print(array.description)
+//        print(" ")
 
         return array
     }
