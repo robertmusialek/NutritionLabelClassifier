@@ -2,7 +2,7 @@ import Foundation
 import VisionSugar
 import TabularData
 
-public let NutritionLabelClassifierVersion = "0.0.161"
+public let NutritionLabelClassifierVersion = "0.0.164"
 
 //let IsTestingNewAlgorithm = true
 let IsTestingNewAlgorithm = false
