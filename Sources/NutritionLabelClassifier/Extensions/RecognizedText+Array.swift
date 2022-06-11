@@ -135,8 +135,6 @@ extension Array where Element == RecognizedText {
     //MARK: - Legacy
 
     func filterSameColumn(as recognizedText: RecognizedText, preceding: Bool = false, removingOverlappingTexts: Bool = true) -> [RecognizedText] {
-        var column: [RecognizedText] = []
-        var discarded: [RecognizedText] = []
         let candidates = filter {
             $0.isInSameColumnAs(recognizedText)
             && (preceding ? $0.rect.maxY < recognizedText.rect.maxY : $0.rect.minY > recognizedText.rect.minY)
@@ -144,6 +142,8 @@ extension Array where Element == RecognizedText {
             $0.rect.minY < $1.rect.minY
         }
 
+        var column: [RecognizedText] = []
+        var discarded: [RecognizedText] = []
         for candidate in candidates {
 
             guard !discarded.contains(candidate) else {
@@ -180,6 +180,7 @@ extension Array where Element == RecognizedText {
                 column.append(closest)
             } else {
                 column = candidates
+                break
             }
         }
         

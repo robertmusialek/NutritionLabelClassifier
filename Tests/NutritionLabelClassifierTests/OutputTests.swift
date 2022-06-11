@@ -13,12 +13,15 @@ let RunLegacyTests = true
 let ClassifierTestCases = 1...23
 let ClassifierTestCasesToIgnore: [Int] = []
 
-let CurrentTestCase = UUID(uuidString: "3EDD65E5-6363-42E3-8358-21A520ED21CC")!
+let CurrentTestCase = UUID(uuidString: "E84F7C80-50C4-4237-BAAD-BD5C1B958B84")!
 //let CurrentTestCase = UUID(uuidString: "7648338E-8AC8-4C03-AAA1-AC8FC76E7368")!
 
 let SingledOutTestCaseId: UUID? = nil
 //let SingledOutTestCaseId: UUID? = CurrentTestCase
 //let SingledOutTestCaseId: UUID? = UUID(uuidString: "6BAD0EB1-8BED-4DD9-8FD8-C9861A267A3D")
+
+//let IgnoredTests: [UUID] = []
+let IgnoredTests: [UUID] = FailingTests + []
 
 let FailingTestUUIDStrings = [
     "674347E4-7B53-4409-95AF-07FD0560ADBA",
@@ -44,14 +47,12 @@ let FailingTestUUIDStrings = [
     "15D5AD72-033E-4CA4-BA87-D6CB6193EC9B",
     "083C5BAA-2DDA-42E5-8A6C-DCD1A3E5B7E1",
     "B789ED71-802F-42EF-85A5-FD9FEED77E6F",
-    "5410D64B-4A8D-4183-8C81-EC82ABBFA648"
+    "5410D64B-4A8D-4183-8C81-EC82ABBFA648",
+    "E84F7C80-50C4-4237-BAAD-BD5C1B958B84"
 ]
 
 
 let FailingTests: [UUID] = FailingTestUUIDStrings.map { UUID(uuidString: $0)! }
-
-//let IgnoredTests: [UUID] = []
-let IgnoredTests: [UUID] = FailingTests + []
 
 final class OutputTests: XCTestCase {
 

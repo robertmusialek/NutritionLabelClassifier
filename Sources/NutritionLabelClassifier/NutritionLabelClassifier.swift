@@ -40,6 +40,11 @@ public class NutritionLabelClassifier {
     public func dataFrameOfObservations() -> DataFrame {
         for recognizedTexts in arrayOfRecognizedTexts {
             
+//            observations = TableClassifier.observations(
+//                from: recognizedTexts,
+//                priorObservations: observations)
+//            continue
+            
             observations = NutrientsClassifier.observations(
                 from: recognizedTexts,
                 priorObservations: observations)
