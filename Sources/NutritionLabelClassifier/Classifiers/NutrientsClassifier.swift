@@ -131,7 +131,7 @@ class NutrientsClassifier: Classifier {
                                             valueText2: nil))
                     value1BeingExtracted = nil
                 }
-                attributeTextBeingExtracted = AttributeText(attribute: extractedAttribute, textId: recognizedText.id)
+                attributeTextBeingExtracted = AttributeText(attribute: extractedAttribute, text: recognizedText)
                 
                 if let attributeText = attributeTextBeingExtracted {
                     
@@ -357,7 +357,7 @@ class NutrientsClassifier: Classifier {
                 /// **Heuristic** If the value is missing its unit, the observation is for `.energy` *and* the observed text matches "Calories", assign `.kcal` for the unit
                 if unit == nil,
                    observation.attribute == .energy,
-                   let attributeString = recognizedTexts.first(where: { $0.id == observation.attributeText.textId})?.string,
+                   let attributeString = recognizedTexts.first(where: { $0.id == observation.attributeText.text.id})?.string,
                    attributeString.matchesRegex(Attribute.Regex.calories)
                 {
                     value.unit = .kcal
@@ -369,7 +369,7 @@ class NutrientsClassifier: Classifier {
                     
                     /// **Heuristic** If the attribute is `.energy`, and the label contained `kcal` in it, use that as the default value
                     if observation.attribute == .energy,
-                       let attributeString = recognizedTexts.first(where: { $0.id == observation.attributeText.textId })?.string,
+                       let attributeString = recognizedTexts.first(where: { $0.id == observation.attributeText.text.id })?.string,
                        attributeString.matchesRegex(#"kcal"#)
                     {
                         value = Value(amount: value.amount, unit: .kcal)

@@ -275,7 +275,7 @@ extension Array where Element == Observation {
 extension Observation {
     
     var textIds: [UUID] {
-        [attributeText.textId,
+        [attributeText.text.id,
          valueText1?.textId,
          valueText2?.textId,
          doubleText?.textId,

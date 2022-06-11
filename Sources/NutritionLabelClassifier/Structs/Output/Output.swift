@@ -1,4 +1,5 @@
 import Foundation
+import VisionSugar
 
 public struct Output {
     public let serving: Serving?
@@ -47,7 +48,8 @@ extension Output {
 
 public struct AttributeText {
     public let attribute: Attribute
-    public let textId: UUID
+    public let text: RecognizedText
+//    public let textId: UUID
 }
 
 public struct ValueText {

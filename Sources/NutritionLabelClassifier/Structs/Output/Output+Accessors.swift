@@ -43,7 +43,7 @@ public extension Output.Nutrients.Row {
     var value1: Value? { valueText1?.value }
     var value2: Value? { valueText2?.value }
     
-    var attributeId: UUID { attributeText.textId }
+    var attributeId: UUID { attributeText.text.id }
     var value1Id: UUID? { valueText1?.textId }
     var value2Id: UUID? { valueText2?.textId }
 }

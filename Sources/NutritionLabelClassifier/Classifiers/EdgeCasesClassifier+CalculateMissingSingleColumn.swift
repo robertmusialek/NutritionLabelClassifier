@@ -6,6 +6,7 @@ let KcalsPerGramOfCarb = 4.0
 let KcalsPerGramOfProtein = 4.0
 let KcalsPerKilojule = 4.184
 
+let defaultText = RecognizedText(id: defaultUUID, rectString: "", boundingBoxString: "", candidates: [])
 extension EdgeCasesClassifier {
     
     func calculateMissingMacroOrEnergyInSingleColumnOfValues() {
@@ -32,17 +33,12 @@ extension EdgeCasesClassifier {
         
         let kcal = (carbsValue.amount * KcalsPerGramOfCarb) + (fatValue.amount * KcalsPerGramOfFat) + (proteinValue.amount * KcalsPerGramOfProtein)
         
-        let uuid: UUID
-        if let recognizedText = recognizedTexts.first(where: { $0.string == kcal.clean }) {
-            uuid = recognizedText.id
-        } else {
-            uuid = defaultUUID
-        }
+        let recognizedText = recognizedTexts.first(where: { $0.string == kcal.clean }) ?? defaultText
 
-        let attributeText = AttributeText(attribute: .energy, textId: uuid)
+        let attributeText = AttributeText(attribute: .energy, text: recognizedText)
         let observation = Observation(
             attributeText: attributeText,
-            valueText1: ValueText(value: Value(amount: kcal, unit: .kcal), textId: uuid),
+            valueText1: ValueText(value: Value(amount: kcal, unit: .kcal), textId: recognizedText.id),
             valueText2: nil, doubleText: nil, stringText: nil
         )
         observations.append(observation)
@@ -70,17 +66,12 @@ extension EdgeCasesClassifier {
         var amount = (kcal - (fatValue.amount * KcalsPerGramOfFat) - (proteinValue.amount * KcalsPerGramOfProtein)) / KcalsPerGramOfCarb
         amount = amount.rounded(toPlaces: 4)
         
-        let uuid: UUID
-        if let recognizedText = recognizedTexts.first(where: { $0.string == amount.clean }) {
-            uuid = recognizedText.id
-        } else {
-            uuid = defaultUUID
-        }
+        let recognizedText = recognizedTexts.first(where: { $0.string == amount.clean }) ?? defaultText
 
-        let attributeText = AttributeText(attribute: .carbohydrate, textId: uuid)
+        let attributeText = AttributeText(attribute: .carbohydrate, text: recognizedText)
         let observation = Observation(
             attributeText: attributeText,
-            valueText1: ValueText(value: Value(amount: amount, unit: .g), textId: uuid),
+            valueText1: ValueText(value: Value(amount: amount, unit: .g), textId: recognizedText.id),
             valueText2: nil, doubleText: nil, stringText: nil
         )
         observations.append(observation)
@@ -107,17 +98,12 @@ extension EdgeCasesClassifier {
         var amount = (kcal - (carbValue.amount * KcalsPerGramOfCarb) - (proteinValue.amount * KcalsPerGramOfProtein)) / KcalsPerGramOfFat
         amount = amount.rounded(toPlaces: 4)
 
-        let uuid: UUID
-        if let recognizedText = recognizedTexts.first(where: { $0.string == amount.clean }) {
-            uuid = recognizedText.id
-        } else {
-            uuid = defaultUUID
-        }
+        let recognizedText = recognizedTexts.first(where: { $0.string == amount.clean }) ?? defaultText
 
-        let attributeText = AttributeText(attribute: .fat, textId: uuid)
+        let attributeText = AttributeText(attribute: .fat, text: recognizedText)
         let observation = Observation(
             attributeText: attributeText,
-            valueText1: ValueText(value: Value(amount: amount, unit: .g), textId: uuid),
+            valueText1: ValueText(value: Value(amount: amount, unit: .g), textId: recognizedText.id),
             valueText2: nil, doubleText: nil, stringText: nil
         )
         observations.append(observation)
@@ -144,17 +130,12 @@ extension EdgeCasesClassifier {
         var amount = (kcal - (carbValue.amount * KcalsPerGramOfCarb) - (fatValue.amount * KcalsPerGramOfFat)) / KcalsPerGramOfProtein
         amount = amount.rounded(toPlaces: 4)
         
-        let uuid: UUID
-        if let recognizedText = recognizedTexts.first(where: { $0.string == amount.clean }) {
-            uuid = recognizedText.id
-        } else {
-            uuid = defaultUUID
-        }
+        let recognizedText = recognizedTexts.first(where: { $0.string == amount.clean }) ?? defaultText
 
-        let attributeText = AttributeText(attribute: .protein, textId: uuid)
+        let attributeText = AttributeText(attribute: .protein, text: recognizedText)
         let observation = Observation(
             attributeText: attributeText,
-            valueText1: ValueText(value: Value(amount: amount, unit: .g), textId: uuid),
+            valueText1: ValueText(value: Value(amount: amount, unit: .g), textId: recognizedText.id),
             valueText2: nil, doubleText: nil, stringText: nil
         )
         observations.append(observation)

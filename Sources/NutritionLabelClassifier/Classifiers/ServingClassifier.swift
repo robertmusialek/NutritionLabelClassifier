@@ -135,14 +135,17 @@ class ServingClassifier: Classifier {
 
         let artefacts = recognizedText.servingArtefacts
 
-        let textId = recognizedText.id
+//        let textId = recognizedText.id
         var observations: [Observation] = []
         var extractingAttributes: [AttributeText] = [startingAttributeText].compactMap { $0 }
 
         for i in artefacts.indices {
             let artefact = artefacts[i]
             if let extractedAttribute = artefact.attribute {
-                extractingAttributes = [AttributeText(attribute: extractedAttribute, textId: textId)]
+                extractingAttributes = [AttributeText(
+                    attribute: extractedAttribute,
+                    text: recognizedText)
+                ]
             }
             else if !extractingAttributes.isEmpty {
                 for extractingAttribute in extractingAttributes {
@@ -152,7 +155,7 @@ class ServingClassifier: Classifier {
                         
                         /// If we expect attributes following this (for example, `.servingUnit` or `.servingUnitSize` following a `.servingAmount`), assign those as the attributes we're now extracting
                         if let nextAttributes = extractingAttribute.attribute.nextAttributes {
-                            extractingAttributes = nextAttributes.map { AttributeText(attribute: $0, textId: textId) }
+                            extractingAttributes = nextAttributes.map { AttributeText(attribute: $0, text: recognizedText) }
                         } else {
                             extractingAttributes = []
                         }

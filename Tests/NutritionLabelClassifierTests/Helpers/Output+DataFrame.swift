@@ -238,7 +238,7 @@ extension Output.Nutrients {
             let nutrientRow = Row(
                 attributeText: AttributeText(
                     attribute: attribute,
-                    textId: defaultUUID
+                    text: defaultText
                 ),
                 valueText1: valueText1,
                 valueText2: valueText2)
