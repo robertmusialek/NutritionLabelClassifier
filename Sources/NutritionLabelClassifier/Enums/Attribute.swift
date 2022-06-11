@@ -267,7 +267,7 @@ public enum Attribute: String, CaseIterable {
         case .carbohydrate:
             return #".*(carb|glucides|h(y|v)drate).*"#
         case .dietaryFibre:
-            return #"(dietary |)fib(re|er)"#
+            return Regex.dietaryFibre
         case .gluten:
             return #"gluten"#
         case .starch:
@@ -364,12 +364,29 @@ public enum Attribute: String, CaseIterable {
 
         static let calories = #"calories"#
         
-        static let totalSugar = #"^.*(sugar|sucres|zucker|zuccheri).*$"#
+        static let totalSugarOptions = [
+            "sugar", "sucres", "zucker", "zuccheri", "dont sucres"
+        ]
+        
+        static let totalSugar = #"^.*(\#(totalSugarOptions.joined(separator: "|"))).*$"#
         static let addedSugar = #"^.*added sugar(s|).*$"#
         static let sugar = #"^(?=\#(totalSugar))(?!\#(addedSugar)).*$"#
         
-        static let totalFat = #"^.*(fa(t|i)|fett|grassi|lípidos|grasa total).*$"#
-        static let saturatedFat = #"^.*(saturated|of which saturates|saturi|saturados).*$"#
+        static let dietaryFibreOptions = [
+            "(dietary |)fib(re|er)", "fibra"
+        ]
+        static let dietaryFibre = #"^.*(\#(dietaryFibreOptions.joined(separator: "|"))).*$"#
+        
+        static let totalFatOptions = [
+            "fa(t|i)", "fett", "grassi", "lípidos", "grasa total"
+        ]
+
+        static let saturatedFatOptions = [
+            "saturated", "of which saturates", "saturi", "saturados", "gras saturés"
+        ]
+
+        static let totalFat = #"^.*(\#(totalFatOptions.joined(separator: "|"))).*$"#
+        static let saturatedFat = #"^.*(\#(saturatedFatOptions.joined(separator: "|"))).*$"#
         static let transFat = #"^.*trans.*$"#
         static let monounsaturatedFat = #"^.*mono(-|)unsaturat.*$"#
         static let polyunsaturatedFat = #"^.*poly(-|)unsaturat.*$"#

@@ -4,6 +4,9 @@ import TabularData
 
 public let NutritionLabelClassifierVersion = "0.0.161"
 
+let IsTestingNewAlgorithm = true
+//let IsTestingNewAlgorithm = false
+
 //TODO: Rename this to
 /// `NutritionLabelRecognizer`
 /// `NutritionFactRecognizer`
@@ -38,29 +41,30 @@ public class NutritionLabelClassifier {
     }
     
     public func dataFrameOfObservations() -> DataFrame {
-        for recognizedTexts in arrayOfRecognizedTexts {
-            
-//            observations = TableClassifier.observations(
-//                from: recognizedTexts,
-//                priorObservations: observations)
-//            continue
-            
-            observations = NutrientsClassifier.observations(
-                from: recognizedTexts,
+        if IsTestingNewAlgorithm {
+            observations = TableClassifier.observations(
+                from: arrayOfRecognizedTexts,
                 priorObservations: observations)
-            
-            observations = ServingClassifier.observations(
-                from: recognizedTexts,
-                arrayOfRecognizedTexts: arrayOfRecognizedTexts,
-                priorObservations: observations)
-            
-            observations = HeaderClassifier.observations(
-                from: recognizedTexts,
-                priorObservations: observations)
-            
-            observations = EdgeCasesClassifier.observations(
-                from: recognizedTexts,
-                priorObservations: observations)
+        } else {
+            for recognizedTexts in arrayOfRecognizedTexts {
+                            
+                observations = NutrientsClassifier.observations(
+                    from: recognizedTexts,
+                    priorObservations: observations)
+                
+                observations = ServingClassifier.observations(
+                    from: recognizedTexts,
+                    arrayOfRecognizedTexts: arrayOfRecognizedTexts,
+                    priorObservations: observations)
+                
+                observations = HeaderClassifier.observations(
+                    from: recognizedTexts,
+                    priorObservations: observations)
+                
+                observations = EdgeCasesClassifier.observations(
+                    from: recognizedTexts,
+                    priorObservations: observations)
+            }
         }
         return Self.dataFrameOfNutrients(from: observations)
     }

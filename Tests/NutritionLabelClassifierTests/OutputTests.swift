@@ -13,12 +13,18 @@ let RunLegacyTests = true
 let ClassifierTestCases = 1...23
 let ClassifierTestCasesToIgnore: [Int] = []
 
+/// Cookie Butter
+let CurrentTestCase = UUID(uuidString: "00DC2D0A-2C55-4633-B5AE-DF2BA90C4249")!
+
+/// Shredded Cheese
 //let CurrentTestCase = UUID(uuidString: "E84F7C80-50C4-4237-BAAD-BD5C1B958B84")!
-let CurrentTestCase = UUID(uuidString: "3EDD65E5-6363-42E3-8358-21A520ED21CC")!
+
+/// Sliced Cheese
+//let CurrentTestCase = UUID(uuidString: "3EDD65E5-6363-42E3-8358-21A520ED21CC")!
 //let CurrentTestCase = UUID(uuidString: "7648338E-8AC8-4C03-AAA1-AC8FC76E7368")!
 
-let SingledOutTestCaseId: UUID? = nil
-let IgnoredTests: [UUID] = FailingTests + []
+let SingledOutTestCaseId: UUID? = IsTestingNewAlgorithm ? CurrentTestCase : nil
+let IgnoredTests: [UUID] = IsTestingNewAlgorithm ? [] : FailingTests + []
 
 //let SingledOutTestCaseId: UUID? = CurrentTestCase
 //let IgnoredTests: [UUID] = []
@@ -51,7 +57,8 @@ let FailingTestUUIDStrings = [
     "083C5BAA-2DDA-42E5-8A6C-DCD1A3E5B7E1",
     "B789ED71-802F-42EF-85A5-FD9FEED77E6F",
     "5410D64B-4A8D-4183-8C81-EC82ABBFA648",
-    "E84F7C80-50C4-4237-BAAD-BD5C1B958B84"
+    "E84F7C80-50C4-4237-BAAD-BD5C1B958B84",
+    "00DC2D0A-2C55-4633-B5AE-DF2BA90C4249"
 ]
 
 

@@ -1,9 +1,16 @@
 import Foundation
 import VisionSugar
 
-class TableClassifier: Classifier {
+extension Sequence where Element: Hashable {
+    func uniqued() -> [Element] {
+        var set = Set<Element>()
+        return filter { set.insert($0).inserted }
+    }
+}
+
+class TableClassifier {
     
-    let recognizedTexts: [RecognizedText]
+    let arrayOfRecognizedTexts: [[RecognizedText]]
     var observations: [Observation]
     
     var pendingObservations: [Observation] = []
@@ -12,37 +19,51 @@ class TableClassifier: Classifier {
     /// Holds onto those that are single `Value`s that have already been used
     var discarded: [RecognizedText] = []
 
-    init(recognizedTexts: [RecognizedText], observations: [Observation]) {
-        self.recognizedTexts = recognizedTexts
+    init(arrayOfRecognizedTexts: [[RecognizedText]], observations: [Observation]) {
+        self.arrayOfRecognizedTexts = arrayOfRecognizedTexts
         self.observations = observations
     }
     
-    static func observations(from recognizedTexts: [RecognizedText], priorObservations observations: [Observation]) -> [Observation] {
-        TableClassifier(recognizedTexts: recognizedTexts, observations: observations).getObservations()
+    static func observations(from arrayOfRecognizedTexts: [[RecognizedText]], priorObservations observations: [Observation]) -> [Observation]
+    {
+        TableClassifier(
+            arrayOfRecognizedTexts: arrayOfRecognizedTexts,
+            observations: observations)
+        .getObservations()
     }
 
     func getObservations() -> [Observation] {
 
         /// Identify column of labels
-        let nutrientLabelTexts = getNutrientLabelTexts()
+        if let nutrientLabelTexts = getNutrientLabelTexts() {
+            let attributes = getUniqueAttributesFrom(nutrientLabelTexts)
+            print("Here we go")
+        }
         
         return observations
+    }
+    
+    func getUniqueAttributesFrom(_ texts: [RecognizedText]) -> [Attribute]? {
+        texts.compactMap({ Attribute(fromString: $0.string) }).uniqued()
     }
     
     func getNutrientLabelTexts() -> [RecognizedText]? {
         
         var candidates: [[RecognizedText]] = [[]]
         
-        for text in recognizedTexts {
-            guard let attribute = Attribute(fromString: text.string), attribute.isNutrientAttribute else {
-                continue
+        for recognizedTexts in arrayOfRecognizedTexts {
+            for text in recognizedTexts {
+                guard let attribute = Attribute(fromString: text.string), attribute.isNutrientAttribute else {
+                    continue
+                }
+                
+                /// Go through texts until a nutrient attribute is found
+                let columnOfTexts = getColumnOfNutrientLabelTexts(startingFrom: text)
+                    .sorted(by: { $0.rect.minY < $1.rect.minY })
+                
+                /// Add this to the array of candidates
+                candidates.append(columnOfTexts)
             }
-            
-            /// Go through texts until a nutrient attribute is found
-            let columnOfTexts = getColumnOfNutrientLabelTexts(startingFrom: text)
-            
-            /// Add this to the array of candidates
-            candidates.append(columnOfTexts)
         }
         
         /// Now that we've parsed all the nutrient-label columns, pick the one with the most elements
@@ -56,41 +77,43 @@ class TableClassifier: Classifier {
         let BoundingBoxMinXDeltaThreshold = 0.05
         var array: [RecognizedText] = [startingText]
         
-        /// Now go upwards to get nutrient-attribute texts in same column as it
-        let textsAbove = recognizedTexts.filterSameColumn(as: startingText, preceding: true, removingOverlappingTexts: false).reversed()
-        
-        for text in textsAbove {
-            let boundingBoxMinXDelta = abs(text.boundingBox.minX - startingText.boundingBox.minX)
+        for recognizedTexts in arrayOfRecognizedTexts {
+            /// Now go upwards to get nutrient-attribute texts in same column as it
+            let textsAbove = recognizedTexts.filterSameColumn(as: startingText, preceding: true, removingOverlappingTexts: false).filter { !$0.string.isEmpty }.reversed()
             
-            /// Ignore `text`s that are clearly not in-line with the `startingText`, in terms of its `boundingBox.minX` being more than `0.05` from the `startingText`s
-            guard boundingBoxMinXDelta < BoundingBoxMinXDeltaThreshold else {
-                continue
+            for text in textsAbove {
+                let boundingBoxMinXDelta = abs(text.boundingBox.minX - startingText.boundingBox.minX)
+                
+                /// Ignore `text`s that are clearly not in-line with the `startingText`, in terms of its `boundingBox.minX` being more than `0.05` from the `startingText`s
+                guard boundingBoxMinXDelta < BoundingBoxMinXDeltaThreshold else {
+                    continue
+                }
+
+                /// Until we reach a non-nutrient-attribute text
+                guard let attribute = Attribute(fromString: text.string), attribute.isNutrient else {
+                    break
+                }
+                
+                /// Insert these into the start of our column of labels as we read them in
+                array.insert(text, at: 0)
             }
 
-            /// Until we reach a non-nutrient-attribute text
-            guard let attribute = Attribute(fromString: text.string), attribute.isNutrient else {
-                break
-            }
-            
-            /// Insert these into the start of our column of labels as we read them in
-            array.insert(text, at: 0)
-        }
+            /// Now do the same thing downwards
+            let textsBelow = recognizedTexts.filterSameColumn(as: startingText, preceding: false, removingOverlappingTexts: false).filter { !$0.string.isEmpty }
+            for text in textsBelow {
+                let boundingBoxMinXDelta = abs(text.boundingBox.minX - startingText.boundingBox.minX)
+                
+                /// Ignore `text`s that are clearly not in-line with the `startingText`, in terms of its `boundingBox.minX` being more than `0.05` from the `startingText`s
+                guard boundingBoxMinXDelta < BoundingBoxMinXDeltaThreshold else {
+                    continue
+                }
 
-        /// Now do the same thing downwards
-        let textsBelow = recognizedTexts.filterSameColumn(as: startingText, preceding: false, removingOverlappingTexts: false)
-        for text in textsBelow {
-            let boundingBoxMinXDelta = abs(text.boundingBox.minX - startingText.boundingBox.minX)
-            
-            /// Ignore `text`s that are clearly not in-line with the `startingText`, in terms of its `boundingBox.minX` being more than `0.05` from the `startingText`s
-            guard boundingBoxMinXDelta < BoundingBoxMinXDeltaThreshold else {
-                continue
+                guard let attribute = Attribute(fromString: text.string), attribute.isNutrient else {
+                    break
+                }
+                
+                array.append(text)
             }
-
-            guard let attribute = Attribute(fromString: text.string), attribute.isNutrient else {
-                break
-            }
-            
-            array.append(text)
         }
 
 //        print(array.description)
