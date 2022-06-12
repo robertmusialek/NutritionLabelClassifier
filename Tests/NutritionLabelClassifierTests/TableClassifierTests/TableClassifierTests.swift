@@ -42,10 +42,10 @@ final class TableClassifierTests: XCTestCase {
             XCTAssertEqual(attributes, attributeExpectations[id.uuidString], m("Attributes"))
             
             if attributes == attributeExpectations[id.uuidString] {
-                print("✅ \(attributes) was expected")
+                print("🤖✅ \(attributes) was expected")
             } else {
                 print("Expected: \(attributeExpectations[id.uuidString]!)")
-                print("❌ Got: \(attributes)")
+                print("🤖❌ Got: \(attributes)")
             }
         }
     }
