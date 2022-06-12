@@ -369,7 +369,7 @@ public enum Attribute: String, CaseIterable {
         ]
         
         static let totalSugar = #"^.*(\#(totalSugarOptions.joined(separator: "|"))).*$"#
-        static let addedSugar = #"^.*added sugar(s|).*$"#
+        static let addedSugar = #"^.*(added sugar(s|)|includes [0-9,.]+ (grams|g)).*$"#
         static let sugar = #"^(?=\#(totalSugar))(?!\#(addedSugar)).*$"#
         
         static let dietaryFibreOptions = [

@@ -1,6 +1,46 @@
 import Foundation
 import VisionSugar
 
+extension Attribute {
+    
+    
+    static func detect(in string: String) -> [Attribute] {
+        var attributes: [Attribute] = []
+        for attribute in Self.allCases {
+            guard let regex = attribute.regex else { continue }
+            if string.cleanedAttributeString.matchesRegex(regex) {
+                attributes.append(attribute)
+            }
+        }
+        
+        /// If we have more than one attribute, order them based on the appearance
+        guard attributes.count <= 1 else {
+            var orderedAttributes: [Attribute] = []
+            var stringToCheck = ""
+            for character in string {
+                /// Keep checking string one character at a time
+                stringToCheck.append(character)
+                
+                /// Once an attribute is detected, append it to the array and clear the string
+                if let attribute = Attribute(fromString: stringToCheck) {
+                    orderedAttributes.append(attribute)
+                    stringToCheck = ""
+                }
+            }
+            return orderedAttributes
+        }
+        return attributes
+    }
+
+    static func haveAttributes(in string: String) -> Bool {
+        detect(in: string).count > 0
+    }
+    
+    static func haveNutrientAttribute(in string: String) -> Bool {
+        detect(in: string).contains(where: { $0.isNutrientAttribute })
+    }
+}
+
 extension TableClassifier {
     
     public func getAttributes() -> [Attribute] {
@@ -15,12 +55,11 @@ extension TableClassifier {
     func getUniqueAttributeTextsFrom(_ texts: [RecognizedText]) -> [AttributeText]? {
         var attributeTexts: [AttributeText] = []
         for text in texts {
-            guard let attribute = Attribute(fromString: text.string),
-                  !attributeTexts.contains(where: { $0.attribute == attribute })
-            else {
-                continue
+            let attributes = Attribute.detect(in: text.string)
+            for attribute in attributes {
+                guard !attributeTexts.contains(where: { $0.attribute == attribute }) else { continue }
+                attributeTexts.append(AttributeText(attribute: attribute, text: text))
             }
-            attributeTexts.append(AttributeText(attribute: attribute, text: text))
         }
         return attributeTexts
     }
@@ -31,7 +70,7 @@ extension TableClassifier {
         
         for recognizedTexts in arrayOfRecognizedTexts {
             for text in recognizedTexts {
-                guard let attribute = Attribute(fromString: text.string), attribute.isNutrientAttribute else {
+                guard Attribute.haveNutrientAttribute(in: text.string) else {
                     continue
                 }
                 
@@ -72,13 +111,8 @@ extension TableClassifier {
                 }
 
                 /// Until we reach a non-nutrient-attribute text
-                guard let attribute = Attribute(fromString: text.string) else {
-                    print("    ✋🏽 ending search because couldn't get an attribute for it")
-                    break
-                }
-                
-                guard attribute.isNutrient else {
-                    print("    ✋🏽 ending search because attribute: \(attribute) isn't a nutrient")
+                guard Attribute.haveNutrientAttribute(in: text.string) else {
+                    print("    ✋🏽 ending search because no nutrient attributes can be detected in string")
                     break
                 }
                 
@@ -101,13 +135,8 @@ extension TableClassifier {
                     continue
                 }
 
-                guard let attribute = Attribute(fromString: text.string) else {
-                    print("    ✋🏽 ending search because couldn't get an attribute for it")
-                    break
-                }
-                
-                guard attribute.isNutrient else {
-                    print("    ✋🏽 ending search because attribute: \(attribute) isn't a nutrient")
+                guard Attribute.haveNutrientAttribute(in: text.string) else {
+                    print("    ✋🏽 ending search because no nutrient attributes can be detected in string")
                     break
                 }
                 

@@ -9,11 +9,22 @@ final class TableClassifierTests: XCTestCase {
 
     var currentTestCaseId: UUID = defaultUUID
 
+//    let SingledOutTestCase: UUID? = UUID(uuidString: "2184C983-5761-4F8F-BE7A-E6771E963FFF")!
+    let SingledOutTestCase: UUID? = nil
+
     func testTableClassifier() throws {
         
         try prepareTestCases()
         
         for id in testCaseIds {
+            
+            if let singledOutTestCase = SingledOutTestCase {
+                guard id == singledOutTestCase else {
+                    continue
+                }
+            }
+            
+            
             guard attributeExpectations.keys.contains(id.uuidString) else {
                 continue
             }
@@ -30,7 +41,12 @@ final class TableClassifierTests: XCTestCase {
             let attributes = classifier.getAttributes()
             XCTAssertEqual(attributes, attributeExpectations[id.uuidString], m("Attributes"))
             
-            print("✅ \(attributes) was expected")
+            if attributes == attributeExpectations[id.uuidString] {
+                print("✅ \(attributes) was expected")
+            } else {
+                print("Expected: \(attributeExpectations[id.uuidString]!)")
+                print("❌ Got: \(attributes)")
+            }
         }
     }
     
@@ -48,5 +64,8 @@ let attributeExpectations: [String: [Attribute]] = [
     ],
     "3EDD65E5-6363-42E3-8358-21A520ED21CC": [
         .fat, .saturatedFat, .transFat, .cholesterol, .carbohydrate, .sugar, .dietaryFibre, .protein, .salt, .sodium
+    ],
+    "2184C983-5761-4F8F-BE7A-E6771E963FFF": [
+        .fat, .saturatedFat, .transFat, .cholesterol, .sodium, .salt, .carbohydrate, .dietaryFibre, .sugar, .addedSugar, .protein
     ]
 ]
