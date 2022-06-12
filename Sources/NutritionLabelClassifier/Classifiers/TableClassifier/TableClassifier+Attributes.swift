@@ -13,6 +13,7 @@ extension Attribute {
             }
         }
         
+        //TODO: Try speed this up by checking position of regex result (create a function for it) and using that instead
         /// If we have more than one attribute, order them based on the appearance
         guard attributes.count <= 1 else {
             var orderedAttributes: [Attribute] = []
