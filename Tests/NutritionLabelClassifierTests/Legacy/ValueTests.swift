@@ -5,14 +5,14 @@ import TabularData
 
 final class NutritionLabelValueTests: XCTestCase {
     
-    func testValueAtStartOfString() throws {
+    func _testValueAtStartOfString() throws {
         guard SingledOutTestCaseId == nil else { return }
         testCasesValueAtStartOfString.forEach {
             XCTAssertEqual(Value(fromString: $0.input), $0.value)
         }
     }
     
-    func testValueFromEntireString() throws {
+    func _testValueFromEntireString() throws {
         guard SingledOutTestCaseId == nil else { return }
         for testCase in testCasesValueFromEntireString_Legacy {
             XCTAssertEqual(Value(string: testCase.input), testCase.value)

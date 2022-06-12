@@ -8,7 +8,7 @@ import Zip
 
 final class NutritionLabelClassifierTests: XCTestCase {
     
-    func testClassifier() throws {
+    func _testClassifier() throws {
         guard RunLegacyTests else { return }
         
         guard SingledOutTestCaseId == nil else { return }
@@ -101,21 +101,21 @@ final class NutritionLabelClassifierTests: XCTestCase {
         }
     }
     
-    func testContainsTwoKcalValues() throws {
+    func _testContainsTwoKcalValues() throws {
         for testCase in testCasesForColumnSpanningEnergy {
             let kcalValues = NutritionLabelClassifier.kcalValues(from: testCase.input)
             XCTAssertEqual(kcalValues, testCase.kcal)
         }
     }
     
-    func testContainsTwoKjValues() throws {
+    func _testContainsTwoKjValues() throws {
         for testCase in testCasesForColumnSpanningEnergy {
             let kjValues = NutritionLabelClassifier.kjValues(from: testCase.input)
             XCTAssertEqual(kjValues, testCase.kj)
         }
     }
 
-    func testColumnSpanningHeader() throws {
+    func _testColumnSpanningHeader() throws {
         for testCase in testCasesForColumnSpanningHeader {
             let headers = NutritionLabelClassifier.columnHeadersFromColumnSpanningHeader(testCase.input)
             XCTAssertEqual(headers.header1, testCase.header1)

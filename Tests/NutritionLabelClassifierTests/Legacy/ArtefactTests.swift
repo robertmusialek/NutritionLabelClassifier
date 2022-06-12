@@ -6,7 +6,7 @@ import VisionSugar
 
 final class ArtefactTests: XCTestCase {
 
-    func testArtefacts() throws {
+    func _testArtefacts() throws {
         guard SingledOutTestCaseId == nil else { return }
         testCasesStringsWithArtefacts.forEach {
             let dummyRecognizedText = RecognizedText(id: defaultUUID, rectString: "", boundingBoxString: "", candidates: [$0.input])
