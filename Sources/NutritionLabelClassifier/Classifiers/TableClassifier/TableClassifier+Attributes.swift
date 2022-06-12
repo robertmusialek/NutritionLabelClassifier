@@ -3,6 +3,15 @@ import VisionSugar
 
 extension TableClassifier {
     
+    public func getAttributes() -> [Attribute] {
+        guard let attributeRecognizedTexts = getAttributeRecognizedTexts() else {
+            return []
+        }
+        return getUniqueAttributeTextsFrom(attributeRecognizedTexts)?
+            .map { $0.attribute }
+        ?? []
+    }
+    
     func getUniqueAttributeTextsFrom(_ texts: [RecognizedText]) -> [AttributeText]? {
         var attributeTexts: [AttributeText] = []
         for text in texts {

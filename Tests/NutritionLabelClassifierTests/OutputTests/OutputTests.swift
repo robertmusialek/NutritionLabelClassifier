@@ -11,7 +11,7 @@ final class OutputTests: XCTestCase {
     var observedOutput: Output? = nil
     var expectedOutput: Output? = nil
 
-    func testAllExpectations() throws {
+    func _testOutput() throws {
         
         guard RunTests else { return }
         

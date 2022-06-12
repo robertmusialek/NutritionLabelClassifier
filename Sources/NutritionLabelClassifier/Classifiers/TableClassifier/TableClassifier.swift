@@ -12,19 +12,19 @@ class TableClassifier {
     /// Holds onto those that are single `Value`s that have already been used
     var discarded: [RecognizedText] = []
 
-    init(arrayOfRecognizedTexts: [[RecognizedText]], observations: [Observation]) {
+    init(arrayOfRecognizedTexts: [[RecognizedText]], observations: [Observation] = []) {
         self.arrayOfRecognizedTexts = arrayOfRecognizedTexts
         self.observations = observations
     }
     
-    static func observations(from arrayOfRecognizedTexts: [[RecognizedText]], priorObservations observations: [Observation]) -> [Observation]
+    static func observations(from arrayOfRecognizedTexts: [[RecognizedText]], priorObservations observations: [Observation] = []) -> [Observation]
     {
         TableClassifier(
             arrayOfRecognizedTexts: arrayOfRecognizedTexts,
             observations: observations)
         .getObservations()
     }
-
+    
     func getObservations() -> [Observation] {
 
         /// Identify column of labels
