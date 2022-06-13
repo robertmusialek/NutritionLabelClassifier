@@ -268,10 +268,14 @@ public enum Attribute: String, CaseIterable {
             return #".*(carb|glucides|h(y|v)drate).*"#
         case .dietaryFibre:
             return Regex.dietaryFibre
+        case .solubleFibre:
+            return Regex.solubleFibre
+        case .insolubleFibre:
+            return Regex.insolubleFibre
         case .gluten:
             return #"gluten"#
         case .starch:
-            return #"starch"#
+            return Regex.starch
 
         case .fat:
             return Regex.fat
@@ -302,6 +306,19 @@ public enum Attribute: String, CaseIterable {
             return #"potas"#
         case .magnesium:
             return #"magnesium"#
+        case .zinc:
+            return #"zinc"#
+        case .thiamin:
+            return #"thiamin"#
+        case .riboflavin:
+            return #"riboflavin"#
+        case .niacin:
+            return #"niacin"#
+        
+        case .folicAcid:
+            return #"folic acid"#
+        case .folate:
+            return #"folate"#
             
         case .cobalamin: /// Vitamin B12
             return #"cobalamin"#
@@ -312,8 +329,11 @@ public enum Attribute: String, CaseIterable {
         case .vitaminD:
             return Regex.vitamin("d")
         case .vitaminB6:
-            return Regex.vitamin("b6")
-
+            return Regex.vitamin("(b6|86)")
+        case .vitaminB1:
+            return Regex.vitamin("(b1|81)")
+        case .vitaminB12:
+            return Regex.vitamin("(b12|812)")
         default:
             return nil
         }
@@ -375,7 +395,17 @@ public enum Attribute: String, CaseIterable {
         static let dietaryFibreOptions = [
             "(dietary |)fib(re|er)", "fibra"
         ]
+        static let solubleFibreOptions = [
+            "[ ]*soluble fib(re|er)"
+        ]
+        static let insolubleFibreOptions = [
+            "insoluble fib(re|er)"
+        ]
         static let dietaryFibre = #"^.*(\#(dietaryFibreOptions.joined(separator: "|"))).*$"#
+        static let solubleFibre = #"^.*(\#(solubleFibreOptions.joined(separator: "|"))).*$"#
+        static let insolubleFibre = #"^.*(\#(insolubleFibreOptions.joined(separator: "|"))).*$"#
+
+        static let starch = #"(?<!tapioca )starch"#
         
         static let totalFatOptions = [
             "fa(t|i)", "fett", "grassi", "lípidos", "grasa total"
@@ -396,7 +426,7 @@ public enum Attribute: String, CaseIterable {
         static let cholesterol = #"cholesterol"#
         
         static func vitamin(_ letter: String) -> String {
-            #"vit(amin[ ]+|\.[ ]*|[ ]+)\#(letter)"#
+            #"vit(amin[ ]+|\.[ ]*|[ ]+)\#(letter)( |$)"#
         }
     }
 }

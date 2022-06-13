@@ -1,6 +1,20 @@
 import SwiftUI
 import VisionSugar
 
+extension RecognizedText {
+    func yIntersectionRatio(to text: RecognizedText) -> CGFloat {
+        let xNormalizedRect = text.rect.rectWithXValues(of: rect)
+        let yIntersection = xNormalizedRect.intersection(rect)
+        return yIntersection.height / rect.height
+    }
+    
+    func xIntersectionRatio(to text: RecognizedText) -> CGFloat {
+        let yNormalizedRect = text.rect.rectWithYValues(of: rect)
+        let xIntersection = yNormalizedRect.intersection(rect)
+        return xIntersection.width / rect.width
+    }
+
+}
 extension Array where Element == RecognizedText {
 
     var description: String {
@@ -132,8 +146,73 @@ extension Array where Element == RecognizedText {
         return row
     }
     
-    //MARK: - Legacy
+    //TODO: Add option to 'join' inline strings when getting column
+    func filterColumn(of recognizedText: RecognizedText, preceding: Bool = false) -> [RecognizedText] {
+        let unfilteredColumn = filter {
+            !$0.string.isEmpty
+            && $0.isInSameColumnAs(recognizedText)
+            && (preceding ? $0.rect.maxY < recognizedText.rect.maxY : $0.rect.minY > recognizedText.rect.minY)
+        }.sorted {
+            $0.rect.minY < $1.rect.minY
+        }
+        
+        
+//        print("🧩 Got unfilteredColumn for: '\(recognizedText.string)':")
+//        print("🧩 \(unfilteredColumn.description)")
 
+        var column: [RecognizedText] = []
+        var discarded: [RecognizedText] = []
+        for columnElement in unfilteredColumn {
+
+//            print("🧩     Checking inline elements of: '\(columnElement.string)':")
+//            print("🧩                 (rect): \(columnElement.rect)")
+
+            guard !discarded.contains(columnElement) else {
+//                print("🧩         (discarded, so skipping)")
+                continue
+            }
+            
+            let line = unfilteredColumn
+                .filter { !$0.string.isEmpty }
+                .filter { !discarded.contains($0) }
+                .filter { $0.id != columnElement.id }
+                .filter { $0.isInSameRowAs(columnElement) }
+            
+            print("🧩         \(line.description)")
+            guard line.count > 1 else {
+//                print("🧩         No inline elements, so appending '\(columnElement.string)'")
+                column.append(columnElement)
+                continue
+            }
+            
+            for inlineElement in line {
+//                print("🧩             Checking '\(inlineElement.string)'")
+                
+//                let xNormalizedRect = inlineElement.rect.rectWithXValues(of: columnElement.rect)
+//                let yIntersection = xNormalizedRect.intersection(columnElement.rect)
+//                let yIntersectionRatio = yIntersection.height / columnElement.rect.height
+                
+                let yIntersectionRatio = columnElement.yIntersectionRatio(to: inlineElement)
+                let xIntersectionRatio = columnElement.xIntersectionRatio(to: inlineElement)
+
+//                print("🧩                 normalizing rect: \(inlineElement.rect)")
+//                print("🧩                 normalized: \(xNormalizedRect)")
+//                print("🧩                 intersection: \(intersection)")
+//                print("🧩                 ratio: \(intersectionRatio)")
+                
+                //TODO: Document what we're doing here!
+                if yIntersectionRatio >= 0.35 && xIntersectionRatio < 0.35 {
+//                    print("⭐️ '\(inlineElement.string)' is inline with: '\(columnElement.string)'")
+                    discarded.append(inlineElement)
+                }
+            }
+            column.append(columnElement)
+        }
+        
+        return column
+    }
+    
+    //MARK: - Legacy
     func filterSameColumn(as recognizedText: RecognizedText, preceding: Bool = false, removingOverlappingTexts: Bool = true) -> [RecognizedText] {
         let candidates = filter {
             $0.isInSameColumnAs(recognizedText)

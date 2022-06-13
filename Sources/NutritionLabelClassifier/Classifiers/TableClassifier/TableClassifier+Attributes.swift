@@ -1,6 +1,7 @@
 import Foundation
 import VisionSugar
 
+//TODO: Rename, document and move to SwiftSugar
 func matches(for regex: String, in text: String) -> [(string: String, position: Int)]? {
     do {
         let regex = try NSRegularExpression(pattern: regex)
@@ -19,47 +20,8 @@ func matches(for regex: String, in text: String) -> [(string: String, position: 
 
 extension Attribute {
     
-    static func _detect(in string: String, inOrderOfAppearance: Bool = false) -> [Attribute] {
-        var attributes: [Attribute] = []
-        for attribute in Self.allCases {
-            guard let regex = attribute.regex else { continue }
-            //TODO: Get starting position of position instead of a simple boolean match to it here
-            let startingPositionOfMatch = 0
-            if string.cleanedAttributeString.matchesRegex(regex) {
-                attributes.append(attribute)
-            }
-        }
-        
-        /// If we don't care about the order of apperance, return now
-        guard inOrderOfAppearance else {
-            return attributes
-        }
-        
-        //TODO: Try speed this up by checking position of regex result (create a function for it) and using that instead
-        /// If we have more than one attribute, order them based on the appearance
-        guard attributes.count <= 1 else {
-            var orderedAttributes: [Attribute] = []
-            var stringToCheck = ""
-            for character in string {
-                /// Keep checking string one character at a time
-                stringToCheck.append(character)
-                
-                /// Once an attribute is detected, append it to the array and clear the string
-                if let attribute = Attribute(fromString: stringToCheck) {
-                    orderedAttributes.append(attribute)
-                    guard orderedAttributes.count < attributes.count else {
-                        print("✅ Ending at character: \(character)")
-                        return orderedAttributes
-                    }
-                    stringToCheck = ""
-                }
-            }
-            return orderedAttributes
-        }
-        return attributes
-    }
-    
-    static func detect(in string: String, inOrderOfAppearance: Bool = false) -> [Attribute] {
+    /// Detects `Attribute`s in a provided `string` in the order that they appear
+    static func detect(in string: String) -> [Attribute] {
         var attributesAndPositions: [(attribute: Attribute, positionOfMatch: Int)] = []
         
         for attribute in Self.allCases {
@@ -89,19 +51,15 @@ extension TableClassifier {
         guard let attributeRecognizedTexts = getAttributeRecognizedTexts() else {
             return []
         }
-        let start = CFAbsoluteTimeGetCurrent()
-        let attributes = getUniqueAttributeTextsFrom(attributeRecognizedTexts)?
+        return getUniqueAttributeTextsFrom(attributeRecognizedTexts)?
             .map { $0.attribute }
         ?? []
-        let elapsed = CFAbsoluteTimeGetCurrent()-start
-        print("🤖⏱ Took: \(elapsed)s")
-        return attributes
     }
     
     func getUniqueAttributeTextsFrom(_ texts: [RecognizedText]) -> [AttributeText]? {
         var attributeTexts: [AttributeText] = []
         for text in texts {
-            let attributes = Attribute.detect(in: text.string, inOrderOfAppearance: true)
+            let attributes = Attribute.detect(in: text.string)
             for attribute in attributes {
                 guard !attributeTexts.contains(where: { $0.attribute == attribute }) else { continue }
                 attributeTexts.append(AttributeText(attribute: attribute, text: text))
@@ -142,7 +100,7 @@ extension TableClassifier {
         
         for recognizedTexts in arrayOfRecognizedTexts {
             /// Now go upwards to get nutrient-attribute texts in same column as it
-            let textsAbove = recognizedTexts.filterSameColumn(as: startingText, preceding: true, removingOverlappingTexts: false).filter { !$0.string.isEmpty }.reversed()
+            let textsAbove = recognizedTexts.filterColumn(of: startingText, preceding: true).filter { !$0.string.isEmpty }.reversed()
             
             print("  ⬆️ textsAbove: \(textsAbove.map { $0.string } )")
 
@@ -167,7 +125,7 @@ extension TableClassifier {
             }
 
             /// Now do the same thing downwards
-            let textsBelow = recognizedTexts.filterSameColumn(as: startingText, preceding: false, removingOverlappingTexts: false).filter { !$0.string.isEmpty }
+            let textsBelow = recognizedTexts.filterColumn(of: startingText, preceding: false).filter { !$0.string.isEmpty }
             
             print("  ⬇️ textsBelow: \(textsBelow.map { $0.string } )")
 
