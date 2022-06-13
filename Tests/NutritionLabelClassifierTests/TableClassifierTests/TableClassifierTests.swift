@@ -113,6 +113,9 @@ let attributeExpectations: [String: [Attribute]] = [
     "5FEDB3DF-4214-44EF-A390-3C5CB3C1DA14": [
         .energy, .fat, .saturatedFat, .transFat, . carbohydrate, .sugar, .protein, .sodium, .salt
     ],
+    "22801297-A39C-4F80-AE1D-858AA6A68DDC": [
+        .energy, .fat, .saturatedFat, .transFat, . carbohydrate, .sugar, .protein, .sodium, .salt
+    ],
     "03A07980-DDEC-41A6-8130-080F582FB5C3": [
         .energy, .fat, .saturatedFat, .transFat, .cholesterol, .sodium, .carbohydrate, .dietaryFibre, .sugar, .addedSugar, .protein, .vitaminD, .calcium, .iron, .potassium
     ]
