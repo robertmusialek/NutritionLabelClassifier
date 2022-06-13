@@ -79,7 +79,7 @@ extension TableClassifier {
                 }
                 
                 /// Skip over title attributes, but don't stop searching because of them
-                guard !text.string.isTitleAttribute else {
+                guard !text.string.isSkippableTableElement else {
                     continue
                 }
 
@@ -108,7 +108,7 @@ extension TableClassifier {
                 }
                 
                 /// Skip over title attributes, but don't stop searching because of them
-                guard !text.string.isTitleAttribute else {
+                guard !text.string.isSkippableTableElement else {
                     continue
                 }
                 
@@ -125,16 +125,16 @@ extension TableClassifier {
 
 extension String {
     
-    var isTitleAttribute: Bool {
+    var isSkippableTableElement: Bool {
         guard let attribute = Attribute(fromString: self),
-           attribute.isTitleAttribute else {
+            attribute.isTableAttribute else {
             return false
         }
         return true
     }
     
     var containsNutrientOrTitleAttributes: Bool {
-        containsNutrientAttributes || isTitleAttribute
+        containsNutrientAttributes || isSkippableTableElement
     }
     
     var containsNutrientAttributes: Bool {

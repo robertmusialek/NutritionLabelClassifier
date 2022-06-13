@@ -2,9 +2,8 @@ import Foundation
 
 public enum Attribute: String, CaseIterable {
     
-    //MARK: Headers
-    case nutritionFacts
-    case vitaminsAndMinerals
+    case tableElementNutritionFacts
+    case tableElementSkippable
     
     //MARK: - Serving
     case servingAmount                 /// Double
@@ -150,11 +149,11 @@ public enum Attribute: String, CaseIterable {
         }
     }
     
-    public var isTitleAttribute: Bool {
+    public var isTableAttribute: Bool {
         switch self {
-        case .nutritionFacts:
+        case .tableElementNutritionFacts:
             return true
-        case .vitaminsAndMinerals:
+        case .tableElementSkippable:
             return true
         default:
             return false
@@ -162,7 +161,7 @@ public enum Attribute: String, CaseIterable {
     }
     
     public var isNutrientAttribute: Bool {
-        !isHeaderAttribute && !isServingAttribute && !isTitleAttribute
+        !isHeaderAttribute && !isServingAttribute && !isTableAttribute
     }
 
     var parentAttribute: Attribute? {
@@ -251,10 +250,10 @@ public enum Attribute: String, CaseIterable {
     
     var regex: String? {
         switch self {
-        case .nutritionFacts:
+        case .tableElementNutritionFacts:
             return #"nutrition facts"#
-        case .vitaminsAndMinerals:
-            return #"vitamins (&|and) minerals"#
+        case .tableElementSkippable:
+            return #"^(vitamins (&|and) minerals|of which|alimentaires)$"#
         case .servingsPerContainerAmount:
             return #"(?:servings |serving5 |)per (container|pack(age|)|tub|pot)"#
         case .servingAmount:
@@ -263,7 +262,7 @@ public enum Attribute: String, CaseIterable {
             return #"^.*(energy|calories|energie|kcal).*$"#
             
         case .protein:
-            return #"(protein|proteine)"#
+            return #"(protein|proteine|protéines)"#
             
         case .carbohydrate:
             return #".*(carb|glucides|h(y|v)drate).*"#
@@ -469,9 +468,9 @@ extension Attribute {
 extension Attribute: CustomStringConvertible {
     public var description: String {
         switch self {
-        case .nutritionFacts:
+        case .tableElementNutritionFacts:
             return "Nutrition Facts"
-        case .vitaminsAndMinerals:
+        case .tableElementSkippable:
             return "Vitamins & Minerals"
         case .servingAmount:
             return "Serving Amount"

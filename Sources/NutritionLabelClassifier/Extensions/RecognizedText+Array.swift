@@ -160,56 +160,59 @@ extension Array where Element == RecognizedText {
 //        print("🧩 Got unfilteredColumn for: '\(recognizedText.string)':")
 //        print("🧩 \(unfilteredColumn.description)")
 
-        var column: [RecognizedText] = []
-        var discarded: [RecognizedText] = []
-        for columnElement in unfilteredColumn {
-
-//            print("🧩     Checking inline elements of: '\(columnElement.string)':")
-//            print("🧩                 (rect): \(columnElement.rect)")
-
-            guard !discarded.contains(columnElement) else {
-//                print("🧩         (discarded, so skipping)")
-                continue
-            }
-            
-            let line = unfilteredColumn
-                .filter { !$0.string.isEmpty }
-                .filter { !discarded.contains($0) }
-                .filter { $0.id != columnElement.id }
-                .filter { $0.isInSameRowAs(columnElement) }
-            
-            print("🧩         \(line.description)")
-            guard line.count > 1 else {
-//                print("🧩         No inline elements, so appending '\(columnElement.string)'")
-                column.append(columnElement)
-                continue
-            }
-            
-            for inlineElement in line {
-//                print("🧩             Checking '\(inlineElement.string)'")
-                
-//                let xNormalizedRect = inlineElement.rect.rectWithXValues(of: columnElement.rect)
-//                let yIntersection = xNormalizedRect.intersection(columnElement.rect)
-//                let yIntersectionRatio = yIntersection.height / columnElement.rect.height
-                
-                let yIntersectionRatio = columnElement.yIntersectionRatio(to: inlineElement)
-                let xIntersectionRatio = columnElement.xIntersectionRatio(to: inlineElement)
-
-//                print("🧩                 normalizing rect: \(inlineElement.rect)")
-//                print("🧩                 normalized: \(xNormalizedRect)")
-//                print("🧩                 intersection: \(intersection)")
-//                print("🧩                 ratio: \(intersectionRatio)")
-                
-                //TODO: Document what we're doing here!
-                if yIntersectionRatio >= 0.35 && xIntersectionRatio < 0.35 {
-//                    print("⭐️ '\(inlineElement.string)' is inline with: '\(columnElement.string)'")
-                    discarded.append(inlineElement)
-                }
-            }
-            column.append(columnElement)
-        }
+        return unfilteredColumn
         
-        return column
+//        var column: [RecognizedText] = []
+//        var discarded: [RecognizedText] = []
+//
+//        for columnElement in unfilteredColumn {
+//
+////            print("🧩     Checking inline elements of: '\(columnElement.string)':")
+////            print("🧩                 (rect): \(columnElement.rect)")
+//
+//            guard !discarded.contains(columnElement) else {
+////                print("🧩         (discarded, so skipping)")
+//                continue
+//            }
+//
+//            let line = unfilteredColumn
+//                .filter { !$0.string.isEmpty }
+//                .filter { !discarded.contains($0) }
+//                .filter { $0.id != columnElement.id }
+//                .filter { $0.isInSameRowAs(columnElement) }
+//
+//            print("🧩         \(line.description)")
+//            guard line.count > 1 else {
+////                print("🧩         No inline elements, so appending '\(columnElement.string)'")
+//                column.append(columnElement)
+//                continue
+//            }
+//
+//            for inlineElement in line {
+////                print("🧩             Checking '\(inlineElement.string)'")
+//
+////                let xNormalizedRect = inlineElement.rect.rectWithXValues(of: columnElement.rect)
+////                let yIntersection = xNormalizedRect.intersection(columnElement.rect)
+////                let yIntersectionRatio = yIntersection.height / columnElement.rect.height
+//
+//                let yIntersectionRatio = columnElement.yIntersectionRatio(to: inlineElement)
+//                let xIntersectionRatio = columnElement.xIntersectionRatio(to: inlineElement)
+//
+////                print("🧩                 normalizing rect: \(inlineElement.rect)")
+////                print("🧩                 normalized: \(xNormalizedRect)")
+////                print("🧩                 intersection: \(intersection)")
+////                print("🧩                 ratio: \(intersectionRatio)")
+//
+//                //TODO: Document what we're doing here!
+//                if yIntersectionRatio >= 0.35 && xIntersectionRatio < 0.35 {
+////                    print("⭐️ '\(inlineElement.string)' is inline with: '\(columnElement.string)'")
+//                    discarded.append(inlineElement)
+//                }
+//            }
+//            column.append(columnElement)
+//        }
+//
+//        return column
     }
     
     //MARK: - Legacy

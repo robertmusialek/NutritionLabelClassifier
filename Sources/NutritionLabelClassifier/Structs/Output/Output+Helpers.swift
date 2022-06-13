@@ -44,7 +44,7 @@ public extension Output {
     
     func containsAttribute(_ attribute: Attribute) -> Bool {
         switch attribute {
-        case .nutritionFacts:
+        case .tableElementNutritionFacts:
             return false
         case .servingAmount:
             return serving?.amount != nil

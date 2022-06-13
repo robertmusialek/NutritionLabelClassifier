@@ -9,9 +9,6 @@ final class TableClassifierTests: XCTestCase {
     
     var currentTestCaseId: UUID = defaultUUID
     
-//    let SingledOutTestCase: UUID? = UUID(uuidString: "7E6948F3-3CBC-4DE3-8E18-7FD2E9EFD79E")!
-    let SingledOutTestCase: UUID? = nil
-    
     func testTableClassifier() throws {
         
         try prepareTestCases()
@@ -122,4 +119,53 @@ let attributeExpectations: [String: [Attribute]] = [
     "7E6948F3-3CBC-4DE3-8E18-7FD2E9EFD79E": [
         .energy, .protein, .carbohydrate, .sugar, .starch, .fat, .saturatedFat, .monounsaturatedFat, .polyunsaturatedFat, .dietaryFibre, .salt, .sodium, .calcium
     ],
+    "38F77747-253E-4E3B-A5E9-D74B4EE2CBC0": [
+        .energy, .protein, .carbohydrate, .sugar, .fat, .saturatedFat, .dietaryFibre, .sodium, .salt, .calcium
+    ],
+    "EDAA3E38-55CC-4202-8128-91A04883AB33": [
+        .energy, .protein, .carbohydrate, .sugar, .fat, .saturatedFat, .dietaryFibre, .sodium, .salt, .calcium
+    ],
+    "6C225FA4-44FF-45D7-B723-3AF4DD1D4E40": [
+        .energy, .protein, .gluten, .fat, .saturatedFat, .carbohydrate, .sugar, .sodium, .calcium
+    ],
+    "E7EFDA78-DC5B-4E4F-B82A-F04DBBE04577": [
+        .energy, .fat, .saturatedFat, .carbohydrate, .sugar, .dietaryFibre, .protein, .salt
+    ],
+    "C05EDF6E-BB82-49FB-B745-1B8984987762": [
+        .energy, .protein, .carbohydrate, .sugar, .fat, .saturatedFat, .dietaryFibre, .sodium
+    ],
+    "21AB8151-540A-41A9-BAB2-8674FD3A46E7": [
+        .energy, .fat, .saturatedFat, .transFat, .cholesterol, .carbohydrate, .sugar, .dietaryFibre, .protein, .sodium, .salt
+    ],
+    "02CE7C0B-CA9C-4E63-8E42-5D8C105FE320": [
+        .energy, .fat, .saturatedFat, .carbohydrate, .sugar, .protein, .salt
+    ],
+    "A049E005-AB5E-4474-92B2-979EBC347FB5": [
+        .energy, .fat, .saturatedFat, .carbohydrate, .sugar, .dietaryFibre, .protein, .salt
+    ],
+    "77B1E2FD-7879-4C75-9CA4-187C3EDAB858": [
+        .energy, .protein, .fat, .saturatedFat, .transFat, .cholesterol, .carbohydrate, .dietaryFibre, .sodium, .calcium
+    ],
+    "F3B96913-B2CD-4FFB-99B1-B277395BD003": [
+        .energy, .protein, .fat, .saturatedFat, .carbohydrate, .sugar, .sodium
+    ],
+    "0DEA4407-48DF-4A16-8488-0EB967CB13ED": [
+        .energy, .protein, .gluten, .fat, .saturatedFat, .carbohydrate, .sugar, .sodium, .calcium
+    ],
+    "C132B648-8974-457A-8EE6-824688D901EA": [
+        .energy, .protein, .fat, .saturatedFat, .transFat, .cholesterol, .carbohydrate, .dietaryFibre, .sodium, .calcium
+    ],
+    "991D390B-B741-4821-8DAD-B0F967CE9D3B": [
+        .energy, .fat, .saturatedFat, .carbohydrate, .sugar, .dietaryFibre, .protein, .salt, .calcium, .vitaminD
+    ],
+    "6BAD0EB1-8BED-4DD9-8FD8-C9861A267A3D": [
+        .energy, .protein, .fat, .saturatedFat, .transFat, .cholesterol, .carbohydrate, .dietaryFibre, .sodium, .calcium
+    ],
+    "024A0939-FF3D-4312-868F-F82565C58ED9": [
+        .energy, .fat, .saturatedFat, .carbohydrate, .sugar, .dietaryFibre, .protein, .salt
+    ]
 ]
+
+let SingledOutTestCase: UUID? = UUID(uuidString: "024A0939-FF3D-4312-868F-F82565C58ED9")!
+//let SingledOutTestCase: UUID? = nil
+    
