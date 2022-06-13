@@ -405,14 +405,15 @@ public enum Attribute: String, CaseIterable {
         static let solubleFibre = #"^.*(\#(solubleFibreOptions.joined(separator: "|"))).*$"#
         static let insolubleFibre = #"^.*(\#(insolubleFibreOptions.joined(separator: "|"))).*$"#
 
-        static let starch = #"(?<!tapioca )starch"#
+        /// Negative lookbehind makes sure starch isn't preceded by tapioca
+        static let starch = #"^starch$"#
         
         static let totalFatOptions = [
             "fa(t|i)", "fett", "grassi", "lípidos", "grasa total"
         ]
 
         static let saturatedFatOptions = [
-            "saturated", "of which saturates", "saturi", "saturados", "gras saturés"
+            "saturated", "of which saturates", "saturi", "saturados", "gras saturés", "sat. fat"
         ]
 
         static let totalFat = #"^.*(\#(totalFatOptions.joined(separator: "|"))).*$"#
@@ -423,7 +424,7 @@ public enum Attribute: String, CaseIterable {
         
         static let fat = #"^(?=\#(totalFat))(?!\#(saturatedFat))(?!\#(transFat))(?!\#(polyunsaturatedFat))(?!\#(monounsaturatedFat)).*$"#
 
-        static let cholesterol = #"cholesterol"#
+        static let cholesterol = #"cholest"#
         
         static func vitamin(_ letter: String) -> String {
             #"vit(amin[ ]+|\.[ ]*|[ ]+)\#(letter)( |$)"#

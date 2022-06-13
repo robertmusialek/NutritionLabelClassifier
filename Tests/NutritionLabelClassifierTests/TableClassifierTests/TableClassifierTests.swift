@@ -9,7 +9,7 @@ final class TableClassifierTests: XCTestCase {
     
     var currentTestCaseId: UUID = defaultUUID
     
-//    let SingledOutTestCase: UUID? = UUID(uuidString: "0748DBAE-1379-40CF-A29C-0D342F53E7E3")!
+//    let SingledOutTestCase: UUID? = UUID(uuidString: "03A07980-DDEC-41A6-8130-080F582FB5C3")!
     let SingledOutTestCase: UUID? = nil
     
     func testTableClassifier() throws {
@@ -107,4 +107,13 @@ let attributeExpectations: [String: [Attribute]] = [
     "826DB226-9FCD-4662-A1CD-5FD862493D55": [
         .energy, .fat, .saturatedFat, .transFat, . carbohydrate, .sugar, .protein, .sodium, .salt
     ],
+    "B1B04BC0-212D-442E-AF10-2F860400AE45": [
+        .energy, .fat, .saturatedFat, .transFat, . carbohydrate, .sugar, .protein, .sodium, .salt
+    ],
+    "5FEDB3DF-4214-44EF-A390-3C5CB3C1DA14": [
+        .energy, .fat, .saturatedFat, .transFat, . carbohydrate, .sugar, .protein, .sodium, .salt
+    ],
+    "03A07980-DDEC-41A6-8130-080F582FB5C3": [
+        .energy, .fat, .saturatedFat, .transFat, .cholesterol, .sodium, .carbohydrate, .dietaryFibre, .sugar, .addedSugar, .protein, .vitaminD, .calcium, .iron, .potassium
+    ]
 ]
