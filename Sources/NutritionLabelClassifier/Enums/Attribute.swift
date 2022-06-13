@@ -413,7 +413,7 @@ public enum Attribute: String, CaseIterable {
         ]
 
         static let saturatedFatOptions = [
-            "saturated", "of which saturates", "saturi", "saturados", "gras saturés", "sat. fat"
+            "saturated", "of which saturates", "saturi", "saturados", "gras saturés", "sat. fat", "kwasy nasycone"
         ]
 
         static let totalFat = #"^.*(\#(totalFatOptions.joined(separator: "|"))).*$"#

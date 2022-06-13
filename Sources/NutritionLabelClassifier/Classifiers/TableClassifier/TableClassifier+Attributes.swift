@@ -70,8 +70,6 @@ extension TableClassifier {
                     continue
                 }
                 
-                
-                
                 /// Until we reach a non-nutrient-attribute text
                 guard text.string.containsNutrientOrTitleAttributes else {
                     print("    ✋🏽 ending search because no nutrient attributes can be detected in string")
