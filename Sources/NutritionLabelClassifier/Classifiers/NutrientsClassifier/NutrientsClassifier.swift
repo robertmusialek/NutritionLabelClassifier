@@ -195,7 +195,7 @@ class NutrientsClassifier: Classifier {
                 }
                 
                 if let value1 = value1BeingExtracted, let unit1 = value1.unit {
-                    if attributeWithId.attribute.isNutrient {
+                    if attributeWithId.attribute.isNutrientAttribute {
                         /// If the unit doesn't match the first one we got, ignore this
                         guard unit == unit1 else {
                             continue

@@ -135,7 +135,7 @@ extension DataFrame {
         return Output.Nutrients(
             headerText1: headerText(for: .headerType1),
             headerText2: headerText(for: .headerType2),
-            rows: rows.filter { $0.attributeText.attribute.isNutrient }
+            rows: rows.filter { $0.attributeText.attribute.isNutrientAttribute }
         )
     }
     

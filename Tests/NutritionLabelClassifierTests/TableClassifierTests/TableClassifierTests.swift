@@ -9,7 +9,7 @@ final class TableClassifierTests: XCTestCase {
     
     var currentTestCaseId: UUID = defaultUUID
     
-//    let SingledOutTestCase: UUID? = UUID(uuidString: "03A07980-DDEC-41A6-8130-080F582FB5C3")!
+//    let SingledOutTestCase: UUID? = UUID(uuidString: "7E6948F3-3CBC-4DE3-8E18-7FD2E9EFD79E")!
     let SingledOutTestCase: UUID? = nil
     
     func testTableClassifier() throws {
@@ -118,5 +118,8 @@ let attributeExpectations: [String: [Attribute]] = [
     ],
     "03A07980-DDEC-41A6-8130-080F582FB5C3": [
         .energy, .fat, .saturatedFat, .transFat, .cholesterol, .sodium, .carbohydrate, .dietaryFibre, .sugar, .addedSugar, .protein, .vitaminD, .calcium, .iron, .potassium
-    ]
+    ],
+    "7E6948F3-3CBC-4DE3-8E18-7FD2E9EFD79E": [
+        .energy, .protein, .carbohydrate, .sugar, .starch, .fat, .saturatedFat, .monounsaturatedFat, .polyunsaturatedFat, .dietaryFibre, .salt, .sodium, .calcium
+    ],
 ]

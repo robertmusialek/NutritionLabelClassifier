@@ -2,7 +2,9 @@ import Foundation
 
 public enum Attribute: String, CaseIterable {
     
+    //MARK: Headers
     case nutritionFacts
+    case vitaminsAndMinerals
     
     //MARK: - Serving
     case servingAmount                 /// Double
@@ -148,9 +150,11 @@ public enum Attribute: String, CaseIterable {
         }
     }
     
-    public var isIrrelevant: Bool {
+    public var isTitleAttribute: Bool {
         switch self {
         case .nutritionFacts:
+            return true
+        case .vitaminsAndMinerals:
             return true
         default:
             return false
@@ -158,10 +162,9 @@ public enum Attribute: String, CaseIterable {
     }
     
     public var isNutrientAttribute: Bool {
-        !isHeaderAttribute && !isServingAttribute && !isIrrelevant
+        !isHeaderAttribute && !isServingAttribute && !isTitleAttribute
     }
 
-    
     var parentAttribute: Attribute? {
         switch self {
         case .saturatedFat, .polyunsaturatedFat, .monounsaturatedFat, .transFat, .cholesterol:
@@ -201,10 +204,6 @@ public enum Attribute: String, CaseIterable {
         default:
             return false
         }
-    }
-    
-    var isNutrient: Bool {
-        !isServingAttribute && !isHeaderAttribute
     }
     
     var supportedUnits: [NutritionUnit] {
@@ -252,12 +251,14 @@ public enum Attribute: String, CaseIterable {
     
     var regex: String? {
         switch self {
+        case .nutritionFacts:
+            return #"nutrition facts"#
+        case .vitaminsAndMinerals:
+            return #"vitamins (&|and) minerals"#
         case .servingsPerContainerAmount:
             return #"(?:servings |serving5 |)per (container|pack(age|)|tub|pot)"#
         case .servingAmount:
             return #"((serving size|size:|dose de referência)|^size$)"#
-        case .nutritionFacts:
-            return #"Nutrition Facts"#
         case .energy:
             return #"^.*(energy|calories|energie|kcal).*$"#
             
@@ -406,7 +407,7 @@ public enum Attribute: String, CaseIterable {
         static let insolubleFibre = #"^.*(\#(insolubleFibreOptions.joined(separator: "|"))).*$"#
 
         /// Negative lookbehind makes sure starch isn't preceded by tapioca
-        static let starch = #"^starch$"#
+        static let starch = #"^(of which |)starch$"#
         
         static let totalFatOptions = [
             "fa(t|i)", "fett", "grassi", "lípidos", "grasa total"
@@ -470,6 +471,8 @@ extension Attribute: CustomStringConvertible {
         switch self {
         case .nutritionFacts:
             return "Nutrition Facts"
+        case .vitaminsAndMinerals:
+            return "Vitamins & Minerals"
         case .servingAmount:
             return "Serving Amount"
         case .servingUnit:
