@@ -61,18 +61,10 @@ extension Array where Element == [AttributeText] {
 
 extension TableClassifier {
     
-    public func getAttributes() -> [[Attribute]]? {
-        return []
-//        guard let attributeRecognizedTexts = getAttributeRecognizedTexts() else {
-//            return []
-//        }
-//        return getUniqueAttributeTextsFrom(attributeRecognizedTexts)?
-//            .map { $0.attribute }
-//        ?? []
-    }
-    
     /// Returns an array of arrays of `AttributeText`s, with each array representing a column of attributes, in the order they appear on the label.
     func getColumnsOfAttributes() -> [[Attribute]]? {
+        
+        //TODO: Check if most values are inline and if so, return nil
         
         var columns: [[AttributeText]] = []
         
@@ -91,7 +83,7 @@ extension TableClassifier {
                 }
 
                 /// First, make sure the column is at least the threshold of attributes long
-                guard column.count > 3 else {
+                guard column.count >= 3 else {
                     continue
                 }
                 

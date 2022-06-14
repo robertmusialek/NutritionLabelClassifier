@@ -55,7 +55,7 @@ final class TableClassifierTests: XCTestCase {
     }
 }
 
-let attributeExpectations: [String: [[Attribute]]] = [
+let attributeExpectations: [String: [[Attribute]]?] = [
     "E84F7C80-50C4-4237-BAAD-BD5C1B958B84": [
         [.energy, .protein, .fat, .saturatedFat, .carbohydrate, .sugar, .sodium, .calcium]
     ],
@@ -174,11 +174,16 @@ let attributeExpectations: [String: [[Attribute]]] = [
         [.energy, .fat, .saturatedFat, .carbohydrate],
         [.sugar, .dietaryFibre, .protein, .salt]
     ],
-//    "0AA10182-06ED-46BE-AC45-19BFFADA9DC9": [
-//        .energy, .fat, .saturatedFat, .carbohydrate, .sugar, .dietaryFibre, .protein, .salt
-//    ],
+    "0AA10182-06ED-46BE-AC45-19BFFADA9DC9": [
+        [.energy, .fat, .saturatedFat, .carbohydrate],
+        [.sugar, .dietaryFibre, .protein, .salt]
+    ],
+    "7648338E-8AC8-4C03-AAA1-AC8FC76E7368": [
+        [.energy, .carbohydrate, .sugar, .addedSugar],
+        [.fat, .saturatedFat, .transFat, .cholesterol, .sodium]
+    ],
+    "4CF0CBA5-C746-4844-BF54-27A92C808280": nil,
 ]
 
-//let SingledOutTestCase: UUID? = UUID(uuidString: "9671423C-3C8F-484F-A462-7584660C7149")!
-//let SingledOutTestCase: UUID? = UUID(uuidString: "C132B648-8974-457A-8EE6-824688D901EA")!
-let SingledOutTestCase: UUID? = nil
+let SingledOutTestCase: UUID? = UUID(uuidString: "4CF0CBA5-C746-4844-BF54-27A92C808280")!
+//let SingledOutTestCase: UUID? = nil

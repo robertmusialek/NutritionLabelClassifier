@@ -28,7 +28,7 @@ class TableClassifier {
     func getObservations() -> [Observation] {
 
         /// Identify column of labels
-        if let attributeRecognizedTexts = getAttributes() {
+        if let attributeRecognizedTexts = getColumnsOfAttributes() {
 //            let attributes = getUniqueAttributeTextsFrom(attributeRecognizedTexts)
             
             let valueRecognizedTexts = getValueRecognizedTexts()

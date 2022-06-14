@@ -253,13 +253,13 @@ public enum Attribute: String, CaseIterable {
         case .tableElementNutritionFacts:
             return #"nutrition facts"#
         case .tableElementSkippable:
-            return #"^(vitamins (&|and) minerals|of which|alimentaires)$"#
+            return #"^(vitamins (&|and) minerals|of which|alimentaires|g)$"#
         case .servingsPerContainerAmount:
             return #"(?:servings |serving5 |)per (container|pack(age|)|tub|pot)"#
         case .servingAmount:
             return #"((serving size|size:|dose de referencia)|^size$)"#
         case .energy:
-            return #"^.*(energy|calories|energie|valoare energetica).*$"#
+            return #"^(.*energy.*|.*calories.*|.*energie.*|.*valoare energetica.*|y kcal)$"#
             
         case .protein:
             return #"(protein|proteine|proteines)"#
