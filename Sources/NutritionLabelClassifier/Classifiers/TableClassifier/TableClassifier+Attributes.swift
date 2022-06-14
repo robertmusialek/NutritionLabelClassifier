@@ -1,21 +1,58 @@
 import Foundation
 import VisionSugar
 import TabularData
+import UIKit
+
+extension Array where Element == AttributeText {
+    
+    var averageMidX: CGFloat {
+        guard count > 0 else { return 0 }
+        let sum = self.reduce(0, { $0 + $1.text.rect.midX })
+        return sum / Double(count)
+    }
+    
+    var attributeDescription: String {
+        map{ $0.attribute }.description
+    }
+}
+
+extension Array where Element == [AttributeText] {
+    
+    var attributeDescription: String {
+        map { $0.map { $0.attribute } }.description
+    }
+    func indexOfSuperset(of array: [AttributeText]) -> Int? {
+        let arrayAsSet = Set(array.map { $0.attribute })
+        for i in indices {
+//            guard array.count < self[i].count else {
+//                continue
+//            }
+//
+            let set = Set(self[i].map { $0.attribute })
+            if arrayAsSet.isSubset(of: set) {
+                return i
+            }
+        }
+        return nil
+    }
+}
 
 extension TableClassifier {
     
-    public func getAttributes() -> [Attribute] {
-        guard let attributeRecognizedTexts = getAttributeRecognizedTexts() else {
-            return []
-        }
-        return getUniqueAttributeTextsFrom(attributeRecognizedTexts)?
-            .map { $0.attribute }
-        ?? []
+    public func getAttributes() -> [[Attribute]]? {
+        return []
+//        guard let attributeRecognizedTexts = getAttributeRecognizedTexts() else {
+//            return []
+//        }
+//        return getUniqueAttributeTextsFrom(attributeRecognizedTexts)?
+//            .map { $0.attribute }
+//        ?? []
     }
     
-    func getAttributeRecognizedTexts() -> [RecognizedText]? {
+    /// Returns an array of arrays of `AttributeText`s, with each array representing a column of attributes, in the order they appear on the label.
+    func getColumnsOfAttributes() -> [[Attribute]]? {
         
-        var candidates: [[RecognizedText]] = [[]]
+        var columns: [[AttributeText]] = []
         
         var startingStrings: [String] = []
         var attributes: [[Attribute]] = []
@@ -30,15 +67,28 @@ extension TableClassifier {
                 let columnOfTexts = getColumnOfNutrientLabelTexts(startingFrom: text)
                     .sorted(by: { $0.rect.minY < $1.rect.minY })
                 
-                if let uniqueAttributes = getUniqueAttributeTextsFrom(columnOfTexts) {
-                    startingStrings.append(text.string)
-                    attributes.append(uniqueAttributes.map { $0.attribute })
+                guard let column = getUniqueAttributeTextsFrom(columnOfTexts) else {
+                    continue
 //                    print("🔧 ➡️ Starting from: '\(text.string)'")
 //                    print("🔧 ✨ \(uniqueAttributes.map { $0.attribute } )")
                 }
+
+                startingStrings.append(text.string)
+                attributes.append(column.map { $0.attribute })
                 
-                /// Add this to the array of candidates
-                candidates.append(columnOfTexts)
+                /// First, make sure the column is at least the threshold of attributes long
+                guard column.count > 3 else {
+                    continue
+                }
+                
+                /// Now see if we have any existing columns that is a subset of this column
+                if let index = columns.indexOfSuperset(of: column) {
+                    /// Replace it
+                    columns[index] = column
+                } else {
+                    /// Otherwise, set it as a new column
+                    columns.append(column)
+                }
             }
         }
         
@@ -47,8 +97,15 @@ extension TableClassifier {
         dataFrame.append(column: Column(name: "attributes", contents: attributes))
         print(dataFrame)
         
-        /// Now that we've parsed all the nutrient-label columns, pick the one with the most elements
-        return candidates.sorted(by: { $0.count > $1.count }).first
+        /// Sort the columns by the `text.rect.midX` values (so that we get them in the order they appear), and only return the `attribute`s
+        let columnsOfAttributes = columns.sorted(by: {
+            $0.averageMidX < $1.averageMidX
+        }).map {
+            $0.map { $0.attribute }
+        }
+        
+        print(columnsOfAttributes)
+        return columnsOfAttributes
     }
     
     func getUniqueAttributeTextsFrom(_ texts: [RecognizedText]) -> [AttributeText]? {
@@ -60,7 +117,7 @@ extension TableClassifier {
                 attributeTexts.append(AttributeText(attribute: attribute, text: text))
             }
         }
-        return attributeTexts
+        return attributeTexts.count > 0 ? attributeTexts : nil
     }
     
     func getColumnOfNutrientLabelTexts(startingFrom startingText: RecognizedText) -> [RecognizedText] {

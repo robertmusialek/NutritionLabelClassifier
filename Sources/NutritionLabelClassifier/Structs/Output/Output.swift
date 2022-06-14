@@ -51,6 +51,13 @@ public struct AttributeText {
     public let text: RecognizedText
 }
 
+extension AttributeText: Hashable {
+    public func hash(into hasher: inout Hasher) {
+        hasher.combine(attribute)
+        hasher.combine(text)
+    }
+}
+
 public struct ValueText {
     public var value: Value
     public let text: RecognizedText
