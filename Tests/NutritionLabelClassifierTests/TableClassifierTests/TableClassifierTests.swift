@@ -170,8 +170,11 @@ let attributeExpectations: [String: [Attribute]] = [
     "81344E05-FDC0-44D3-AA58-61259F3D2AE6": [
         .energy, .fat, .saturatedFat, .carbohydrate, .protein, .salt
     ],
+    "9671423C-3C8F-484F-A462-7584660C7149": [
+        .energy, .fat, .saturatedFat, .carbohydrate, .sugar, .dietaryFibre, .protein, .salt
+    ],
 ]
 
-//let SingledOutTestCase: UUID? = UUID(uuidString: "7A686ECF-A383-4ACF-9868-A290701D92F3")!
-let SingledOutTestCase: UUID? = nil
+let SingledOutTestCase: UUID? = UUID(uuidString: "9671423C-3C8F-484F-A462-7584660C7149")!
+//let SingledOutTestCase: UUID? = nil
     
