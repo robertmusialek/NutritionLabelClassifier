@@ -21,15 +21,37 @@ extension Array where Element == [AttributeText] {
     var attributeDescription: String {
         map { $0.map { $0.attribute } }.description
     }
+    
     func indexOfSuperset(of array: [AttributeText]) -> Int? {
         let arrayAsSet = Set(array.map { $0.attribute })
         for i in indices {
-//            guard array.count < self[i].count else {
-//                continue
-//            }
-//
             let set = Set(self[i].map { $0.attribute })
             if arrayAsSet.isSubset(of: set) {
+                return i
+            }
+        }
+        return nil
+    }
+    
+    func indexOfSubset(of array: [AttributeText]) -> Int? {
+        let arrayAsSet = Set(array.map { $0.attribute })
+        for i in indices {
+            let set = Set(self[i].map { $0.attribute })
+            if set.isSubset(of: arrayAsSet) {
+                return i
+            }
+        }
+        return nil
+    }
+
+    func indexOfArrayContainingAnyAttribute(in arrayToCheck: [AttributeText]) -> Int? {
+        for i in indices {
+            let array = self[i]
+            if array.contains(where: { arrayElement in
+                arrayToCheck.contains { arrayToCheckElement in
+                    arrayToCheckElement.attribute == arrayElement.attribute
+                }
+            }) {
                 return i
             }
         }
@@ -54,9 +76,6 @@ extension TableClassifier {
         
         var columns: [[AttributeText]] = []
         
-        var startingStrings: [String] = []
-        var attributes: [[Attribute]] = []
-        
         for recognizedTexts in arrayOfRecognizedTexts {
             for text in recognizedTexts {
                 guard Attribute.haveNutrientAttribute(in: text.string) else {
@@ -69,33 +88,31 @@ extension TableClassifier {
                 
                 guard let column = getUniqueAttributeTextsFrom(columnOfTexts) else {
                     continue
-//                    print("🔧 ➡️ Starting from: '\(text.string)'")
-//                    print("🔧 ✨ \(uniqueAttributes.map { $0.attribute } )")
                 }
 
-                startingStrings.append(text.string)
-                attributes.append(column.map { $0.attribute })
-                
                 /// First, make sure the column is at least the threshold of attributes long
                 guard column.count > 3 else {
                     continue
                 }
                 
                 /// Now see if we have any existing columns that is a subset of this column
-                if let index = columns.indexOfSuperset(of: column) {
+                if let index = columns.indexOfSubset(of: column) {
                     /// Replace it
                     columns[index] = column
+                } else if let _ = columns.indexOfSuperset(of: column) {
+                    /// This `column` is a subset of one of the `columns`, so ignore it
+                } else if let index = columns.indexOfArrayContainingAnyAttribute(in: column) {
+                    /// This `column` has attributes that another added `column has`
+                    if columns[index].count < column.count {
+                        /// This column has more attributes, so replace the smaller one with it
+                        columns[index] = column
+                    }
                 } else {
                     /// Otherwise, set it as a new column
                     columns.append(column)
                 }
             }
         }
-        
-        var dataFrame = DataFrame()
-        dataFrame.append(column: Column(name: "startingStrings", contents: startingStrings))
-        dataFrame.append(column: Column(name: "attributes", contents: attributes))
-        print(dataFrame)
         
         /// Sort the columns by the `text.rect.midX` values (so that we get them in the order they appear), and only return the `attribute`s
         let columnsOfAttributes = columns.sorted(by: {
