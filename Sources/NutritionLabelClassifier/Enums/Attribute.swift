@@ -257,15 +257,15 @@ public enum Attribute: String, CaseIterable {
         case .servingsPerContainerAmount:
             return #"(?:servings |serving5 |)per (container|pack(age|)|tub|pot)"#
         case .servingAmount:
-            return #"((serving size|size:|dose de referência)|^size$)"#
+            return #"((serving size|size:|dose de referencia)|^size$)"#
         case .energy:
-            return #"^.*(energy|calories|energie|kcal).*$"#
+            return #"^.*(energy|calories|energie|kcal|valoare energetica).*$"#
             
         case .protein:
-            return #"(protein|proteine|protéines)"#
+            return #"(protein|proteine|proteines)"#
             
         case .carbohydrate:
-            return #".*(carb|glucides|h(y|v)drate).*"#
+            return #".*(carb|glucide(s|)|h(y|v)drate).*"#
         case .dietaryFibre:
             return Regex.dietaryFibre
         case .solubleFibre:
@@ -291,7 +291,7 @@ public enum Attribute: String, CaseIterable {
             return Regex.cholesterol
             
         case .salt:
-            return #"(salt|salz|sel)"#
+            return #"(salt|salz|sel|sare)"#
         case .sodium:
             return #"sodium"#
         case .sugar:
@@ -385,7 +385,7 @@ public enum Attribute: String, CaseIterable {
         static let calories = #"calories"#
         
         static let totalSugarOptions = [
-            "sugar", "sucres", "zucker", "zuccheri", "dont sucres"
+            "sugar", "sucres", "zucker", "zuccheri", "dont sucres", "din care zaharuri"
         ]
         
         static let totalSugar = #"^.*(\#(totalSugarOptions.joined(separator: "|"))).*$"#
@@ -409,11 +409,11 @@ public enum Attribute: String, CaseIterable {
         static let starch = #"^(of which |)starch$"#
         
         static let totalFatOptions = [
-            "fa(t|i)", "fett", "grassi", "lípidos", "grasa total"
+            "fa(t|i)", "fett", "grassi", "lipidos", "grasa total", "grasimi"
         ]
 
         static let saturatedFatOptions = [
-            "saturated", "of which saturates", "saturi", "saturados", "gras saturés", "sat. fat", "kwasy nasycone"
+            "saturated", "of which saturates", "saturi", "saturados", "gras satures", "sat. fat", "kwasy nasycone", "grasi saturati"
         ]
 
         static let totalFat = #"^.*(\#(totalFatOptions.joined(separator: "|"))).*$"#
@@ -436,6 +436,7 @@ extension String {
     var cleanedAttributeString: String {
         var cleaned = trimmingWhitespaces
             .lowercased()
+            .folding(options: .diacriticInsensitive, locale: .current)
 
         /// Fix Vision misreads
         cleaned = cleaned.replacingOccurrences(of: "serving5", with: "servings")
