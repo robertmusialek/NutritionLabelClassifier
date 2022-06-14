@@ -259,7 +259,7 @@ public enum Attribute: String, CaseIterable {
         case .servingAmount:
             return #"((serving size|size:|dose de referencia)|^size$)"#
         case .energy:
-            return #"^.*(energy|calories|energie|kcal|valoare energetica).*$"#
+            return #"^.*(energy|calories|energie|valoare energetica).*$"#
             
         case .protein:
             return #"(protein|proteine|proteines)"#

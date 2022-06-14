@@ -1,5 +1,6 @@
 import Foundation
 import VisionSugar
+import TabularData
 
 extension TableClassifier {
     
@@ -16,6 +17,9 @@ extension TableClassifier {
         
         var candidates: [[RecognizedText]] = [[]]
         
+        var startingStrings: [String] = []
+        var attributes: [[Attribute]] = []
+        
         for recognizedTexts in arrayOfRecognizedTexts {
             for text in recognizedTexts {
                 guard Attribute.haveNutrientAttribute(in: text.string) else {
@@ -26,10 +30,22 @@ extension TableClassifier {
                 let columnOfTexts = getColumnOfNutrientLabelTexts(startingFrom: text)
                     .sorted(by: { $0.rect.minY < $1.rect.minY })
                 
+                if let uniqueAttributes = getUniqueAttributeTextsFrom(columnOfTexts) {
+                    startingStrings.append(text.string)
+                    attributes.append(uniqueAttributes.map { $0.attribute })
+//                    print("🔧 ➡️ Starting from: '\(text.string)'")
+//                    print("🔧 ✨ \(uniqueAttributes.map { $0.attribute } )")
+                }
+                
                 /// Add this to the array of candidates
                 candidates.append(columnOfTexts)
             }
         }
+        
+        var dataFrame = DataFrame()
+        dataFrame.append(column: Column(name: "startingStrings", contents: startingStrings))
+        dataFrame.append(column: Column(name: "attributes", contents: attributes))
+        print(dataFrame)
         
         /// Now that we've parsed all the nutrient-label columns, pick the one with the most elements
         return candidates.sorted(by: { $0.count > $1.count }).first
