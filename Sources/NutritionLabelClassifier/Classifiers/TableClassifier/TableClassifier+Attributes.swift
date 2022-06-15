@@ -92,8 +92,7 @@ extension TableClassifier {
                 for detectedAttribute in detectedAttributes {
                     /// Ignore non-nutrient attributes and energy (because it's usually not inline)
                     guard detectedAttribute.isNutrientAttribute,
-                          !detectedAttribute.isVitamin,
-                          !detectedAttribute.isMineral,
+                          detectedAttribute.isCoreTableNutrient,
                           detectedAttribute != .energy
                     else {
                         continue
@@ -108,8 +107,7 @@ extension TableClassifier {
                 let nutrients = text.string.nutrients
                 for nutrient in nutrients {
                     guard nutrient.attribute != .energy,
-                          !nutrient.attribute.isVitamin,
-                          !nutrient.attribute.isMineral
+                          nutrient.attribute.isCoreTableNutrient
                     else {
                         continue
                     }

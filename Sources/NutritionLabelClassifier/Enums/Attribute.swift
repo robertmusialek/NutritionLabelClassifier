@@ -32,6 +32,7 @@ public enum Attribute: String, CaseIterable {
     //MARK: - Nutrient
     case energy
     
+    //MARK: Core Table Nutrients
     case protein
     
     case carbohydrate
@@ -51,9 +52,10 @@ public enum Attribute: String, CaseIterable {
     case transFat
     case cholesterol
     
-    /// Minerals **add to** `isMineral`
     case salt
     case sodium
+    
+    //MARK: Additional Table Nutrients (Usually at bottom)
     case calcium
     case iron
     case potassium
@@ -64,7 +66,6 @@ public enum Attribute: String, CaseIterable {
     case niacin
     case zinc
     
-    /// Vitamins **add to** `isVitamin`
     case folate
     case folicAcid
     case vitaminA
@@ -74,24 +75,14 @@ public enum Attribute: String, CaseIterable {
     case vitaminB6
     case vitaminB12
     
-    var isVitamin: Bool {
+    var isCoreTableNutrient: Bool {
         switch self {
-        case .folate, .folicAcid, .vitaminA, .vitaminC, .vitaminD, .vitaminB1, .vitaminB6, .vitaminB12:
+        case .protein, .carbohydrate, .gluten, .sugar, .addedSugar, .starch, .dietaryFibre, .solubleFibre, .insolubleFibre, .fat, .saturatedFat, .polyunsaturatedFat, .monounsaturatedFat, .transFat, .cholesterol, .salt, .sodium:
             return true
         default:
             return false
         }
     }
-    
-    var isMineral: Bool {
-        switch self {
-        case .salt, .sodium, .calcium, .iron, .potassium, .cobalamin, .magnesium, .thiamin, .riboflavin, .niacin, .zinc:
-            return true
-        default:
-            return false
-        }
-    }
-    
     
     public var conflictingAttributes: [Attribute] {
         switch self {
