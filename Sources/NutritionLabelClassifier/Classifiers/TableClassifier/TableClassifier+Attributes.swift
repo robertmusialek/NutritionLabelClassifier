@@ -59,12 +59,75 @@ extension Array where Element == [AttributeText] {
     }
 }
 
+extension Array where Element == RecognizedText {
+    var attributeTexts: [RecognizedText] {
+        filter { $0.string.containsNutrientAttributes }
+    }
+    
+    var inlineAttributeTexts: [RecognizedText] {
+        filter { $0.string.containsInlineNutrients }
+    }
+}
+
 extension TableClassifier {
+    
+    var attributeTexts: [RecognizedText] {
+        arrayOfRecognizedTexts.reduce([]) { $0 + $1.attributeTexts }
+    }
+    
+    var inlineAttributeTexts: [RecognizedText] {
+        arrayOfRecognizedTexts.reduce([]) { $0 + $1.inlineAttributeTexts }
+    }
+    
+    var mostTextsAreInline: Bool {
+        var attributes: [Attribute] = []
+        var inlineAttributes: [Attribute] = []
+        
+        /// Go through all recognized texts
+        for recognizedTexts in arrayOfRecognizedTexts {
+            for text in recognizedTexts {
+                
+                /// Each time we detect an attribute for the first time—whether inline or not—add it to the `attributes` array
+                let detectedAttributes = Attribute.detect(in: text.string)
+                for detectedAttribute in detectedAttributes {
+                    /// Ignore non-nutrient attributes and energy (because it's usually not inline)
+                    guard detectedAttribute.isNutrientAttribute, detectedAttribute != .energy else {
+                        continue
+                    }
+                    
+                    if !attributes.contains(detectedAttribute) {
+                        attributes.append(detectedAttribute)
+                    }
+                }
+                
+                /// Each time we detect an inline version of an attribute, add it to the `inlineAttributes` array
+                let nutrients = text.string.nutrients
+                for attribute in nutrients.map({ $0.attribute }) {
+                    guard attribute != .energy else {
+                        continue
+                    }
+
+                    if !inlineAttributes.contains(attribute) {
+                        inlineAttributes.append(attribute)
+                    }
+                }
+            }
+        }
+        
+        let ratio = Double(inlineAttributes.count) / Double(attributes.count)
+        
+        //TODO: Tweak this threshold
+        print("🧮 Ratio is: \(ratio)")
+        return ratio > 0.75
+    }
     
     /// Returns an array of arrays of `AttributeText`s, with each array representing a column of attributes, in the order they appear on the label.
     func getColumnsOfAttributes() -> [[Attribute]]? {
         
         //TODO: Check if most values are inline and if so, return nil
+        guard !mostTextsAreInline else {
+            return nil
+        }
         
         var columns: [[AttributeText]] = []
         

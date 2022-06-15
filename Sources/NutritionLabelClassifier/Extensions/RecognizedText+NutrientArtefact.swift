@@ -25,9 +25,15 @@ extension RecognizedText {
     }
     
     func nutrientArtefacts(for string: String) -> [NutrientArtefact] {
+        string.nutrientArtefacts(textId: id)
+    }
+}
+
+extension String {
+    func nutrientArtefacts(textId id: UUID) -> [NutrientArtefact] {
         
         var array: [NutrientArtefact] = []
-        var string = string
+        var string = self
         
         var isExpectingCalories: Bool = false
         

@@ -32,7 +32,7 @@ final class TableClassifierTests: XCTestCase {
             }
             
             currentTestCaseId = id
-            print("Checking: \(id)")
+            print("🧮 Checking: \(id)")
             
             let classifier = TableClassifier(arrayOfRecognizedTexts: array)
             let attributes = classifier.getColumnsOfAttributes()
@@ -183,7 +183,9 @@ let attributeExpectations: [String: [[Attribute]]?] = [
         [.fat, .saturatedFat, .transFat, .cholesterol, .sodium]
     ],
     "4CF0CBA5-C746-4844-BF54-27A92C808280": nil,
+    "5410D64B-4A8D-4183-8C81-EC82ABBFA648": nil,
+    "B789ED71-802F-42EF-85A5-FD9FEED77E6F": nil
 ]
 
-let SingledOutTestCase: UUID? = UUID(uuidString: "4CF0CBA5-C746-4844-BF54-27A92C808280")!
-//let SingledOutTestCase: UUID? = nil
+//let SingledOutTestCase: UUID? = UUID(uuidString: "B789ED71-802F-42EF-85A5-FD9FEED77E6F")!
+let SingledOutTestCase: UUID? = nil

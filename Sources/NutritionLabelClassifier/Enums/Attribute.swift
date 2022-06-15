@@ -273,7 +273,7 @@ public enum Attribute: String, CaseIterable {
         case .insolubleFibre:
             return Regex.insolubleFibre
         case .gluten:
-            return #"gluten"#
+            return #"^.*(?=gluten)(?!gluten free).*$"#
         case .starch:
             return Regex.starch
 
@@ -291,7 +291,7 @@ public enum Attribute: String, CaseIterable {
             return Regex.cholesterol
             
         case .salt:
-            return #"(salt|salz|sel|sare)"#
+            return #"(salt|salz|sel|sare)([^,]|$)"#
         case .sodium:
             return #"sodium"#
         case .sugar:

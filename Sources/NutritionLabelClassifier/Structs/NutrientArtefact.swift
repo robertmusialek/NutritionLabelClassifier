@@ -1,5 +1,6 @@
 import Foundation
 
+//TODO: Legacy Artefact
 public struct NutrientArtefact {
     let textId: UUID
     let attribute: Attribute?
