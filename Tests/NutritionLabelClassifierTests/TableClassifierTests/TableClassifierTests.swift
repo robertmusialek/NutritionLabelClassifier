@@ -184,8 +184,9 @@ let attributeExpectations: [String: [[Attribute]]?] = [
     ],
     "4CF0CBA5-C746-4844-BF54-27A92C808280": nil,
     "5410D64B-4A8D-4183-8C81-EC82ABBFA648": nil,
-    "B789ED71-802F-42EF-85A5-FD9FEED77E6F": nil
+    "B789ED71-802F-42EF-85A5-FD9FEED77E6F": nil,
+    "083C5BAA-2DDA-42E5-8A6C-DCD1A3E5B7E1": nil,
 ]
 
-//let SingledOutTestCase: UUID? = UUID(uuidString: "B789ED71-802F-42EF-85A5-FD9FEED77E6F")!
-let SingledOutTestCase: UUID? = nil
+let SingledOutTestCase: UUID? = UUID(uuidString: "083C5BAA-2DDA-42E5-8A6C-DCD1A3E5B7E1")!
+//let SingledOutTestCase: UUID? = nil
