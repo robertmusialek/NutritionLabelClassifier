@@ -87,11 +87,15 @@ extension TableClassifier {
         for recognizedTexts in arrayOfRecognizedTexts {
             for text in recognizedTexts {
                 
-                /// Each time we detect an attribute for the first time—whether inline or not—add it to the `attributes` array
+                /// Each time we detect a non-mineral, non-vitamin attribute for the first time—whether inline or not—add it to the `attributes` array
                 let detectedAttributes = Attribute.detect(in: text.string)
                 for detectedAttribute in detectedAttributes {
                     /// Ignore non-nutrient attributes and energy (because it's usually not inline)
-                    guard detectedAttribute.isNutrientAttribute, detectedAttribute != .energy else {
+                    guard detectedAttribute.isNutrientAttribute,
+                          !detectedAttribute.isVitamin,
+                          !detectedAttribute.isMineral,
+                          detectedAttribute != .energy
+                    else {
                         continue
                     }
                     
@@ -102,13 +106,16 @@ extension TableClassifier {
                 
                 /// Each time we detect an inline version of an attribute, add it to the `inlineAttributes` array
                 let nutrients = text.string.nutrients
-                for attribute in nutrients.map({ $0.attribute }) {
-                    guard attribute != .energy else {
+                for nutrient in nutrients {
+                    guard nutrient.attribute != .energy,
+                          !nutrient.attribute.isVitamin,
+                          !nutrient.attribute.isMineral
+                    else {
                         continue
                     }
 
-                    if !inlineAttributes.contains(attribute) {
-                        inlineAttributes.append(attribute)
+                    if !inlineAttributes.contains(nutrient.attribute) {
+                        inlineAttributes.append(nutrient.attribute)
                     }
                 }
             }

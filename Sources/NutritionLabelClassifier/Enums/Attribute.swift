@@ -51,6 +51,7 @@ public enum Attribute: String, CaseIterable {
     case transFat
     case cholesterol
     
+    /// Minerals **add to** `isMineral`
     case salt
     case sodium
     case calcium
@@ -63,15 +64,33 @@ public enum Attribute: String, CaseIterable {
     case niacin
     case zinc
     
+    /// Vitamins **add to** `isVitamin`
     case folate
     case folicAcid
-    
     case vitaminA
     case vitaminC
     case vitaminD
     case vitaminB1
     case vitaminB6
     case vitaminB12
+    
+    var isVitamin: Bool {
+        switch self {
+        case .folate, .folicAcid, .vitaminA, .vitaminC, .vitaminD, .vitaminB1, .vitaminB6, .vitaminB12:
+            return true
+        default:
+            return false
+        }
+    }
+    
+    var isMineral: Bool {
+        switch self {
+        case .salt, .sodium, .calcium, .iron, .potassium, .cobalamin, .magnesium, .thiamin, .riboflavin, .niacin, .zinc:
+            return true
+        default:
+            return false
+        }
+    }
     
     
     public var conflictingAttributes: [Attribute] {
@@ -396,15 +415,17 @@ public enum Attribute: String, CaseIterable {
             "(dietary |)fib(re|er)", "fibra"
         ]
         static let solubleFibreOptions = [
-            "[ ]*soluble fib(re|er)"
+            "(^|[ ])soluble fib(re|er)"
         ]
         static let insolubleFibreOptions = [
             "insoluble fib(re|er)"
         ]
-        static let dietaryFibre = #"^.*(\#(dietaryFibreOptions.joined(separator: "|"))).*$"#
+        static let dietaryFibreOnly = #"^.*(\#(dietaryFibreOptions.joined(separator: "|"))).*$"#
         static let solubleFibre = #"^.*(\#(solubleFibreOptions.joined(separator: "|"))).*$"#
         static let insolubleFibre = #"^.*(\#(insolubleFibreOptions.joined(separator: "|"))).*$"#
-
+        
+        static let dietaryFibre = #"^(?=\#(dietaryFibreOnly))(?!\#(solubleFibre))(?!\#(insolubleFibre)).*$"#
+        
         /// Negative lookbehind makes sure starch isn't preceded by tapioca
         static let starch = #"^(of which |)starch$"#
         
@@ -419,11 +440,13 @@ public enum Attribute: String, CaseIterable {
         ]
 
         static let totalFat = #"^.*(\#(totalFatOptions.joined(separator: "|"))).*$"#
-        static let saturatedFat = #"^.*(\#(saturatedFatOptions.joined(separator: "|"))).*$"#
+        static let saturatedFatOnly = #"^.*(\#(saturatedFatOptions.joined(separator: "|"))).*$"#
         static let transFat = #"^.*trans.*$"#
         static let monounsaturatedFat = #"^.*mono(-|)unsaturat.*$"#
         static let polyunsaturatedFat = #"^.*poly(-|)unsaturat.*$"#
-        
+
+        static let saturatedFat = #"^(?=\#(saturatedFatOnly))(?!\#(monounsaturatedFat))(?!\#(polyunsaturatedFat)).*$"#
+
         static let fat = #"^(?=\#(totalFat))(?!\#(saturatedFat))(?!\#(transFat))(?!\#(polyunsaturatedFat))(?!\#(monounsaturatedFat)).*$"#
 
         static let cholesterol = #"cholest"#

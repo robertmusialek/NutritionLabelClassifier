@@ -41,6 +41,9 @@ extension String {
         if string == "O" {
             string = "0"
         }
+        if string.hasSuffix("Omg") {
+            string = string.replacingLastOccurrence(of: "Omg", with: "0mg")
+        }
         
         while string.count > 0 {
             /// First check if we have a value at the start of the string
