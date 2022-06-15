@@ -39,6 +39,7 @@ public enum Attribute: String, CaseIterable {
     case gluten
     case sugar
     case addedSugar
+    case polyols
     case starch
 
     case dietaryFibre
@@ -77,7 +78,7 @@ public enum Attribute: String, CaseIterable {
     
     var isCoreTableNutrient: Bool {
         switch self {
-        case .protein, .carbohydrate, .gluten, .sugar, .addedSugar, .starch, .dietaryFibre, .solubleFibre, .insolubleFibre, .fat, .saturatedFat, .polyunsaturatedFat, .monounsaturatedFat, .transFat, .cholesterol, .salt, .sodium:
+        case .protein, .carbohydrate, .gluten, .sugar, .addedSugar, .polyols, .starch, .dietaryFibre, .solubleFibre, .insolubleFibre, .fat, .saturatedFat, .polyunsaturatedFat, .monounsaturatedFat, .transFat, .cholesterol, .salt, .sodium:
             return true
         default:
             return false
@@ -282,6 +283,8 @@ public enum Attribute: String, CaseIterable {
             return Regex.solubleFibre
         case .insolubleFibre:
             return Regex.insolubleFibre
+        case .polyols:
+            return "polyols"
         case .gluten:
             return #"^.*(?=gluten)(?!gluten free).*$"#
         case .starch:
@@ -395,7 +398,7 @@ public enum Attribute: String, CaseIterable {
         static let calories = #"calories"#
         
         static let totalSugarOptions = [
-            "sugar", "sucres", "zucker", "zuccheri", "dont sucres", "din care zaharuri"
+            "sugar", "sucres", "zucker", "zuccheri", "dont sucres", "din care zaharuri", "azucares",
         ]
         
         static let totalSugar = #"^.*(\#(totalSugarOptions.joined(separator: "|"))).*$"#
@@ -536,6 +539,8 @@ extension Attribute: CustomStringConvertible {
             return "Total Sugars"
         case .addedSugar:
             return "Added Sugars"
+        case .polyols:
+            return "Polyols"
         case .starch:
             return "Starch"
         case .fat:
