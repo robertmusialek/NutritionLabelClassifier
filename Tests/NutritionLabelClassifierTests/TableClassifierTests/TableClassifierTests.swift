@@ -70,7 +70,7 @@ final class TableClassifierTests: XCTestCase {
             classifier.classify()
         }
         
-        print("🤖 Failed: \(numberOfPassedTests) tests")
+        print("🤖 Failed: \(numberOfFailedTests) tests")
         print("🤖 Passed: \(numberOfPassedTests) tests")
     }
     
@@ -236,6 +236,99 @@ let attributeExpectations: [String: [[Attribute]]?] = [
     "1B51A831-FE9C-4752-B526-0ED7823EA591": [
         [.energy, .fat, .saturatedFat, .monounsaturatedFat, .polyunsaturatedFat, .transFat, .cholesterol, .carbohydrate, .sugar, .dietaryFibre, .protein, .salt, .sodium]
     ],
+    
+    "6682E31B-6674-47F7-BF71-CA3B2C7713DC": [
+        [.fat, .saturatedFat, .transFat, .cholesterol, .carbohydrate, .sugar, .dietaryFibre, .protein, .salt, .sodium]
+    ],
+    "3FFEB5C4-610D-488F-BA4B-9BA1E99C020E": [
+        [.fat, .saturatedFat, .transFat, .cholesterol, .carbohydrate, .sugar, .dietaryFibre, .protein, .salt, .sodium]
+    ],
+    "D0A85313-7611-494C-969C-5A2F62A7B9D4": [
+        [.fat, .saturatedFat, .transFat, .cholesterol, .carbohydrate, .sugar, .dietaryFibre, .protein, .salt, .sodium]
+    ],
+    "7E330674-3589-4B20-BA7A-283FF70AB01C": [
+        [.fat, .saturatedFat, .transFat, .cholesterol, .carbohydrate, .sugar, .dietaryFibre, .protein, .salt, .sodium]
+    ],
+    "BE5881E2-44D1-44ED-8471-0DC980A97244": [
+        [.fat, .saturatedFat, .transFat, .cholesterol, .carbohydrate, .sugar, .dietaryFibre, .protein, .salt, .sodium]
+    ],
+    "26440E08-8A8D-450A-A6DF-6F95C5E76C7D": [
+        [.fat, .saturatedFat, .transFat, .cholesterol, .carbohydrate, .sugar, .dietaryFibre, .protein, .salt, .sodium]
+    ],
+    
+    "DD0390E1-6555-40C8-9E58-D7B93D731A88": [
+        [.energy, .carbohydrate, .protein, .fat, .calcium]
+    ],
+
+    "207A16DF-03DF-41DE-B29F-075558953CEA": [
+        [.energy, .fat, .saturatedFat, .transFat, .protein, .carbohydrate, .dietaryFibre, .sugar, .sodium]
+    ],
+
+    "C6FA0D87-4B38-4D8F-9408-26725BB8D463": [
+        [.energy, .fat, .saturatedFat, .transFat, .protein, .carbohydrate, .dietaryFibre, .sugar, .sodium]
+    ],
+    "EB754683-ECF4-4DC4-9978-0B6258581172": [
+        [.energy, .fat, .saturatedFat, .transFat, .protein, .carbohydrate, .dietaryFibre, .sugar, .sodium]
+    ],
+    "A221A0C0-A111-40DF-81BF-C334359B3809": [
+        [.energy, .fat, .saturatedFat, .transFat, .protein, .carbohydrate, .dietaryFibre, .sugar, .sodium]
+    ],
+    "C6BDB073-EF44-46DE-864A-9B3E2EAA2BA8": [
+        [.energy, .fat, .saturatedFat, .transFat, .protein, .carbohydrate, .dietaryFibre, .sugar, .sodium]
+    ],
+    
+    "A4DC9A58-AE29-4C79-A364-827470D60DD6": [
+        [.energy, .fat, .saturatedFat, .transFat, .protein, .carbohydrate, .dietaryFibre, .sugar, .sodium]
+    ],
+    "C19F126E-6D6E-464A-B7C4-718AA4384CC2": [
+        [.energy, .fat, .saturatedFat, .transFat, .protein, .carbohydrate, .dietaryFibre, .sugar, .sodium]
+    ],
+
+    "99DAA772-983E-4C3E-ABF9-D97D870BC14D": [
+        [.energy, .fat, .saturatedFat, .carbohydrate, .sugar, .dietaryFibre, .protein, .salt]
+    ],
+
+    "8ABC130C-07E8-4780-898D-1B69950C947D": [
+        [.energy, .fat, .saturatedFat, .carbohydrate, .sugar, .dietaryFibre, .protein, .salt]
+    ],
+    "B1E5C59E-7B94-4570-B226-DD9D17BC743E": [
+        [.energy, .fat, .saturatedFat, .carbohydrate, .sugar, .dietaryFibre, .protein, .salt]
+    ],
+    "660D2B6A-F56B-46DB-B82C-FF78AAA341AD": [
+        [.energy, .fat, .saturatedFat, .carbohydrate, .sugar, .dietaryFibre, .protein, .salt]
+    ],
+    "01BD75D4-6F0D-4F67-B3C6-FC22AE1B157C": [
+        [.energy, .fat, .saturatedFat, .carbohydrate, .sugar, .dietaryFibre, .protein, .salt]
+    ],
+    "CADCD350-B6B0-4DD9-9892-872B58F5CC44": [
+        [.energy, .fat, .saturatedFat, .carbohydrate, .sugar, .dietaryFibre, .protein, .salt]
+    ],
+    "C9B40B4A-213C-439A-8142-3042072D0B32": [
+        [.energy, .fat, .saturatedFat, .carbohydrate, .sugar, .dietaryFibre, .protein, .salt]
+    ],
+    
+    "736D808A-6D24-4DC3-B448-11A8CA04B15D": [
+        [.energy, .fat, .saturatedFat, .carbohydrate, .sugar, .polyols, .protein, .salt]
+    ],
+    "54B88941-BF23-4D42-8B59-8DDA76F11C9D": [
+        [.energy, .fat, .saturatedFat, .carbohydrate, .sugar, .polyols, .protein, .salt]
+    ],
+    "74ED810B-EF85-4D73-A7F5-D3AA0DDD5CDF": [
+        [.energy, .fat, .saturatedFat, .carbohydrate, .sugar, .polyols, .protein, .salt]
+    ],
+    "C9C4FC00-486C-4D4B-985C-6CDDC45A466A": [
+        [.energy, .fat, .saturatedFat, .carbohydrate, .sugar, .polyols, .protein, .salt]
+    ],
+    "C50419CB-B58A-47A1-A9F3-41DD1C7074EE": [
+        [.energy, .fat, .saturatedFat, .carbohydrate, .sugar, .polyols, .protein, .salt]
+    ],
+    "D24F62B2-6DC5-4249-B0A3-3023C0DEB711": [
+        [.energy, .fat, .saturatedFat, .carbohydrate, .sugar, .polyols, .protein, .salt]
+    ],
+    "E790FF79-2551-440E-8C80-ECBCF069881E": [
+        [.energy, .fat, .saturatedFat, .carbohydrate, .sugar, .polyols, .protein, .salt]
+    ],
+
     "3A7D1894-FD50-4226-8A97-8471F4E34E89": nil,
     "4CF0CBA5-C746-4844-BF54-27A92C808280": nil,
     "5410D64B-4A8D-4183-8C81-EC82ABBFA648": nil,
@@ -263,5 +356,5 @@ let attributeExpectations: [String: [[Attribute]]?] = [
     "D8809685-A90E-4756-BCA1-79B2D8C0D090": nil,
 ]
 
-//let SingledOutTestCase: UUID? = UUID(uuidString: "1B51A831-FE9C-4752-B526-0ED7823EA591")!
+//let SingledOutTestCase: UUID? = UUID(uuidString: "E790FF79-2551-440E-8C80-ECBCF069881E")!
 let SingledOutTestCase: UUID? = nil

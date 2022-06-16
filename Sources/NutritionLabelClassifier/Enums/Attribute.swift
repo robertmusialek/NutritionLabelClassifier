@@ -273,10 +273,10 @@ public enum Attribute: String, CaseIterable {
             return Regex.energy
             
         case .protein:
-            return #"(protein|proteine|proteines)"#
+            return #"(protein|proteine|proteines)(?! (bar|bas))( |$)"#
             
         case .carbohydrate:
-            return #".*(carb|glucide(s|)|h(y|v)drate).*"#
+            return #".*(carb|glucide(s|)|(h|b)(y|v)drate).*"#
         case .dietaryFibre:
             return Regex.dietaryFibre
         case .solubleFibre:
@@ -286,7 +286,7 @@ public enum Attribute: String, CaseIterable {
         case .polyols:
             return "(polyols|polioli)"
         case .gluten:
-            return #"^.*(?=gluten)(?!gluten free).*$"#
+            return #"^.*gluten(?! (free|(b|d)evatten)).*$"#
         case .starch:
             return Regex.starch
 
@@ -397,9 +397,9 @@ public enum Attribute: String, CaseIterable {
 
         static let calories = #"calories"#
         
-        static let energy_legacy = #"^(.*energy.*|.*calories.*|.*energie.*|.*valoare energetica.*|y kcal)$"#
+        static let energy_legacy = #"^(.*energy.*|.*energi.*|.*calories.*|.*energie.*|.*valoare energetica.*|y kcal)$"#
         static let energyOptions = [
-            ".*energy.*", ".*calories.*", ".*energie.*", ".*valoare energetica.*", "y kcal"
+            ".*energy.*", ".*energi.*", ".*calories.*", ".*energie.*", ".*valoare energetica.*", "y kcal"
         ]
         static let energyOnly = #"^(\#(energyOptions.joined(separator: "|")))$"#
         static let energyOutOfContext = #".*calories a day.*"#
@@ -407,7 +407,7 @@ public enum Attribute: String, CaseIterable {
 //        static let energy = #"^(?=\#(energyOnly)).*$"#
 
         static let totalSugarOptions = [
-            "sugar", "sucres", "zucker", "zuccheri", "dont sucres", "din care zaharuri", "azucares", "waarvan suikers"
+            "sugar", "sucres", "zucker", "zuccheri", "dont sucres", "din care zaharuri", "azucares", "waarvan suikers", "sigar"
         ]
         
         static let totalSugar = #"^.*(\#(totalSugarOptions.joined(separator: "|")))([^,]|).*$"#
@@ -439,6 +439,7 @@ public enum Attribute: String, CaseIterable {
         static let saturatedFatOptions = [
             "saturated",
             "satuwed", /// Vision typo
+            "saturates",
             "of which saturates", "saturi", "saturados", "gras satures", "sat. fat", "kwasy nasycone", "grasi saturati", "sociosios"
         ]
 
