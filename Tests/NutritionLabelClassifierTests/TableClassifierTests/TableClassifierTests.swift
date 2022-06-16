@@ -233,5 +233,5 @@ let attributeExpectations: [String: [[Attribute]]?] = [
     "BD53EFF6-2AF9-4FCA-8865-67CCB4BA9B69": nil,
 ]
 
-let SingledOutTestCase: UUID? = UUID(uuidString: "15D5AD72-033E-4CA4-BA87-D6CB6193EC9B")!
-//let SingledOutTestCase: UUID? = nil
+//let SingledOutTestCase: UUID? = UUID(uuidString: "478883E6-2CA8-4C86-9A9F-A3FD71EA5BBE")!
+let SingledOutTestCase: UUID? = nil

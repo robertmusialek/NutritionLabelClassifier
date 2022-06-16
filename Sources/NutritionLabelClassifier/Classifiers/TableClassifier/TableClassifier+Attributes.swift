@@ -191,7 +191,11 @@ extension TableClassifier {
         for text in texts {
             let attributes = Attribute.detect(in: text.string)
             for attribute in attributes {
-                guard !attributeTexts.contains(where: { $0.attribute == attribute }) else { continue }
+                /// Make sure each `Attribute` detected in this text hasn't already been added, and is also a nutrient (for edge cases where strings containing both a nutrient and a serving (or other type) of attribute may have been picked up and then the nutrient attribute disregarded
+                guard !attributeTexts.contains(where: { $0.attribute == attribute }),
+                      attribute.isNutrientAttribute
+                else { continue }
+                
                 attributeTexts.append(AttributeText(attribute: attribute, text: text))
             }
         }
@@ -206,6 +210,9 @@ extension TableClassifier {
         var array: [RecognizedText] = [startingText]
         
         for recognizedTexts in visionResult.arrayOfTexts {
+            
+            var skipPassUsed = false
+            
             /// Now go upwards to get nutrient-attribute texts in same column as it
             let textsAbove = recognizedTexts.filterColumn(of: startingText, preceding: true).filter { !$0.string.isEmpty }.reversed()
             
@@ -223,10 +230,18 @@ extension TableClassifier {
                 
                 /// Until we reach a non-nutrient-attribute text
                 guard text.string.containsNutrientOrTitleAttributes else {
-                    print("    ✋🏽 ending search because no nutrient attributes can be detected in string")
-                    break
+                    if skipPassUsed {
+                        print("    ✋🏽 ending search because no nutrient attributes can be detected in string AND skip pass was used")
+                        break
+                    } else {
+                        print("    ignoring and using up skipPass")
+                        skipPassUsed = true
+                        continue
+                    }
                 }
                 
+                skipPassUsed = false
+
                 /// Skip over title attributes, but don't stop searching because of them
                 guard !text.string.isSkippableTableElement else {
                     continue
@@ -236,6 +251,9 @@ extension TableClassifier {
                 array.insert(text, at: 0)
             }
 
+            /// Reset skipPass
+            skipPassUsed = false
+            
             /// Now do the same thing downwards
             let textsBelow = recognizedTexts.filterColumn(of: startingText, preceding: false).filter { !$0.string.isEmpty }
             
@@ -252,9 +270,17 @@ extension TableClassifier {
                 }
                 
                 guard text.string.containsNutrientOrTitleAttributes else {
-                    print("    ✋🏽 ending search because no nutrient or title attributes can be detected in string")
-                    break
+                    if skipPassUsed {
+                        print("    ✋🏽 ending search because no nutrient attributes can be detected in string AND skip pass was used")
+                        break
+                    } else {
+                        print("    ignoring and using up skipPass")
+                        skipPassUsed = true
+                        continue
+                    }
                 }
+                
+                skipPassUsed = false
                 
                 /// Skip over title attributes, but don't stop searching because of them
                 guard !text.string.isSkippableTableElement else {

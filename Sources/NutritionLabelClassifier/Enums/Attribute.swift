@@ -270,7 +270,7 @@ public enum Attribute: String, CaseIterable {
         case .servingAmount:
             return #"((serving size|size:|dose de referencia)|^size$)"#
         case .energy:
-            return #"^(.*energy.*|.*calories.*|.*energie.*|.*valoare energetica.*|y kcal)$"#
+            return Regex.energy
             
         case .protein:
             return #"(protein|proteine|proteines)"#
@@ -304,7 +304,7 @@ public enum Attribute: String, CaseIterable {
             return Regex.cholesterol
             
         case .salt:
-            return #"(salt|salz|sel|sare)([^,]|$)"#
+            return #"(?<!less of )(salt|salz|sel|sare)([^,]|$)"#
         case .sodium:
             return #"sodium"#
         case .sugar:
@@ -397,11 +397,20 @@ public enum Attribute: String, CaseIterable {
 
         static let calories = #"calories"#
         
+        static let energy_legacy = #"^(.*energy.*|.*calories.*|.*energie.*|.*valoare energetica.*|y kcal)$"#
+        static let energyOptions = [
+            ".*energy.*", ".*calories.*", ".*energie.*", ".*valoare energetica.*", "y kcal"
+        ]
+        static let energyOnly = #"^(\#(energyOptions.joined(separator: "|")))$"#
+        static let energyOutOfContext = #".*calories a day.*"#
+        static let energy = #"^(?=\#(energyOnly))(?!\#(energyOutOfContext)).*$"#
+//        static let energy = #"^(?=\#(energyOnly)).*$"#
+
         static let totalSugarOptions = [
             "sugar", "sucres", "zucker", "zuccheri", "dont sucres", "din care zaharuri", "azucares", "waarvan suikers"
         ]
         
-        static let totalSugar = #"^.*(\#(totalSugarOptions.joined(separator: "|"))).*$"#
+        static let totalSugar = #"^.*(\#(totalSugarOptions.joined(separator: "|")))([^,]|).*$"#
         static let addedSugar = #"^.*(added sugar(s|)|includes [0-9,.]+ (grams|g)).*$"#
         static let sugar = #"^(?=\#(totalSugar))(?!\#(addedSugar)).*$"#
         
