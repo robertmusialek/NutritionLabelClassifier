@@ -33,7 +33,8 @@ final class TableClassifierTests: XCTestCase {
             currentTestCaseId = id
             print("🧮 Checking: \(id)")
             
-            let classifier = NutritionLabelClassifier(image: image, contentSize: CGSize(width: 428.0, height: 376.0))
+//            let classifier = NutritionLabelClassifier(image: image, contentSize: CGSize(width: 428.0, height: 376.0))
+            let classifier = NutritionLabelClassifier(image: image, contentSize: image.size)
             classifier.onCompletion = {
                 
                 let start = CFAbsoluteTimeGetCurrent()
@@ -180,7 +181,7 @@ let attributeExpectations: [String: [[Attribute]]?] = [
         [.energy, .fat, .saturatedFat, .carbohydrate, .sugar, .dietaryFibre, .protein, .salt]
     ],
     "7A686ECF-A383-4ACF-9868-A290701D92F3": [
-        [.energy, .fat, .saturatedFat, .sugar, .dietaryFibre, .protein, .salt]
+        [.energy, .fat, .saturatedFat, .carbohydrate, .sugar, .dietaryFibre, .protein, .salt]
     ],
     "81344E05-FDC0-44D3-AA58-61259F3D2AE6": [
         [.energy, .fat, .saturatedFat, .carbohydrate, .sugar, .dietaryFibre, .protein, .salt]
@@ -232,5 +233,5 @@ let attributeExpectations: [String: [[Attribute]]?] = [
     "BD53EFF6-2AF9-4FCA-8865-67CCB4BA9B69": nil,
 ]
 
-//let SingledOutTestCase: UUID? = UUID(uuidString: "7648338E-8AC8-4C03-AAA1-AC8FC76E7368")!
-let SingledOutTestCase: UUID? = nil
+let SingledOutTestCase: UUID? = UUID(uuidString: "15D5AD72-033E-4CA4-BA87-D6CB6193EC9B")!
+//let SingledOutTestCase: UUID? = nil

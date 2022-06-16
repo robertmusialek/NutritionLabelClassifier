@@ -398,7 +398,7 @@ public enum Attribute: String, CaseIterable {
         static let calories = #"calories"#
         
         static let totalSugarOptions = [
-            "sugar", "sucres", "zucker", "zuccheri", "dont sucres", "din care zaharuri", "azucares",
+            "sugar", "sucres", "zucker", "zuccheri", "dont sucres", "din care zaharuri", "azucares", "waarvan suikers"
         ]
         
         static let totalSugar = #"^.*(\#(totalSugarOptions.joined(separator: "|"))).*$"#
@@ -406,7 +406,7 @@ public enum Attribute: String, CaseIterable {
         static let sugar = #"^(?=\#(totalSugar))(?!\#(addedSugar)).*$"#
         
         static let dietaryFibreOptions = [
-            "(dietary |)fib(re|er)", "fibra"
+            "(dietary |)fib(re|er)", "fibra", "voedingsvezel"
         ]
         static let solubleFibreOptions = [
             "(^|[ ])soluble fib(re|er)"
