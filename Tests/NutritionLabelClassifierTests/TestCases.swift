@@ -80,3 +80,22 @@ func prepareTestCases() throws {
     /// Unzip Test Data contents
     try Zip.unzipFile(filePath, destination: testDataUrl, overwrite: true, password: nil)
 }
+
+func prepareTestCaseImages() throws {
+    let filePath = Bundle.module.url(forResource: "NutritionClassifier-TestImages", withExtension: "zip")!
+    let destinationUrl = testImagesDirectory
+    
+    /// Remove directory and create it again
+    if testImagesDirectoryExists {
+        try FileManager.default.removeItem(at: destinationUrl)
+    }
+    try FileManager.default.createDirectory(at: destinationUrl, withIntermediateDirectories: true)
+
+    /// Unzip Test Data contents
+    try Zip.unzipFile(filePath, destination: destinationUrl, overwrite: true, password: nil)
+}
+
+var testImagesDirectoryExists: Bool {
+    var isDir: ObjCBool = true
+    return FileManager.default.fileExists(atPath: testImagesDirectory.path, isDirectory: &isDir)
+}

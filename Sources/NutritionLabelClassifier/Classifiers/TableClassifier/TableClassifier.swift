@@ -3,7 +3,8 @@ import VisionSugar
 
 class TableClassifier {
     
-    let arrayOfRecognizedTexts: [[RecognizedText]]
+//    let arrayOfRecognizedTexts: [[RecognizedText]]
+    let visionResult: VisionResult
     var observations: [Observation]
     
     var pendingObservations: [Observation] = []
@@ -12,15 +13,16 @@ class TableClassifier {
     /// Holds onto those that are single `Value`s that have already been used
     var discarded: [RecognizedText] = []
 
-    init(arrayOfRecognizedTexts: [[RecognizedText]], observations: [Observation] = []) {
-        self.arrayOfRecognizedTexts = arrayOfRecognizedTexts
+    init(visionResult: VisionResult, observations: [Observation] = []) {
+//        self.arrayOfRecognizedTexts = arrayOfRecognizedTexts
+        self.visionResult = visionResult
         self.observations = observations
     }
     
-    static func observations(from arrayOfRecognizedTexts: [[RecognizedText]], priorObservations observations: [Observation] = []) -> [Observation]
+    static func observations(from visionResult: VisionResult, priorObservations observations: [Observation] = []) -> [Observation]
     {
         TableClassifier(
-            arrayOfRecognizedTexts: arrayOfRecognizedTexts,
+            visionResult: visionResult,
             observations: observations)
         .getObservations()
     }
@@ -74,7 +76,7 @@ class TableClassifier {
 
         var candidates: [[RecognizedText]] = [[]]
         
-        for recognizedTexts in [arrayOfRecognizedTexts.first ?? []] {
+        for recognizedTexts in [visionResult.accurateRecognitionWithLanugageCorrection ?? []] {
             for text in recognizedTexts {
                 guard let _ = Value(fromString: text.string) else {
                     continue
@@ -117,7 +119,7 @@ class TableClassifier {
         var array: [RecognizedText] = [startingText]
         
         //TODO: Remove using only first array of texts
-        for recognizedTexts in [arrayOfRecognizedTexts.first ?? []] {
+        for recognizedTexts in [visionResult.accurateRecognitionWithLanugageCorrection ?? []] {
             /// Now go upwards to get nutrient-attribute texts in same column as it
             let textsAbove = recognizedTexts.filterSameColumn(as: startingText, preceding: true, removingOverlappingTexts: false).filter { !$0.string.isEmpty }.reversed()
             

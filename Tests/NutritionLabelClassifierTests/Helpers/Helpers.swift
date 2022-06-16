@@ -72,6 +72,45 @@ func arrayOfRecognizedTextsForTestCase(withId id: UUID) -> [[RecognizedText]]? {
     return [withLC, withoutLC, withFastRecognition]
 }
 
+func visionResultForTestCase_legacy(withId id: UUID) -> VisionResult? {
+    guard let arrays = arrayOfRecognizedTextsForTestCase(withId: id) else {
+        return nil
+    }
+    
+    var visionResult = VisionResult()
+    visionResult.accurateRecognitionWithLanugageCorrection = arrays[0]
+    visionResult.accurateRecognitionWithoutLanugageCorrection = arrays[1]
+    visionResult.fastRecognition = arrays[2]
+
+    return visionResult
+}
+
+var testImagesDirectory: URL {
+    URL.documents.appendingPathComponent("Test Images", isDirectory: true)
+}
+
+func imageForTestCase(withId id: UUID) -> UIImage? {
+    let imageUrl = testImagesDirectory.appendingPathComponent("\(id).jpg", isDirectory: false)
+    return UIImage(contentsOfFile: imageUrl.path)
+}
+
+//func visionResultForTestCase(withId id: UUID) -> VisionResult? {
+//    /// Get image
+//    guard let image = imageForTestCase(withId: id) else {
+//        return nil
+//    }
+//    
+//    
+//    
+//    var visionResult = VisionResult()
+//    visionResult.accurateRecognitionWithLanugageCorrection = arrays[0]
+//    visionResult.accurateRecognitionWithoutLanugageCorrection = arrays[1]
+//    visionResult.fastRecognition = arrays[2]
+//
+//    return visionResult
+//}
+
+
 func dataFrameWithTextIdsRemoved(from sourceDataFrame: DataFrame) -> DataFrame {
     var dataFrame = sourceDataFrame
     dataFrame.transformColumn("attribute") { (attributeText: AttributeText?) -> Attribute? in

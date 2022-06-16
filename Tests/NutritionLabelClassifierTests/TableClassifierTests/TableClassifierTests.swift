@@ -11,7 +11,7 @@ final class TableClassifierTests: XCTestCase {
     
     func testTableClassifier() throws {
         
-        try prepareTestCases()
+        try prepareTestCaseImages()
         
         for id in testCaseIds {
             
@@ -21,32 +21,47 @@ final class TableClassifierTests: XCTestCase {
                 }
             }
             
-            
             guard attributeExpectations.keys.contains(id.uuidString) else {
                 continue
             }
             
-            guard let array = arrayOfRecognizedTextsForTestCase(withId: id) else {
-                XCTFail("Couldn't get array of recognized texts for Test Case \(id)")
+            guard let image = imageForTestCase(withId: id) else {
+                XCTFail("Couldn't get image for Test Case \(id)")
                 return
             }
             
             currentTestCaseId = id
             print("🧮 Checking: \(id)")
             
-            let classifier = TableClassifier(arrayOfRecognizedTexts: array)
-            let attributes = classifier.getColumnsOfAttributes()
-            
-            if attributes == attributeExpectations[id.uuidString] {
-                print("🤖✅ \(id): \(attributes) as expected")
-            } else {
-                print("🤖❌ \(id)")
-                print("🤖❌ Expected: \(attributeExpectations[id.uuidString]!)")
-                print("🤖❌ Got back: \(attributes)")
-                print("🤖❌ ----")
+            let classifier = NutritionLabelClassifier(image: image, contentSize: CGSize(width: 428.0, height: 376.0))
+            classifier.onCompletion = {
+                
+                let start = CFAbsoluteTimeGetCurrent()
+                
+                let tableClassifier = TableClassifier(visionResult: classifier.visionResult)
+                let attributes = tableClassifier.getColumnsOfAttributes()
+                
+                if attributes == attributeExpectations[id.uuidString] {
+                    if let attributes = attributes {
+                        print("🤖✅ \(id): \(attributes) as expected (classification took: \(CFAbsoluteTimeGetCurrent()-start)s)")
+                    } else {
+                        print("🤖✅ \(id): nil as expected (classification took: \(CFAbsoluteTimeGetCurrent()-start)s)")
+                    }
+                } else {
+                    print("🤖❌ \(id)")
+                    if let expectation = attributeExpectations[id.uuidString]! {
+                        print("🤖❌ Expected: \(expectation)")
+                    }
+                    if let attributes = attributes {
+                        print("🤖❌ Got back: \(attributes)")
+                    }
+                    print("🤖❌ ----")
+                }
+                
+                XCTAssertEqual(attributes, attributeExpectations[id.uuidString], self.m("Attributes"))
             }
             
-            XCTAssertEqual(attributes, attributeExpectations[id.uuidString], m("Attributes"))
+            classifier.classify()
         }
     }
     
@@ -168,7 +183,7 @@ let attributeExpectations: [String: [[Attribute]]?] = [
         [.energy, .fat, .saturatedFat, .sugar, .dietaryFibre, .protein, .salt]
     ],
     "81344E05-FDC0-44D3-AA58-61259F3D2AE6": [
-        [.energy, .fat, .saturatedFat, .carbohydrate, .protein, .salt]
+        [.energy, .fat, .saturatedFat, .carbohydrate, .sugar, .dietaryFibre, .protein, .salt]
     ],
     "9671423C-3C8F-484F-A462-7584660C7149": [
         [.energy, .fat, .saturatedFat, .carbohydrate],
@@ -217,5 +232,5 @@ let attributeExpectations: [String: [[Attribute]]?] = [
     "BD53EFF6-2AF9-4FCA-8865-67CCB4BA9B69": nil,
 ]
 
-//let SingledOutTestCase: UUID? = UUID(uuidString: "AC1F7D24-296F-4346-883D-E10890938861")!
+//let SingledOutTestCase: UUID? = UUID(uuidString: "7648338E-8AC8-4C03-AAA1-AC8FC76E7368")!
 let SingledOutTestCase: UUID? = nil

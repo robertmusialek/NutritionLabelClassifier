@@ -72,11 +72,11 @@ extension Array where Element == RecognizedText {
 extension TableClassifier {
     
     var attributeTexts: [RecognizedText] {
-        arrayOfRecognizedTexts.reduce([]) { $0 + $1.attributeTexts }
+        visionResult.arrayOfTexts.reduce([]) { $0 + $1.attributeTexts }
     }
     
     var inlineAttributeTexts: [RecognizedText] {
-        arrayOfRecognizedTexts.reduce([]) { $0 + $1.inlineAttributeTexts }
+        visionResult.arrayOfTexts.reduce([]) { $0 + $1.inlineAttributeTexts }
     }
     
     var mostTextsAreInline: Bool {
@@ -84,7 +84,7 @@ extension TableClassifier {
         var inlineAttributes: [Attribute] = []
         
         /// Go through all recognized texts
-        for recognizedTexts in arrayOfRecognizedTexts {
+        for recognizedTexts in visionResult.arrayOfTexts {
             for text in recognizedTexts {
                 
                 /// Each time we detect a non-mineral, non-vitamin attribute for the first time—whether inline or not—add it to the `attributes` array
@@ -136,7 +136,7 @@ extension TableClassifier {
         
         var columns: [[AttributeText]] = []
         
-        for recognizedTexts in arrayOfRecognizedTexts {
+        for recognizedTexts in visionResult.arrayOfTexts {
             for text in recognizedTexts {
                 guard Attribute.haveNutrientAttribute(in: text.string) else {
                     continue
@@ -156,7 +156,8 @@ extension TableClassifier {
                 }
                 
                 /// Now see if we have any existing columns that is a subset of this column
-                if let index = columns.indexOfSubset(of: column) {
+                if let index = columns.indexOfSubset(of: column),
+                    columns[index].count < column.count {
                     /// Replace it
                     columns[index] = column
                 } else if let _ = columns.indexOfSuperset(of: column) {
@@ -204,7 +205,7 @@ extension TableClassifier {
         let BoundingBoxMinXDeltaThreshold = 0.20
         var array: [RecognizedText] = [startingText]
         
-        for recognizedTexts in arrayOfRecognizedTexts {
+        for recognizedTexts in visionResult.arrayOfTexts {
             /// Now go upwards to get nutrient-attribute texts in same column as it
             let textsAbove = recognizedTexts.filterColumn(of: startingText, preceding: true).filter { !$0.string.isEmpty }.reversed()
             

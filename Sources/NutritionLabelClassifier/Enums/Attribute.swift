@@ -284,7 +284,7 @@ public enum Attribute: String, CaseIterable {
         case .insolubleFibre:
             return Regex.insolubleFibre
         case .polyols:
-            return "polyols"
+            return "(polyols|polioli)"
         case .gluten:
             return #"^.*(?=gluten)(?!gluten free).*$"#
         case .starch:
@@ -430,7 +430,7 @@ public enum Attribute: String, CaseIterable {
         static let saturatedFatOptions = [
             "saturated",
             "satuwed", /// Vision typo
-            "of which saturates", "saturi", "saturados", "gras satures", "sat. fat", "kwasy nasycone", "grasi saturati"
+            "of which saturates", "saturi", "saturados", "gras satures", "sat. fat", "kwasy nasycone", "grasi saturati", "sociosios"
         ]
 
         static let totalFat = #"^.*(\#(totalFatOptions.joined(separator: "|"))).*$"#

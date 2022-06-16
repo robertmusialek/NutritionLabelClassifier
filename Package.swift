@@ -36,6 +36,7 @@ let package = Package(
             dependencies: ["NutritionLabelClassifier"],
             resources: [
                 .process("Test Data/NutritionClassifier-Test_Data.zip"),
+                .process("Test Data/NutritionClassifier-TestImages.zip"),
                 .process("Test Data/Input/1.csv"),
                 .process("Test Data/Input/2.csv"),
                 .process("Test Data/Input/3.csv"),
