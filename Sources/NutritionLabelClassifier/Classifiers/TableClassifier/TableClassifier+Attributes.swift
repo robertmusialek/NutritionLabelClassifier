@@ -233,6 +233,9 @@ extension TableClassifier {
                     if skipPassUsed {
                         print("    ✋🏽 ending search because no nutrient attributes can be detected in string AND skip pass was used")
                         break
+                    } else if text.string.terminatesColumnWiseAttributeSearch {
+                        print("    ✋🏽 ending search because cannot use skipPass")
+                        break
                     } else {
                         print("    ignoring and using up skipPass")
                         skipPassUsed = true
@@ -272,6 +275,9 @@ extension TableClassifier {
                 guard text.string.containsNutrientOrTitleAttributes else {
                     if skipPassUsed {
                         print("    ✋🏽 ending search because no nutrient attributes can be detected in string AND skip pass was used")
+                        break
+                    } else if text.string.terminatesColumnWiseAttributeSearch {
+                        print("    ✋🏽 ending search because cannot use skipPass")
                         break
                     } else {
                         print("    ignoring and using up skipPass")
@@ -314,6 +320,14 @@ extension String {
     
     var containsNutrientAttributes: Bool {
         Attribute.haveNutrientAttribute(in: self)
+    }
+    
+    var terminatesColumnWiseAttributeSearch: Bool {
+        /// Keep adding lists of string that would stop the search immediately by ignoring the `skipPass` even if available
+        if self.matchesRegex(#"daily value"#) {
+            return true
+        }
+        return false
     }
 }
 extension Attribute {

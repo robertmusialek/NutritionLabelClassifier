@@ -312,7 +312,7 @@ public enum Attribute: String, CaseIterable {
         case .addedSugar:
             return Regex.addedSugar
         case .calcium:
-            return #"calcium"#
+            return #"calcium(?! citrate)"#
         case .iron:
             return #"(^| )iron"#
         case .potassium:
