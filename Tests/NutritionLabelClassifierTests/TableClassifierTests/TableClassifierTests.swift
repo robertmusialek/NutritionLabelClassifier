@@ -13,6 +13,9 @@ final class TableClassifierTests: XCTestCase {
         
         try prepareTestCaseImages()
         
+        var numberOfPassedTests = 0
+        var numberOfFailedTests = 0
+        
         for id in testCaseIds {
             
             if let singledOutTestCase = SingledOutTestCase {
@@ -48,6 +51,7 @@ final class TableClassifierTests: XCTestCase {
                     } else {
                         print("🤖✅ \(id): nil as expected (classification took: \(CFAbsoluteTimeGetCurrent()-start)s)")
                     }
+                    numberOfPassedTests += 1
                 } else {
                     print("🤖❌ \(id)")
                     if let expectation = attributeExpectations[id.uuidString]! {
@@ -57,6 +61,7 @@ final class TableClassifierTests: XCTestCase {
                         print("🤖❌ Got back: \(attributes)")
                     }
                     print("🤖❌ ----")
+                    numberOfFailedTests += 1
                 }
                 
                 XCTAssertEqual(attributes, attributeExpectations[id.uuidString], self.m("Attributes"))
@@ -64,6 +69,9 @@ final class TableClassifierTests: XCTestCase {
             
             classifier.classify()
         }
+        
+        print("🤖 Failed: \(numberOfPassedTests) tests")
+        print("🤖 Passed: \(numberOfPassedTests) tests")
     }
     
     func m(_ message: String) -> String {
@@ -207,6 +215,27 @@ let attributeExpectations: [String: [[Attribute]]?] = [
     "AC1F7D24-296F-4346-883D-E10890938861": [
         [.energy, .fat, .saturatedFat, .carbohydrate, .sugar, .polyols, .protein, .salt]
     ],
+    "413A3118-6D94-4158-8B31-FBC3AAA47FCE": [
+        [.energy, .protein, .carbohydrate, .sugar, .fat, .transFat, .saturatedFat]
+    ],
+    "DE476A74-8174-4E9C-81DA-450F578F039D": [
+        [.energy, .fat, .saturatedFat, .carbohydrate, .sugar, .protein, .salt]
+    ],
+    "8CE7C875-BF15-42A1-A49D-A216D3329C9A": [
+        [.energy, .fat, .saturatedFat, .carbohydrate, .sugar, .protein, .salt]
+    ],
+    "81942184-145C-4858-884A-8A76B9BD6498": [
+        [.energy, .protein, .gluten, .fat, .saturatedFat, .carbohydrate, .sugar, .sodium]
+    ],
+    "75C66881-51E5-4A42-92E6-F3B3953BC8E6": [
+        [.energy, .fat, .saturatedFat, .monounsaturatedFat, .polyunsaturatedFat, .transFat, .cholesterol, .carbohydrate, .sugar, .dietaryFibre, .protein, .salt, .sodium]
+    ],
+    "9C26D1D5-50B2-4933-B906-29824617FD96": [
+        [.energy, .fat, .saturatedFat, .monounsaturatedFat, .polyunsaturatedFat, .transFat, .cholesterol, .carbohydrate, .sugar, .dietaryFibre, .protein, .salt, .sodium]
+    ],
+    "1B51A831-FE9C-4752-B526-0ED7823EA591": [
+        [.energy, .fat, .saturatedFat, .monounsaturatedFat, .polyunsaturatedFat, .transFat, .cholesterol, .carbohydrate, .sugar, .dietaryFibre, .protein, .salt, .sodium]
+    ],
     "3A7D1894-FD50-4226-8A97-8471F4E34E89": nil,
     "4CF0CBA5-C746-4844-BF54-27A92C808280": nil,
     "5410D64B-4A8D-4183-8C81-EC82ABBFA648": nil,
@@ -231,7 +260,8 @@ let attributeExpectations: [String: [[Attribute]]?] = [
     "7A7E14B8-EFA8-4140-987F-65439B83D99A": nil,
     "713A721E-A470-4DA8-B44E-E939FEF9777A": nil,
     "BD53EFF6-2AF9-4FCA-8865-67CCB4BA9B69": nil,
+    "D8809685-A90E-4756-BCA1-79B2D8C0D090": nil,
 ]
 
-//let SingledOutTestCase: UUID? = UUID(uuidString: "2184C983-5761-4F8F-BE7A-E6771E963FFF")!
+//let SingledOutTestCase: UUID? = UUID(uuidString: "1B51A831-FE9C-4752-B526-0ED7823EA591")!
 let SingledOutTestCase: UUID? = nil

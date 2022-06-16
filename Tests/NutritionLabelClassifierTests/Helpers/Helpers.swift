@@ -19,7 +19,7 @@ let testCasesForColumnSpanningHeader: [(input: String, header1: HeaderString?, h
     ("Nutritional Values (Typical) Per 100 g Per serving (125 g)", .per100, .perServing(serving: "serving (125 g)"))
 ]
 
-var testCaseIds: [UUID] {
+var testCaseIds_legacy: [UUID] {
     let url = URL.documents
         .appendingPathComponent("Test Data", isDirectory: true)
         .appendingPathComponent("Test Cases", isDirectory: true)
@@ -32,6 +32,20 @@ var testCaseIds: [UUID] {
         files = []
     }
     return files.compactMap { UUID(uuidString: $0.lastPathComponent.replacingOccurrences(of: ".csv", with: "")) }
+}
+
+var testCaseIds: [UUID] {
+    let files: [URL]
+    do {
+        files = try FileManager.default.contentsOfDirectory(
+            at: testImagesDirectory,
+            includingPropertiesForKeys: nil
+        )
+    } catch {
+        print("Error getting Test Case Files: \(error)")
+        files = []
+    }
+    return files.compactMap { UUID(uuidString: $0.lastPathComponent.replacingOccurrences(of: ".jpg", with: "")) }
 }
 
 func arrayOfRecognizedTextsForTestCase(_ testCase: Int) -> [[RecognizedText]]? {

@@ -304,7 +304,7 @@ public enum Attribute: String, CaseIterable {
             return Regex.cholesterol
             
         case .salt:
-            return #"(?<!less of )(salt|salz|sel|sare)([^,]|$)"#
+            return #"(?<!less of )(salt|salz|[^A-z]sel|sare)([^,]|\/|$)"#
         case .sodium:
             return #"sodium"#
         case .sugar:
