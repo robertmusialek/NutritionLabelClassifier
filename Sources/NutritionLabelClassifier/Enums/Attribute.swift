@@ -95,7 +95,7 @@ public enum Attribute: String, CaseIterable {
     }
     
     func shouldIgnoreAttributeIfOnSameString(as attribute: Attribute) -> Bool {
-        if self.isVitamin {
+        if self == .riboflavin {
             return attribute.isVitamin
         }
         return false

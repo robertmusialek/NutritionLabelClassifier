@@ -2526,16 +2526,6 @@ let validAttributeTestCases: [Attribute: [String]] = [
     
     //MARK: - Folate
     .folate: [
-        "IRON, THIAMINE MONON",
-        "IRON, THIAMINE MOlIQli",
-        "Thiamin",
-        "Thiamin (Vitamin B1 from Organic Food Blend)",
-        "Thiamin (v",
-        "Thiamin (vitamin Bl from Organic Food Blend) 1.56 mg",
-        "Thiamin 03m gEN",
-        "Thiamin 03mg3N",
-        "Thiamin 2%",
-        "vitamin B2 (riboflavin), vitamin B1 (thiamin",
     ],
     
     //MARK: - Folic Acid
