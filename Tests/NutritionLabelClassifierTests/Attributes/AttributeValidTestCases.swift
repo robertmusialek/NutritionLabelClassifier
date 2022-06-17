@@ -2526,6 +2526,10 @@ let validAttributeTestCases: [Attribute: [String]] = [
     
     //MARK: - Folate
     .folate: [
+        "Folate",
+        "Folate (from Organic Food Blend)",
+        "Folate 100 mg, Ei",
+        "Folate 100mg, tEi",
     ],
     
     //MARK: - Folic Acid

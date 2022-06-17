@@ -432,7 +432,7 @@ extension Attribute {
         for attribute in Self.allCases {
             guard let regex = attribute.regex else { continue }
             if let match = matches(for: regex, in: string.cleanedAttributeString)?.first {
-                print("🧬 \(attribute.rawValue): \(string)")
+//                print("🧬 \(attribute.rawValue): \(string)")
                 array.append((attribute, match.position))
             }
         }
