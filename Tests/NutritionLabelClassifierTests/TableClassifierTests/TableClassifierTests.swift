@@ -426,10 +426,10 @@ let attributeExpectations: [String: [[Attribute]]?] = [
         [.energy, .protein, .fat, .saturatedFat, .carbohydrate, .sugar, .sodium]
     ],
     "E3BAC0B0-8E46-4C97-A67A-9AFBE5E8ACF7": [
-        [.energy, .fat, .saturatedFat, .carbohydrate, .sugar, .dietaryFibre, .protein, .salt]
+        [.energy, .fat, .saturatedFat, .carbohydrate, .sugar, .dietaryFibre, .protein, .salt, .transFat]
     ],
     "8C7C1D3C-EA76-41D3-852C-4191AC12D28A": [
-        [.energy, .fat, .saturatedFat, .carbohydrate, .sugar, .dietaryFibre, .protein, .salt]
+        [.energy, .fat, .saturatedFat, .carbohydrate, .sugar, .dietaryFibre, .protein, .salt, .transFat, .sodium]
     ],
     
     "3C53CC91-34D1-46EE-92BE-328ABDC20342": nil,
@@ -480,5 +480,5 @@ let attributeExpectations: [String: [[Attribute]]?] = [
     "D8809685-A90E-4756-BCA1-79B2D8C0D090": nil,
 ]
 
-let SingledOutTestCase: UUID? = UUID(uuidString: "AE8C75F6-D65E-4F5F-A2D9-47FC81C158B9")!
-//let SingledOutTestCase: UUID? = nil
+//let SingledOutTestCase: UUID? = UUID(uuidString: "8C7C1D3C-EA76-41D3-852C-4191AC12D28A")!
+let SingledOutTestCase: UUID? = nil

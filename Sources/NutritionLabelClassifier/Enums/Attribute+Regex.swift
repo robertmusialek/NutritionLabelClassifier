@@ -136,12 +136,14 @@ extension Attribute {
             "sugar", "sucres", "zucker", "zuccheri", "dont sucres", "din care zaharuri", "azucares", "waarvan suikers", "sigar"
         ]
         
-        static let totalSugar = #"^.*(\#(totalSugarOptions.joined(separator: "|")))([^,]|).*$"#
+        static let totalSugar = #"^.*(\#(totalSugarOptions.joined(separator: "|")))(?!,).*$"#
         static let addedSugar = #"^.*(added sugar(s|)|includes [0-9,.]+ (grams|g)).*$"#
         static let sugar = #"^(?=\#(totalSugar))(?!\#(addedSugar)).*$"#
         
         static let dietaryFibreOptions = [
-            "(dietary |)fib(re|er)", "fibra", "voedingsvezel", "ballaststoffe"
+            "(dietary |)fib(re|er)", "fibra", "voedingsvezel",
+            "ballaststoffe",
+            "ballaststottest", "libre", "libron" /// Vision Errors
         ]
         static let solubleFibreOptions = [
             "(^|[ ])soluble fib(re|er)"

@@ -4,7 +4,7 @@ import XCTest
 
 final class AttributeFatTests: XCTestCase {
 
-    func testAttributeFat() throws {
+    func _testAttributeFat() throws {
         for testCase in validCases {
             XCTAssertTrue(Attribute.detect(in: testCase).contains(.fat), "\(testCase) failed to be recognized as containing fat")
         }

@@ -432,9 +432,7 @@ extension Attribute {
         for attribute in Self.allCases {
             guard let regex = attribute.regex else { continue }
             if let match = matches(for: regex, in: string.cleanedAttributeString)?.first {
-                if attribute == .fat {
-//                    print("🧬 \(string)")
-                }
+                print("🧬 \(attribute.rawValue): \(string)")
                 array.append((attribute, match.position))
             }
         }
