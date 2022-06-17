@@ -61,7 +61,7 @@ public class NutritionLabelClassifier {
                     )
                     
                     print("👁 fast recognition finished by: \(CFAbsoluteTimeGetCurrent()-start)s, took \(CFAbsoluteTimeGetCurrent()-fastStart)s")
-                    print("🤖👁 extraction took: \(CFAbsoluteTimeGetCurrent()-start)s")
+                    print("👁 extraction took: \(CFAbsoluteTimeGetCurrent()-start)s")
                     self.onCompletion?()
                 }
             }

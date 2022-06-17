@@ -14,12 +14,29 @@ extension Array where Element == AttributeText {
     var attributeDescription: String {
         map{ $0.attribute }.description
     }
+    
+    func contains(_ attribute: Attribute) -> Bool {
+        contains(where: { $0.attribute == attribute })
+    }
+    
+    func containsAnyAttributeIn(_ array: [AttributeText]) -> Bool {
+        contains(where: { array.map({$0.attribute}).contains($0.attribute) })
+    }
 }
 
 extension Array where Element == [AttributeText] {
     
     var attributeDescription: String {
         map { $0.map { $0.attribute } }.description
+    }
+    
+    func containsArrayWithAnAttributeFrom(_ arrayToCheck: [AttributeText]) -> Bool {
+        for array in self {
+            if array.containsAnyAttributeIn(arrayToCheck) {
+                return true
+            }
+        }
+        return false
     }
     
     func indexOfSuperset(of array: [AttributeText]) -> Int? {
@@ -151,23 +168,64 @@ extension TableClassifier {
                 }
 
                 /// First, make sure the column is at least the threshold of attributes long
-                guard column.count >= 3 else {
-                    continue
-                }
+//                guard column.count >= 3 else {
+//                    continue
+//                }
                 
-                /// Now see if we have any existing columns that is a subset of this column
-                if let index = columns.indexOfSubset(of: column),
-                    columns[index].count < column.count {
-                    /// Replace it
-                    columns[index] = column
-                } else if let _ = columns.indexOfSuperset(of: column) {
-                    /// This `column` is a subset of one of the `columns`, so ignore it
-                } else if let index = columns.indexOfArrayContainingAnyAttribute(in: column) {
-                    /// This `column` has attributes that another added `column has`
-                    if columns[index].count < column.count {
-                        /// This column has more attributes, so replace the smaller one with it
-                        columns[index] = column
+                if columns.contains(where: {
+                    $0.containsAnyAttributeIn(column) && $0.count <= column.count
+                }) {
+                    /// filter out the columns
+                    columns = columns.filter {
+                        !$0.containsAnyAttributeIn(column) ||
+                        $0.count >= column.count
                     }
+                    
+//                /// Now see if we have any existing columns that is a subset of this column
+//                if let index = columns.indexOfSubset(of: column), columns[index].count < column.count {
+//
+//                    if columns.containsArrayWithAnAttributeFrom(column) {
+//                        /**
+//                         Consider the following case
+//                         ```
+//                         (lldb) po column.map { $0.attribute }
+//                         ▿ 8 elements
+//                           - 0 : Energy
+//                           - 1 : Protein
+//                           - 2 : Carbohydrate
+//                           - 3 : Total Sugars
+//                           - 4 : Fat
+//                           - 5 : Saturated Fat
+//                           - 6 : Dietary Fibre
+//                           - 7 : Sodium
+//
+//                         (lldb) po columns.map { $0.map { $0.attribute } }
+//                         ▿ 2 elements
+//                           ▿ 0 : 1 element
+//                             - 0 : Total Sugars
+//                           ▿ 1 : 2 elements
+//                             - 0 : Fat
+//                             - 1 : Gluten
+//                         ```
+//                         So we need to replace both of them in this case and only retain the first one
+//                         */
+//
+//                        /// Remove the column
+//                        let _ = columns.remove(at: index)
+//                    } else {
+//                        /// Replace it
+//                        columns[index] = column
+//                    }
+//
+//
+//                } else if columns.containsArrayWithAnAttributeFrom(column) {
+//                    /// Ignore it
+//                } else if let index = columns.indexOfArrayContainingAnyAttribute(in: column) {
+//                    /// This `column` has attributes that another added `column has`
+//                    if columns[index].count < column.count {
+//                        /// This column has more attributes, so replace the smaller one with it
+//                        columns[index] = column
+//                    }
                 } else {
                     /// Otherwise, set it as a new column
                     columns.append(column)
@@ -182,8 +240,12 @@ extension TableClassifier {
             $0.map { $0.attribute }
         }
         
-        print(columnsOfAttributes)
-        return columnsOfAttributes
+        /// If we've got more than one column, remove any that's less than 3
+        if columnsOfAttributes.count > 1 {
+            return columnsOfAttributes.filter { $0.count >= 3 }
+        } else {
+            return columnsOfAttributes
+        }
     }
     
     func getUniqueAttributeTextsFrom(_ texts: [RecognizedText]) -> [AttributeText]? {
@@ -193,6 +255,7 @@ extension TableClassifier {
             for attribute in attributes {
                 /// Make sure each `Attribute` detected in this text hasn't already been added, and is also a nutrient (for edge cases where strings containing both a nutrient and a serving (or other type) of attribute may have been picked up and then the nutrient attribute disregarded
                 guard !attributeTexts.contains(where: { $0.attribute == attribute }),
+                      !attributeTexts.contains(where: { $0.attribute.isSameAttribute(as: attribute) }),
                       attribute.isNutrientAttribute
                 else { continue }
                 
@@ -334,18 +397,29 @@ extension Attribute {
     
     /// Detects `Attribute`s in a provided `string` in the order that they appear
     static func detect(in string: String) -> [Attribute] {
-        var attributesAndPositions: [(attribute: Attribute, positionOfMatch: Int)] = []
+        var array: [(attribute: Attribute, positionOfMatch: Int)] = []
         
         for attribute in Self.allCases {
             guard let regex = attribute.regex else { continue }
             if let match = matches(for: regex, in: string.cleanedAttributeString)?.first {
-                attributesAndPositions.append((attribute, match.position))
+                if attribute == .fat {
+//                    print("🧬 \(string)")
+                }
+                array.append((attribute, match.position))
             }
         }
         
-        return attributesAndPositions
-            .sorted(by: { $0.positionOfMatch < $1.positionOfMatch })
-            .map { $0.attribute }
+        array.sort(by: { $0.positionOfMatch < $1.positionOfMatch })
+        
+        var filtered: [(attribute: Attribute, positionOfMatch: Int)] = []
+        for i in array.indices {
+            let element = array[i]
+            guard !filtered.contains(where: { element.attribute.shouldIgnoreAttributeIfOnSameString(as: $0.attribute)}) else {
+                continue
+            }
+            filtered.append(element)
+        }
+        return filtered.map { $0.attribute }
     }
 
     static func haveAttributes(in string: String) -> Bool {

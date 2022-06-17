@@ -62,20 +62,56 @@ public enum Attribute: String, CaseIterable {
     case potassium
     case cobalamin
     case magnesium
-    case thiamin
-    case riboflavin
-    case niacin
     case zinc
+    case iodine
+    case selenium
+    case manganese
+    case chromium
     
+    case thiamin
     case folate
     case folicAcid
+    case biotin
+    case pantothenicAcid
+    case riboflavin
+    case niacin
     case vitaminA
     case vitaminC
     case vitaminD
     case vitaminB1
+    case vitaminB3
     case vitaminB6
     case vitaminB12
+    case vitaminE
+    case vitaminK
+    case vitaminK2
     
+    static var vitamins: [Attribute] {
+        [.thiamin, .folate, .folicAcid, .biotin, .pantothenicAcid, .riboflavin, .niacin, .vitaminA, .vitaminC, .vitaminD, .vitaminB1, .vitaminB3, .vitaminB6, .vitaminB12, .vitaminE, .vitaminK, .vitaminK2]
+    }
+    
+    var isVitamin: Bool {
+        Self.vitamins.contains(self)
+    }
+    
+    func shouldIgnoreAttributeIfOnSameString(as attribute: Attribute) -> Bool {
+        if self.isVitamin {
+            return attribute.isVitamin
+        }
+        return false
+    }
+    
+    func isSameAttribute(as attribute: Attribute) -> Bool {
+        switch self {
+        case .thiamin:
+            return attribute == .vitaminB1
+        case .vitaminB1:
+            return attribute == .thiamin
+        default:
+            return false
+        }
+    }
+
     var isCoreTableNutrient: Bool {
         switch self {
         case .protein, .carbohydrate, .gluten, .sugar, .addedSugar, .polyols, .starch, .dietaryFibre, .solubleFibre, .insolubleFibre, .fat, .saturatedFat, .polyunsaturatedFat, .monounsaturatedFat, .transFat, .cholesterol, .salt, .sodium:
@@ -259,98 +295,7 @@ public enum Attribute: String, CaseIterable {
         }
     }
     
-    var regex: String? {
-        switch self {
-        case .tableElementNutritionFacts:
-            return #"nutrition facts"#
-        case .tableElementSkippable:
-            return #"^(vitamins (&|and) minerals|of which|alimentaires|g)$"#
-        case .servingsPerContainerAmount:
-            return #"(?:servings |serving5 |)per (container|pack(age|)|tub|pot)"#
-        case .servingAmount:
-            return #"((serving size|size:|dose de referencia)|^size$)"#
-        case .energy:
-            return Regex.energy
-            
-        case .protein:
-            return #"(?<!high)(protein|proteine|proteines)(?! (bar|bas))"#
-
-        case .carbohydrate:
-            return #".*(carb|glucide(s|)|(h|b)(y|v)drate).*"#
-        case .dietaryFibre:
-            return Regex.dietaryFibre
-        case .solubleFibre:
-            return Regex.solubleFibre
-        case .insolubleFibre:
-            return Regex.insolubleFibre
-        case .polyols:
-            return "(polyols|polioli)"
-        case .gluten:
-            return #"^.*gluten(?! (free|(b|d)evatten)).*$"#
-        case .starch:
-            return Regex.starch
-
-        case .fat:
-            return Regex.fat
-        case .saturatedFat:
-            return Regex.saturatedFat
-        case .monounsaturatedFat:
-            return Regex.monounsaturatedFat
-        case .polyunsaturatedFat:
-            return Regex.polyunsaturatedFat
-        case .transFat:
-            return Regex.transFat
-        case .cholesterol:
-            return Regex.cholesterol
-            
-        case .salt:
-            return #"(?<!less of )(salt|salz|[^A-z]sel|sare)([^,]|\/|$)"#
-        case .sodium:
-            return #"sodium"#
-        case .sugar:
-            return Regex.sugar
-        case .addedSugar:
-            return Regex.addedSugar
-        case .calcium:
-            return #"calcium(?! citrate)"#
-        case .iron:
-            return #"(^| )iron"#
-        case .potassium:
-            return #"potas"#
-        case .magnesium:
-            return #"magnesium"#
-        case .zinc:
-            return #"zinc"#
-        case .thiamin:
-            return #"thiamin"#
-        case .riboflavin:
-            return #"riboflavin"#
-        case .niacin:
-            return #"niacin"#
-        
-        case .folicAcid:
-            return #"folic acid"#
-        case .folate:
-            return #"folate"#
-            
-        case .cobalamin: /// Vitamin B12
-            return #"cobalamin"#
-        case .vitaminA:
-            return Regex.vitamin("a")
-        case .vitaminC:
-            return Regex.vitamin("c")
-        case .vitaminD:
-            return Regex.vitamin("d")
-        case .vitaminB6:
-            return Regex.vitamin("(b6|86)")
-        case .vitaminB1:
-            return Regex.vitamin("(b1|81)")
-        case .vitaminB12:
-            return Regex.vitamin("(b12|812)")
-        default:
-            return nil
-        }
-    }
+    
     
     var supportsUnitLessValues: Bool {
         switch self {
@@ -387,76 +332,6 @@ public enum Attribute: String, CaseIterable {
             return false
         default:
             return true
-        }
-    }
-    
-    struct Regex {
-        static let amountPerServing = #"amount per serving"#
-        static let amountPer100g = #"amount per 100[ ]*g"#
-        static let amountPer100ml = #"amount per 100[ ]*ml"#
-
-        static let calories = #"calories"#
-        
-        static let energy_legacy = #"^(.*energy.*|.*energi.*|.*calories.*|.*energie.*|.*valoare energetica.*|y kcal)$"#
-        static let energyOptions = [
-            ".*energy.*", ".*energi.*", ".*calories.*", ".*energie.*", ".*valoare energetica.*", "y kcal"
-        ]
-        static let energyOnly = #"^(\#(energyOptions.joined(separator: "|")))$"#
-        static let energyOutOfContext = #".*calories a day.*"#
-        static let energy = #"^(?=\#(energyOnly))(?!\#(energyOutOfContext)).*$"#
-//        static let energy = #"^(?=\#(energyOnly)).*$"#
-
-        static let totalSugarOptions = [
-            "sugar", "sucres", "zucker", "zuccheri", "dont sucres", "din care zaharuri", "azucares", "waarvan suikers", "sigar"
-        ]
-        
-        static let totalSugar = #"^.*(\#(totalSugarOptions.joined(separator: "|")))([^,]|).*$"#
-        static let addedSugar = #"^.*(added sugar(s|)|includes [0-9,.]+ (grams|g)).*$"#
-        static let sugar = #"^(?=\#(totalSugar))(?!\#(addedSugar)).*$"#
-        
-        static let dietaryFibreOptions = [
-            "(dietary |)fib(re|er)", "fibra", "voedingsvezel"
-        ]
-        static let solubleFibreOptions = [
-            "(^|[ ])soluble fib(re|er)"
-        ]
-        static let insolubleFibreOptions = [
-            "insoluble fib(re|er)"
-        ]
-        static let dietaryFibreOnly = #"^.*(\#(dietaryFibreOptions.joined(separator: "|"))).*$"#
-        static let solubleFibre = #"^.*(\#(solubleFibreOptions.joined(separator: "|"))).*$"#
-        static let insolubleFibre = #"^.*(\#(insolubleFibreOptions.joined(separator: "|"))).*$"#
-        
-        static let dietaryFibre = #"^(?=\#(dietaryFibreOnly))(?!\#(solubleFibre))(?!\#(insolubleFibre)).*$"#
-        
-        /// Negative lookbehind makes sure starch isn't preceded by tapioca
-        static let starch = #"^(of which |)starch$"#
-        
-        static let totalFatOptions = [
-            "fa(t|i)", "fett", "grassi", "lipidos", "grasa total", "grasimi"
-        ]
-
-        static let saturatedFatOptions = [
-            "saturated",
-            "satuwed", /// Vision typo
-            "saturates",
-            "of which saturates", "saturi", "saturados", "gras satures", "sat. fat", "kwasy nasycone", "grasi saturati", "sociosios"
-        ]
-
-        static let totalFat = #"^.*(\#(totalFatOptions.joined(separator: "|"))).*$"#
-        static let saturatedFatOnly = #"^.*(\#(saturatedFatOptions.joined(separator: "|"))).*$"#
-        static let transFat = #"^.*trans.*$"#
-        static let monounsaturatedFat = #"^.*mono(-|)unsaturat.*$"#
-        static let polyunsaturatedFat = #"^.*poly(-|)unsaturat.*$"#
-
-        static let saturatedFat = #"^(?=\#(saturatedFatOnly))(?!\#(monounsaturatedFat))(?!\#(polyunsaturatedFat)).*$"#
-
-        static let fat = #"^(?=\#(totalFat))(?!\#(saturatedFat))(?!\#(transFat))(?!\#(polyunsaturatedFat))(?!\#(monounsaturatedFat)).*$"#
-
-        static let cholesterol = #"cholest"#
-        
-        static func vitamin(_ letter: String) -> String {
-            #"vit(amin[ ]+|\.[ ]*|[ ]+)\#(letter)( |$)"#
         }
     }
 }
@@ -587,6 +462,8 @@ extension Attribute: CustomStringConvertible {
             return "Vitamin D"
         case .vitaminB6:
             return "Vitamin B6"
+        case .vitaminB3:
+            return "Vitamin B3"
             
         case .thiamin:
             return "Thiamin"
@@ -608,6 +485,25 @@ extension Attribute: CustomStringConvertible {
             return "Soluble Fibre"
         case .insolubleFibre:
             return "Insoluble Fibre"
+            
+        case .iodine:
+            return "Iodine"
+        case .selenium:
+            return "Selenium"
+        case .manganese:
+            return "Manganese"
+        case .chromium:
+            return "Chromium"
+        case .biotin:
+            return "Biotin"
+        case .pantothenicAcid:
+            return "Pantothenic Acid"
+        case .vitaminE:
+            return "Vitamin E"
+        case .vitaminK:
+            return "Vitamin K"
+        case .vitaminK2:
+            return "Vitamin K2"
         }
     }
 }

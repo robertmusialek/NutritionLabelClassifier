@@ -46,10 +46,11 @@ final class TableClassifierTests: XCTestCase {
                 let attributes = tableClassifier.getColumnsOfAttributes()
                 
                 if attributes == attributeExpectations[id.uuidString] {
+                    print("🤖✅ \(id)")
                     if let attributes = attributes {
-                        print("🤖✅ \(id): \(attributes) as expected (classification took: \(CFAbsoluteTimeGetCurrent()-start)s)")
+//                        print("🤖✅ \(id): \(attributes) as expected (classification took: \(CFAbsoluteTimeGetCurrent()-start)s)")
                     } else {
-                        print("🤖✅ \(id): nil as expected (classification took: \(CFAbsoluteTimeGetCurrent()-start)s)")
+//                        print("🤖✅ \(id): nil as expected (classification took: \(CFAbsoluteTimeGetCurrent()-start)s)")
                     }
                     numberOfPassedTests += 1
                 } else {
@@ -328,7 +329,65 @@ let attributeExpectations: [String: [[Attribute]]?] = [
     "E790FF79-2551-440E-8C80-ECBCF069881E": [
         [.energy, .fat, .saturatedFat, .carbohydrate, .sugar, .polyols, .protein, .salt]
     ],
+    
+    "904EDDD5-A997-4778-A202-0B6A20629058": [
+        [.energy, .fat, .saturatedFat, .transFat, .cholesterol, .sodium, .carbohydrate, .dietaryFibre, .sugar, .protein, .vitaminA, .calcium]
+    ],
+    "E2EF4CFB-3B79-4DFE-9215-A13AFADC858D": [
+        [.energy, .fat, .saturatedFat, .transFat, .cholesterol, .sodium, .carbohydrate, .dietaryFibre, .sugar, .protein, .vitaminA, .calcium]
+    ],
+    
+    "352BBEBB-C688-4A8F-85E1-CB2C0B059E81": [
+        [.vitaminA, .vitaminC, .vitaminD, .vitaminE, .vitaminK, .thiamin, .riboflavin, .niacin, .vitaminB6, .folate, .vitaminB12, .biotin, .pantothenicAcid, .iodine, .zinc, .selenium]
+    ],
+    
+    "97F9F6CB-6F27-47A5-BEAD-D2F901D78C2A": [
+        [.thiamin, .riboflavin, .niacin, .vitaminB6, .folate, .vitaminB12, .biotin, .pantothenicAcid, .iodine, .zinc, .selenium, .manganese, .chromium, .vitaminK2]
+    ],
+    
+    "C86F6FD2-ADA2-45C1-818F-AD4A85DC0611": [
+        [.energy, .protein, .carbohydrate, .sugar, .fat, .saturatedFat, .dietaryFibre, .sodium]
+    ],
+    
+    "31D0CA8B-5069-4AB3-B865-47CD1D15D879": [
+        [.fat, .saturatedFat, .transFat, .cholesterol, .sodium, .salt, .carbohydrate, .dietaryFibre, .sugar, .addedSugar, .protein]
+    ],
+    
+    "0B9B630F-C388-4DB6-BA7E-221D14F83B26": [
+        [.magnesium]
+    ],
+    
+    "233BE115-FB25-42CC-BCF5-A2E34CC473B6": [
+        [.energy, .protein, .fat, .carbohydrate, .sugar, .sodium, .vitaminB3, .vitaminB6, .vitaminB12]
+    ],
+    "6F8BBF90-AD9D-460C-B0D2-AD5C7FEE08B7": [
+        [.energy, .protein, .fat, .saturatedFat, .carbohydrate, .sugar, .sodium]
+    ],
+    
+    "9D43F6AC-7D3B-498F-AF10-991649E94B74": [
+        [.energy, .fat, .saturatedFat, .carbohydrate, .sugar, .dietaryFibre, .protein, .salt]
+    ],
+    "3078556E-1AC2-4DFF-8420-0BAB5597DCAC": [
+        [.energy, .fat, .saturatedFat, .carbohydrate, .sugar, .dietaryFibre, .protein, .salt]
+    ],
+    "06D9335B-FED5-48BF-8A95-5D3AA1569289": [
+        [.energy, .fat, .saturatedFat, .carbohydrate, .sugar, .dietaryFibre, .protein, .salt]
+    ],
+    "32558479-A279-461B-A736-7FE7D14E859A": [
+        [.energy, .fat, .saturatedFat, .carbohydrate, .sugar, .dietaryFibre, .protein, .salt]
+    ],
+    "C9863E9C-792E-4014-8640-8E1D39EFAC59": [
+        [.energy, .fat, .saturatedFat, .carbohydrate, .sugar, .dietaryFibre, .protein, .salt]
+    ],
 
+    "FCA442D0-9F3A-4AF9-9460-D3075C7FB2A0": nil,
+    "D65B73DA-E3E0-4968-83EF-06EA3E629A20": nil,
+    "6C3008A5-A6B0-438D-9332-827B52421643": nil,
+    "CC5957B2-1208-4A85-A728-5EABA1348DB9": nil,
+    "BB071452-B8C0-492D-890E-122BDBBF5909": nil,
+    "D3E7433B-AF49-4ACB-84EC-8366795CE048": nil,
+    
+    "18E7934B-8B75-4E60-A041-7837D1E3DC27": nil,
     "3A7D1894-FD50-4226-8A97-8471F4E34E89": nil,
     "4CF0CBA5-C746-4844-BF54-27A92C808280": nil,
     "5410D64B-4A8D-4183-8C81-EC82ABBFA648": nil,
@@ -356,5 +415,6 @@ let attributeExpectations: [String: [[Attribute]]?] = [
     "D8809685-A90E-4756-BCA1-79B2D8C0D090": nil,
 ]
 
-//let SingledOutTestCase: UUID? = UUID(uuidString: "D24F62B2-6DC5-4249-B0A3-3023C0DEB711")!
+//let SingledOutTestCase: UUID? = UUID(uuidString: "C05EDF6E-BB82-49FB-B745-1B8984987762")!
 let SingledOutTestCase: UUID? = nil
+
