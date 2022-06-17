@@ -3,151 +3,10 @@ import VisionSugar
 import TabularData
 import UIKit
 
-extension Array where Element == AttributeText {
-    
-    var averageMidX: CGFloat {
-        guard count > 0 else { return 0 }
-        let sum = self.reduce(0, { $0 + $1.text.rect.midX })
-        return sum / Double(count)
-    }
-    
-    var attributeDescription: String {
-        map{ $0.attribute }.description
-    }
-    
-    func contains(_ attribute: Attribute) -> Bool {
-        contains(where: { $0.attribute == attribute })
-    }
-    
-    func containsAnyAttributeIn(_ array: [AttributeText]) -> Bool {
-        contains(where: { array.map({$0.attribute}).contains($0.attribute) })
-    }
-}
-
-extension Array where Element == [AttributeText] {
-    
-    var attributeDescription: String {
-        map { $0.map { $0.attribute } }.description
-    }
-    
-    func containsArrayWithAnAttributeFrom(_ arrayToCheck: [AttributeText]) -> Bool {
-        for array in self {
-            if array.containsAnyAttributeIn(arrayToCheck) {
-                return true
-            }
-        }
-        return false
-    }
-    
-    func indexOfSuperset(of array: [AttributeText]) -> Int? {
-        let arrayAsSet = Set(array.map { $0.attribute })
-        for i in indices {
-            let set = Set(self[i].map { $0.attribute })
-            if arrayAsSet.isSubset(of: set) {
-                return i
-            }
-        }
-        return nil
-    }
-    
-    func indexOfSubset(of array: [AttributeText]) -> Int? {
-        let arrayAsSet = Set(array.map { $0.attribute })
-        for i in indices {
-            let set = Set(self[i].map { $0.attribute })
-            if set.isSubset(of: arrayAsSet) {
-                return i
-            }
-        }
-        return nil
-    }
-
-    func indexOfArrayContainingAnyAttribute(in arrayToCheck: [AttributeText]) -> Int? {
-        for i in indices {
-            let array = self[i]
-            if array.contains(where: { arrayElement in
-                arrayToCheck.contains { arrayToCheckElement in
-                    arrayToCheckElement.attribute == arrayElement.attribute
-                }
-            }) {
-                return i
-            }
-        }
-        return nil
-    }
-}
-
-extension Array where Element == RecognizedText {
-    var attributeTexts: [RecognizedText] {
-        filter { $0.string.containsNutrientAttributes }
-    }
-    
-    var inlineAttributeTexts: [RecognizedText] {
-        filter { $0.string.containsInlineNutrients }
-    }
-}
-
 extension TableClassifier {
     
-    var attributeTexts: [RecognizedText] {
-        visionResult.arrayOfTexts.reduce([]) { $0 + $1.attributeTexts }
-    }
-    
-    var inlineAttributeTexts: [RecognizedText] {
-        visionResult.arrayOfTexts.reduce([]) { $0 + $1.inlineAttributeTexts }
-    }
-    
-    var mostTextsAreInline: Bool {
-        var attributes: [Attribute] = []
-        var inlineAttributes: [Attribute] = []
-        
-        /// Go through all recognized texts
-        for recognizedTexts in visionResult.arrayOfTexts {
-            for text in recognizedTexts {
-                
-                guard !text.string.isSkippableRecognizedText else {
-                    continue
-                }
-                /// Each time we detect a non-mineral, non-vitamin attribute for the first time—whether inline or not—add it to the `attributes` array
-                let detectedAttributes = Attribute.detect(in: text.string)
-                for detectedAttribute in detectedAttributes {
-                    /// Ignore non-nutrient attributes and energy (because it's usually not inline)
-                    guard detectedAttribute.isNutrientAttribute,
-                          detectedAttribute.isCoreTableNutrient,
-                          detectedAttribute != .energy
-                    else {
-                        continue
-                    }
-                    
-                    if !attributes.contains(detectedAttribute) {
-                        attributes.append(detectedAttribute)
-                    }
-                }
-                
-                /// Each time we detect an inline version of an attribute, add it to the `inlineAttributes` array
-                let nutrients = text.string.nutrients
-                for nutrient in nutrients {
-                    guard nutrient.attribute != .energy,
-                          nutrient.attribute.isCoreTableNutrient
-                    else {
-                        continue
-                    }
-
-                    if !inlineAttributes.contains(nutrient.attribute) {
-                        inlineAttributes.append(nutrient.attribute)
-                    }
-                }
-            }
-        }
-        
-        let ratio = Double(inlineAttributes.count) / Double(attributes.count)
-        
-        //TODO: Tweak this threshold
-        print("🧮 Ratio is: \(ratio)")
-        return ratio >= 0.75
-    }
-    
     /// Returns an array of arrays of `AttributeText`s, with each array representing a column of attributes, in the order they appear on the label.
-    func getColumnsOfAttributes() -> [[Attribute]]? {
+    func extractAttributeTextColumns() -> [[AttributeText]]? {
         
         //TODO: Check if most values are inline and if so, return nil
         guard !mostTextsAreInline else {
@@ -243,9 +102,7 @@ extension TableClassifier {
         /// Sort the columns by the `text.rect.midX` values (so that we get them in the order they appear), and only return the `attribute`s
         let columnsOfAttributes = columns.sorted(by: {
             $0.averageMidX < $1.averageMidX
-        }).map {
-            $0.map { $0.attribute }
-        }
+        })
         
         guard columnsOfAttributes.count > 1 else {
             return columnsOfAttributes
@@ -262,6 +119,64 @@ extension TableClassifier {
 //        } else {
         return unfiltered
 //        }
+    }
+    
+    var attributeTexts: [RecognizedText] {
+        visionResult.arrayOfTexts.reduce([]) { $0 + $1.attributeTexts }
+    }
+    
+    var inlineAttributeTexts: [RecognizedText] {
+        visionResult.arrayOfTexts.reduce([]) { $0 + $1.inlineAttributeTexts }
+    }
+    
+    var mostTextsAreInline: Bool {
+        var attributes: [Attribute] = []
+        var inlineAttributes: [Attribute] = []
+        
+        /// Go through all recognized texts
+        for recognizedTexts in visionResult.arrayOfTexts {
+            for text in recognizedTexts {
+                
+                guard !text.string.isSkippableRecognizedText else {
+                    continue
+                }
+                /// Each time we detect a non-mineral, non-vitamin attribute for the first time—whether inline or not—add it to the `attributes` array
+                let detectedAttributes = Attribute.detect(in: text.string)
+                for detectedAttribute in detectedAttributes {
+                    /// Ignore non-nutrient attributes and energy (because it's usually not inline)
+                    guard detectedAttribute.isNutrientAttribute,
+                          detectedAttribute.isCoreTableNutrient,
+                          detectedAttribute != .energy
+                    else {
+                        continue
+                    }
+                    
+                    if !attributes.contains(detectedAttribute) {
+                        attributes.append(detectedAttribute)
+                    }
+                }
+                
+                /// Each time we detect an inline version of an attribute, add it to the `inlineAttributes` array
+                let nutrients = text.string.nutrients
+                for nutrient in nutrients {
+                    guard nutrient.attribute != .energy,
+                          nutrient.attribute.isCoreTableNutrient
+                    else {
+                        continue
+                    }
+
+                    if !inlineAttributes.contains(nutrient.attribute) {
+                        inlineAttributes.append(nutrient.attribute)
+                    }
+                }
+            }
+        }
+        
+        let ratio = Double(inlineAttributes.count) / Double(attributes.count)
+        
+        //TODO: Tweak this threshold
+        print("🧮 Ratio is: \(ratio)")
+        return ratio >= 0.75
     }
     
     func getUniqueAttributeTextsFrom(_ texts: [RecognizedText]) -> [AttributeText]? {
@@ -473,5 +388,89 @@ func matches(for regex: String, in text: String) -> [(string: String, position: 
     } catch let error {
         print("invalid regex: \(error.localizedDescription)")
         return nil
+    }
+}
+
+
+extension Array where Element == AttributeText {
+    
+    var averageMidX: CGFloat {
+        guard count > 0 else { return 0 }
+        let sum = self.reduce(0, { $0 + $1.text.rect.midX })
+        return sum / Double(count)
+    }
+    
+    var attributeDescription: String {
+        map{ $0.attribute }.description
+    }
+    
+    func contains(_ attribute: Attribute) -> Bool {
+        contains(where: { $0.attribute == attribute })
+    }
+    
+    func containsAnyAttributeIn(_ array: [AttributeText]) -> Bool {
+        contains(where: { array.map({$0.attribute}).contains($0.attribute) })
+    }
+}
+
+extension Array where Element == [AttributeText] {
+    
+    var attributeDescription: String {
+        map { $0.map { $0.attribute } }.description
+    }
+    
+    func containsArrayWithAnAttributeFrom(_ arrayToCheck: [AttributeText]) -> Bool {
+        for array in self {
+            if array.containsAnyAttributeIn(arrayToCheck) {
+                return true
+            }
+        }
+        return false
+    }
+    
+    func indexOfSuperset(of array: [AttributeText]) -> Int? {
+        let arrayAsSet = Set(array.map { $0.attribute })
+        for i in indices {
+            let set = Set(self[i].map { $0.attribute })
+            if arrayAsSet.isSubset(of: set) {
+                return i
+            }
+        }
+        return nil
+    }
+    
+    func indexOfSubset(of array: [AttributeText]) -> Int? {
+        let arrayAsSet = Set(array.map { $0.attribute })
+        for i in indices {
+            let set = Set(self[i].map { $0.attribute })
+            if set.isSubset(of: arrayAsSet) {
+                return i
+            }
+        }
+        return nil
+    }
+
+    func indexOfArrayContainingAnyAttribute(in arrayToCheck: [AttributeText]) -> Int? {
+        for i in indices {
+            let array = self[i]
+            if array.contains(where: { arrayElement in
+                arrayToCheck.contains { arrayToCheckElement in
+                    arrayToCheckElement.attribute == arrayElement.attribute
+                }
+            }) {
+                return i
+            }
+        }
+        return nil
+    }
+}
+
+extension Array where Element == RecognizedText {
+    var attributeTexts: [RecognizedText] {
+        filter { $0.string.containsNutrientAttributes }
+    }
+    
+    var inlineAttributeTexts: [RecognizedText] {
+        filter { $0.string.containsInlineNutrients }
     }
 }
