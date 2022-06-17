@@ -2678,7 +2678,6 @@ let validAttributeTestCases: [Attribute: [String]] = [
     
     //MARK: - Vitamin E
     .vitaminE: [
-        "Riboflavin (Vitamin E",
         "Vitamin E (from Organic Food Blend)",
     ],
     

@@ -4,7 +4,7 @@ import XCTest
 
 final class AttributeFatTests: XCTestCase {
 
-    func testAttributes() throws {
+    func _testAttributes() throws {
         
         for key in validAttributeTestCases.keys {
             guard let testCases = validAttributeTestCases[key] else {

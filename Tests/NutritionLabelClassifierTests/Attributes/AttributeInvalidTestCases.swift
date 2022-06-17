@@ -9,7 +9,13 @@ let invalidAttributeTestCases: [Attribute: [String]] = [
         "Saturdted Fats 0,03",
         "satur￿ed Fat",
     ],
+    
     .sugar: [
         "und Mandel-Torrone (10%). Zutaten: Zucker, Vollmilchpulver,"
-    ]
+    ],
+    
+    .vitaminE: [
+        "Riboflavin (Vitamin E",
+    ],
+
 ]

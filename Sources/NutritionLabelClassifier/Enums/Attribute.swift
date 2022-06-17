@@ -87,16 +87,27 @@ public enum Attribute: String, CaseIterable {
     case vitaminK2
     
     static var vitamins: [Attribute] {
-        [.thiamin, .folate, .folicAcid, .biotin, .pantothenicAcid, .riboflavin, .niacin, .vitaminA, .vitaminC, .vitaminD, .vitaminB1, .vitaminB3, .vitaminB6, .vitaminB12, .vitaminE, .vitaminK, .vitaminK2]
+        [.vitaminA, .vitaminC, .vitaminD, .vitaminB1, .vitaminB3, .vitaminB6, .vitaminB12, .vitaminE, .vitaminK, .vitaminK2]
+    }
+    
+    static var vitaminChemicalNames: [Attribute] {
+        [.thiamin, .folate, .folicAcid, .biotin, .pantothenicAcid, .riboflavin, .niacin]
     }
     
     var isVitamin: Bool {
         Self.vitamins.contains(self)
     }
+
+    var isVitaminChemicalName: Bool {
+        Self.vitaminChemicalNames.contains(self)
+    }
     
     func shouldIgnoreAttributeIfOnSameString(as attribute: Attribute) -> Bool {
-        if self == .riboflavin {
-            return attribute.isVitamin
+        if self == .vitaminE {
+            /// Handles edge case of misreading `Riboflavin (Vitamin B12` as `Riboflavin (Vitamin E`
+            if attribute == .riboflavin {
+                return true
+            }
         }
         return false
     }
