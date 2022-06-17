@@ -55,7 +55,8 @@ final class TableClassifierTests: XCTestCase {
                     }
                     numberOfFailedTests += 1
                     
-                    XCTAssertEqual(attributes, attributeExpectations[id.uuidString], self.m("Attributes"))
+                    XCTFail(self.m("Attributes didn't match"))
+//                    XCTAssertEqual(attributes, attributeExpectations[id.uuidString], self.m("Attributes"))
                     return
                 }
                 
@@ -66,14 +67,15 @@ final class TableClassifierTests: XCTestCase {
                 guard values == valueExpectations[id.uuidString] else {
                     print("🤖❌ Values for: \(id)")
                     if let expectation = valueExpectations[id.uuidString]! {
-                        print("    🤖❌ Expected: \(expectation)")
+                        print("    🤖❌ Expected: \(expectation.valuesGroupDescription)")
                     }
                     if let values = values {
-                        print("    🤖❌ Got back: \(values)")
+                        print("    🤖❌ Got back: \(values.valuesGroupDescription)")
                     }
                     numberOfFailedTests += 1
                     
-                    XCTAssertEqual(values, valueExpectations[id.uuidString], self.m("Values"))
+                    XCTFail(self.m("Values didn't match"))
+//                    XCTAssertEqual(values, valueExpectations[id.uuidString], self.m("Values"))
                     return
                 }
                 

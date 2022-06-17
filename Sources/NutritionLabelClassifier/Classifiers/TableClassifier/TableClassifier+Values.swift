@@ -8,6 +8,10 @@ extension Array where Element == [AttributeText] {
         sorted(by: { $0.count < $1.count })
             .first?.count ?? 0
     }
+    
+    var maximumNumberOfValueColumns: Int {
+        count * 2
+    }
 }
 
 extension TableClassifier {
@@ -36,13 +40,21 @@ extension TableClassifier {
                 columns.append(columnOfTexts)
             }
         }
-
-        columns = columns
-            .uniqued()
-            .sorted(by: { $0.count > $1.count })
-            .filter { $0.count >= Int(Double(attributeTextColumns.smallestCount) * 0.3) }
         
+        columns = Array(
+            columns
+                .uniqued()
+                .sorted(by: { $0.count > $1.count })
+                .filter { $0.count >= Int(Double(attributeTextColumns.smallestCount) * 0.3) }
+                .prefix(attributeTextColumns.maximumNumberOfValueColumns)
+        )
         chooseEnergyValues(&columns)
+        
+        columns = columns.sorted(by: {
+            $0.averageMidX < $1.averageMidX
+        })
+        
+        groups = [columns]
         
         return groups
     }
@@ -74,9 +86,40 @@ extension TableClassifier {
 }
 
 extension Array where Element == ValueText {
+    
     var containsTwoEnergyValues: Bool {
         contains(where: { $0.value.unit == .kj })
         &&
         contains(where: { $0.value.unit == .kcal })
+    }
+    
+    var averageMidX: CGFloat {
+        guard count > 0 else { return 0 }
+        let sum = self.reduce(0, { $0 + $1.text.rect.midX })
+        return sum / Double(count)
+    }
+}
+
+extension Array where Element == [[Value?]] {
+    var valuesGroupDescription: String {
+        var description = "{"
+        for group in self {
+            description += "("
+            for column in group {
+                description += "["
+                for value in column {
+                    if let value = value {
+                        description += "\(value.description), "
+                    } else {
+                        description += "nil, "
+                    }
+                }
+                description = description.replacingLastOccurrence(of: ", ", with: "")
+                description += "]"
+            }
+            description += ")"
+        }
+        description += "}"
+        return description
     }
 }

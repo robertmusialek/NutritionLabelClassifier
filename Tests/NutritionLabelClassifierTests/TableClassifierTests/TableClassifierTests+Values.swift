@@ -57,7 +57,19 @@ let valueExpectations: [String: [[[Value?]]]?] = [
             [v(67, .kcal), v(7, .g), v(4.4, .g), v(1.7, .g), v(0.1, .g), v(0.2, .g), v(24, .mg), v(0.7, .g), v(0.7, .g), v(0, .g), v(0.4, .g), v(0.01, .g), v(6, .mg)]
         ]
     ],
+    "9C26D1D5-50B2-4933-B906-29824617FD96": [
+        [
+            [v(337, .kcal), v(35.1, .g), v(22, .g), v(8.6, .g), v(0.7, .g), v(1.2, .g), v(121, .mg), v(3.3, .g), v(3.3, .g), v(0, .g), v(2.1, .g), v(0.07, .g), v(30, .mg)],
+            [v(67, .kcal), v(7, .g), v(4.4, .g), v(1.7, .g), v(0.1, .g), v(0.2, .g), v(24, .mg), v(0.7, .g), v(0.7, .g), v(0, .g), v(0.4, .g), v(0.01, .g), v(6, .mg)]
+        ]
+    ],
+    "1B51A831-FE9C-4752-B526-0ED7823EA591": [
+        [
+            [v(337, .kcal), v(35.1, .g), v(22, .g), v(8.6, .g), v(0.7, .g), v(1.2, .g), v(121, .mg), v(3.3, .g), v(3.3, .g), v(0, .g), v(2.1, .g), v(0.07, .g), v(30, .mg)],
+            [v(67, .kcal), v(7, .g), v(4.4, .g), v(1.7, .g), v(0.1, .g), v(0.2, .g), v(24, .mg), v(0.7, .g), v(0.7, .g), v(0, .g), v(0.4, .g), v(0.01, .g), v(6, .mg)]
+        ]
+    ],
 ]
 
-let SingledOutTestCase: UUID? = UUID(uuidString: "75C66881-51E5-4A42-92E6-F3B3953BC8E6")!
+let SingledOutTestCase: UUID? = UUID(uuidString: "1B51A831-FE9C-4752-B526-0ED7823EA591")!
 //let SingledOutTestCase: UUID? = nil
