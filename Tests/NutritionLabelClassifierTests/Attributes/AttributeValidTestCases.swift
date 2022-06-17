@@ -2,7 +2,7 @@ import Foundation
 
 @testable import NutritionLabelClassifier
 
-let validTestCases: [Attribute: [String]] = [
+let validAttributeTestCases: [Attribute: [String]] = [
     
     //MARK: - Energy
     
