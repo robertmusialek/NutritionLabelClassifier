@@ -104,6 +104,9 @@ extension TableClassifier {
         for recognizedTexts in visionResult.arrayOfTexts {
             for text in recognizedTexts {
                 
+                guard !text.string.isSkippableRecognizedText else {
+                    continue
+                }
                 /// Each time we detect a non-mineral, non-vitamin attribute for the first time—whether inline or not—add it to the `attributes` array
                 let detectedAttributes = Attribute.detect(in: text.string)
                 for detectedAttribute in detectedAttributes {
@@ -381,6 +384,20 @@ extension TableClassifier {
 }
 
 extension String {
+    
+    var isSkippableRecognizedText: Bool {
+        if cleanedAttributeString
+            .matchesRegex(#"(not a significant source of|source negligeable)"#) {
+            return true
+        }
+        
+        /// If it's a string like `cholesterol, fibre, vitamin A, vitamin C, calcium`, return true
+        if !capturedGroups(using: #"[^,]*,[^,]*"#).isEmpty {
+            return true
+        }
+        
+        return false
+    }
     
     var isSkippableTableElement: Bool {
         guard let attribute = Attribute(fromString: self),

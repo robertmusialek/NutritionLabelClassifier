@@ -164,7 +164,7 @@ extension Attribute {
 
         static let saturatedFatOptions = [
             "saturated",
-            "satuwed", /// Vision typo
+            "satuwed", "satu[^ ]+ed", "saturat[^ ]+d", /// Vision typos
             "saturates",
             "davon gesattigte",
             "of which saturates", "saturi", "saturados", "gras satures", "sat. fat", "kwasy nasycone", "grasi saturati", "sociosios"

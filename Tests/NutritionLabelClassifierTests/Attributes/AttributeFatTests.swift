@@ -135,8 +135,6 @@ final class AttributeFatTests: XCTestCase {
         "Refri9efate after openln9 and",
         "Sai Fai",
         "Sat Fat",
-        "Saturatfrd Fat O",
-        "Saturdted Fats 0,03",
         "TMS Fat Og",
         "Tauszcz Riebalai/Grasime/Fat",
         "Tauszcz/Riebalai/Grasime/Fat",
@@ -245,12 +243,14 @@ final class AttributeFatTests: XCTestCase {
         "otal fat/ &)wll",
         "rNszcbfiiebalarfGrasime/Fat",
         "rated Fat 7g",
-        "satur￿ed Fat",
         "te Fettsau",
     ]
     
     let invalidCases = [
         "anufattured & Quality Tested by NOW FCWS.",
+        "Saturatfrd Fat O",
+        "Saturdted Fats 0,03",
+        "satur￿ed Fat",
     ]
 }
 
