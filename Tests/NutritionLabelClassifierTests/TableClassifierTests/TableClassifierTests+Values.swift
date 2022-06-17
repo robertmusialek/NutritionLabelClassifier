@@ -69,7 +69,13 @@ let valueExpectations: [String: [[[Value?]]]?] = [
             [v(67, .kcal), v(7, .g), v(4.4, .g), v(1.7, .g), v(0.1, .g), v(0.2, .g), v(24, .mg), v(0.7, .g), v(0.7, .g), v(0, .g), v(0.4, .g), v(0.01, .g), v(6, .mg)]
         ]
     ],
+    "DE476A74-8174-4E9C-81DA-450F578F039D": [
+        [
+            [v(735, .kj), v(13, .g), v(3.2, .g), v(0.9, .g), v(0, .g), v(14, .g)],
+            [v(412, .kj), v(7.3, .g), v(1.8, .g), v(0, .g), v(0, .g), v(7.8, .g)],
+        ]
+    ],
 ]
 
-let SingledOutTestCase: UUID? = UUID(uuidString: "1B51A831-FE9C-4752-B526-0ED7823EA591")!
 //let SingledOutTestCase: UUID? = nil
+let SingledOutTestCase: UUID? = UUID(uuidString: "DE476A74-8174-4E9C-81DA-450F578F039D")!

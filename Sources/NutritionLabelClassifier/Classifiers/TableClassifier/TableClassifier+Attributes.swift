@@ -330,6 +330,10 @@ extension String {
         Attribute.haveNutrientAttribute(in: self)
     }
     
+    var containsValues: Bool {
+        Value.haveValues(in: self)
+    }
+    
     var terminatesColumnWiseAttributeSearch: Bool {
         /// Keep adding lists of string that would stop the search immediately by ignoring the `skipPass` even if available
         if self.matchesRegex(#"daily value"#) {
