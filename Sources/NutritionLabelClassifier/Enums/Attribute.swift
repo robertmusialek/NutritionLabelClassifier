@@ -273,8 +273,8 @@ public enum Attribute: String, CaseIterable {
             return Regex.energy
             
         case .protein:
-            return #"(protein|proteine|proteines)(?! (bar|bas))( |$)"#
-            
+            return #"(?<!high)(protein|proteine|proteines)(?! (bar|bas))"#
+
         case .carbohydrate:
             return #".*(carb|glucide(s|)|(h|b)(y|v)drate).*"#
         case .dietaryFibre:
