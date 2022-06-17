@@ -140,7 +140,7 @@ extension TableClassifier {
         
         //TODO: Tweak this threshold
         print("🧮 Ratio is: \(ratio)")
-        return ratio > 0.75
+        return ratio >= 0.75
     }
     
     /// Returns an array of arrays of `AttributeText`s, with each array representing a column of attributes, in the order they appear on the label.
@@ -172,13 +172,16 @@ extension TableClassifier {
 //                    continue
 //                }
                 
-                if columns.contains(where: {
-                    $0.containsAnyAttributeIn(column) && $0.count <= column.count
-                }) {
-                    /// filter out the columns
-                    columns = columns.filter {
-                        !$0.containsAnyAttributeIn(column) ||
-                        $0.count >= column.count
+                if columns.containsArrayWithAnAttributeFrom(column) {
+                    
+                    if columns.contains(where: {
+                        $0.containsAnyAttributeIn(column) && $0.count <= column.count
+                    }) {
+                        /// filter out the columns
+                        columns = columns.filter {
+                            !$0.containsAnyAttributeIn(column) ||
+                            $0.count >= column.count
+                        }
                     }
                     
 //                /// Now see if we have any existing columns that is a subset of this column
@@ -227,6 +230,7 @@ extension TableClassifier {
 //                        columns[index] = column
 //                    }
                 } else {
+                    
                     /// Otherwise, set it as a new column
                     columns.append(column)
                 }
@@ -240,12 +244,21 @@ extension TableClassifier {
             $0.map { $0.attribute }
         }
         
-        /// If we've got more than one column, remove any that's less than 3
-        if columnsOfAttributes.count > 1 {
-            return columnsOfAttributes.filter { $0.count >= 3 }
-        } else {
+        guard columnsOfAttributes.count > 1 else {
             return columnsOfAttributes
         }
+        
+        /// If we've got more than one column, remove any that's less than 3 first
+        var unfiltered = columnsOfAttributes.filter { $0.count >= 3 }
+//        var filtered: [[Attribute]] = []
+//        for array in unfiltered {
+//            if
+//        }
+//        if columnsOfAttributes.count > 1 {
+//            return columnsOfAttributes.filter { $0.count >= 3 }
+//        } else {
+        return unfiltered
+//        }
     }
     
     func getUniqueAttributeTextsFrom(_ texts: [RecognizedText]) -> [AttributeText]? {
