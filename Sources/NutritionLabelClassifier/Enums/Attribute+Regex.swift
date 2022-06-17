@@ -15,7 +15,7 @@ extension Attribute {
             return Regex.energy
             
         case .protein:
-            return #"(?<!high)(protein|proteine|proteines)(?! (bar|bas))"#
+            return #"(?<!high)(protein|proteine|proteines|eiweiß)(?! (bar|bas))"#
 
         case .carbohydrate:
             return #".*(carb|glucide(s|)|(h|b)(y|v)drate).*"#
@@ -141,7 +141,7 @@ extension Attribute {
         static let sugar = #"^(?=\#(totalSugar))(?!\#(addedSugar)).*$"#
         
         static let dietaryFibreOptions = [
-            "(dietary |)fib(re|er)", "fibra", "voedingsvezel"
+            "(dietary |)fib(re|er)", "fibra", "voedingsvezel", "ballaststoffe"
         ]
         static let solubleFibreOptions = [
             "(^|[ ])soluble fib(re|er)"
@@ -166,6 +166,7 @@ extension Attribute {
             "saturated",
             "satuwed", /// Vision typo
             "saturates",
+            "davon gesattigte",
             "of which saturates", "saturi", "saturados", "gras satures", "sat. fat", "kwasy nasycone", "grasi saturati", "sociosios"
         ]
 
