@@ -2305,4 +2305,400 @@ let validTestCases: [Attribute: [String]] = [
         "tsukeu (Sodium) 40 un. (mg)",
         "zer: monosodium glutamate; spice extracts, antioxidant:",
     ],
+    
+    //MARK: - Calcium
+    .calcium: [
+        "(Ponsphalé, Calcium Phosphate) Waning (83 BE 812)",
+        "2.000 calorie diet. Vitamin A 0% CPRDONO OLDCO PSTARZO NONRE MAK LE MO ACINC CTIDES S THEMNORLEL NIERDE LINAS Vitamin C 0% Calcium 30%• Iron",
+        "2.000 calorie diet. Vitamin A 0% SPROTO OLD CO PASTA CO NOIRE MAX LIE MO ACINE CUT DIES S THEMNORLEL FIERDE LINES Vitamin C 0% Calcium 30% • Iron",
+        "83% Calcium",
+        "CALCIUM",
+        "CALCIUM (20% RI* PER 100G)",
+        "Calcio/Calcium 0%",
+        "Calcium",
+        "Calcium (% RDA) 128 mg (16%)",
+        "Calcium (3.0 mg)",
+        "Calcium , 223mg . 186mg",
+        "Calcium 0%",
+        "Calcium 0mg",
+        "Calcium 104mg (13% RDI*)",
+        "Calcium 14mg",
+        "Calcium 2%",
+        "Calcium 20mg",
+        "Calcium 22mg",
+        "Calcium 30mg",
+        "Calcium 40mg 2 %",
+        "Calcium 40mg 2%",
+        "Calcium 5mg",
+        "Calcium 6% • Iron 4%",
+        "Calcium 650mg 50%",
+        "Calcium 650mg 500/0",
+        "Calcium 70mg",
+        "Calcium 80mg",
+        "Calcium OQ/o",
+        "Calcium lg,. IM(N",
+        "Calcium/Calcio 30mg 0%",
+        "Calcium/Calcio 50mg",
+        "Calcium/calcio 50m",
+        "Calciumlcalcio 30mg O %",
+        "INGREDIENTS: TREATED WATER, MINERAL (CALCIUM CHLORIDE).",
+        "MAaiBeL (Calcium)",
+        "Nutrition Facts Vitamin D Omcg O% * Calcium 30mg 2%",
+        "Nutrition Facts Vitamin D Omg O% * Calcium 30mg 2%",
+        "Vit. D 0mcg 0% Calcium 58mg 4%",
+        "Vitamin A 0% Vitamin C 2% Calcium 20%",
+        "Vitamin A 4% Vitamin ( 0% • Calcium 2% • Iron 0%",
+        "Vitamin A O'/0 Vitamin C 2 % Calcium 20/ Iron O;,",
+        "Vitamin D 0mcg 0% • Calcium 130mg 10% Iron 0mg 0% Potassium 20mg 0%",
+        "Vitamin D 0mcg 0% • Calcium 130mg 10% Iron Omg 0% Potassium 20mg 0%",
+        "Vitamin D Omcg O % .calcium130mg10 % • Iron Omg O % • Potassium 20mg O %",
+        "based on a 2,000 calorie diet. Vit A 0% • Vit C 0% • Calcium 15% • Iron 0% • Vit D 15% •",
+        "based on a 2,000 calorie diet. Vitamin A 4% - Vitamin C 0% - Calcium 15% - Iron 0% - Vitamin D 15%",
+        "c acid, calcium crtr*), Havourin",
+        "vitamin A, vitamin C and Calcium",
+        "• calcium",
+    ],
+    
+    //MARK: - Iron
+    .iron: [
+        "2.000 calorie diet. Vitamin A 0% CPRDONO OLDCO PSTARZO NONRE MAK LE MO ACINC CTIDES S THEMNORLEL NIERDE LINAS Vitamin C 0% Calcium 30%• Iron",
+        "2.000 calorie diet. Vitamin A 0% SPROTO OLD CO PASTA CO NOIRE MAX LIE MO ACINE CUT DIES S THEMNORLEL FIERDE LINES Vitamin C 0% Calcium 30% • Iron",
+        "Calcium 6% • Iron 4%",
+        "IRON, THIAMINE MONON",
+        "IRON, THIAMINE MOlIQli",
+        "IRonido (nsun) 8",
+        "Iron",
+        "Iron (mg)",
+        "Iron / Fer",
+        "Iron / Fer 0.125 mg",
+        "Iron 0%",
+        "Iron 0.1 mg",
+        "Iron 0.1mg",
+        "Iron 0.8mg",
+        "Iron 0.8mg 4 %",
+        "Iron 0.8mg 4%",
+        "Iron 0mg 0%",
+        "Iron 1.6mg",
+        "Iron 1.6nMJ",
+        "Iron 2%",
+        "Iron 2mg",
+        "Iron 2n)J",
+        "Iron 5.6mg",
+        "Iron 6%",
+        "Iron 8%",
+        "Iron Fer",
+        "Iron Fer 0.125 mg",
+        "Iron O%",
+        "Iron Ow0%",
+        "Iron/Besi/?t",
+        "Iron/Besi/tt",
+        "Iron/Hierro 0.3mg 0%",
+        "Iron/Hierro 0.3mg 00",
+        "Iron/Hierro 1 m",
+        "Iron/Hierro 1mg",
+        "Iron1.4mg 60A • Pots%ium141m9 >-'",
+        "IronlBesil•",
+        "Lth*d*L WrtA O% VrtC O% • Calciuffl15% • Iron * Vrt D1510",
+        "Vitamin A 4% Vitamin ( 0% • Calcium 2% • Iron 0%",
+        "Vitamin A O'/0 Vitamin C 2 % Calcium 20/ Iron O;,",
+        "Vitamin D 0mcg 0% • Calcium 130mg 10% Iron 0mg 0% Potassium 20mg 0%",
+        "Vitamin D 0mcg 0% • Calcium 130mg 10% Iron Omg 0% Potassium 20mg 0%",
+        "Vitamin D Omcg O % .calcium130mg10 % • Iron Omg O % • Potassium 20mg O %",
+        "Vitamins and Minerals: Iron (ferric phosphate),",
+        "Vrtamin A 4% • Wtsmin C ￿. Lakium • Iron O%",
+        "based on a 2,000 calorie diet. Vit A 0% • Vit C 0% • Calcium 15% • Iron 0% • Vit D 15% •",
+        "based on a 2,000 calorie diet. Vitamin A 4% - Vitamin C 0% - Calcium 15% - Iron 0% - Vitamin D 15%",
+        "in iron, mag",
+        "in iron, magi",
+        "iron",
+        "or iron.",
+    ],
+    
+    //MARK: - Potassium
+    .potassium: [
+        "(POTASSIUM CHLORIDE), SUGAR, FLAVOUR ENHANCER",
+        "(unnatdeu (Potassium) 150 un.",
+        "0% Potassium 170mg",
+        "0% Potassium 210mg",
+        "6% • Potassium 140mg 2%",
+        "Cuunatdeu (Potassium) 150 un.",
+        "POTASSIUM",
+        "POTASSIUM SORBATE ADDED AS A PRESERVATIVE",
+        "Potas. 0mg 0%",
+        "Potas. 60mg 2%",
+        "Potas. Omg O %",
+        "Potas./Potas. 40mg 0%",
+        "Potas./Potas. 40mg O /o",
+        "Potassium",
+        "Potassium (39,3 mg)",
+        "Potassium 100mg",
+        "Potassium 104mg",
+        "Potassium 10mg",
+        "Potassium 150mg",
+        "Potassium 160mg",
+        "Potassium 170mg",
+        "Potassium 180 mg",
+        "Potassium 180mg",
+        "Potassium 200 mg",
+        "Potassium 257m8",
+        "Potassium 290mg",
+        "Potassium 320 mg 6%",
+        "Potassium 320iiig 60/",
+        "Potassium 320mg 6%",
+        "Potassium 40mg",
+        "Potassium/Potasio 90mg",
+        "Potassium100mg",
+        "Potasslum 200 mg",
+        "Potasslum 290mg",
+        "Vitamin D 0mcg 0% • Calcium 130mg 10% Iron 0mg 0% Potassium 20mg 0%",
+        "Vitamin D 0mcg 0% • Calcium 130mg 10% Iron Omg 0% Potassium 20mg 0%",
+        "Vitamin D Omcg O % .calcium130mg10 % • Iron Omg O % • Potassium 20mg O %",
+        "acid (Malic acio), Preservative (Potassium sorbate), Nature-identical iaeg",
+        "acid (Malice acid), Preservative (Potassium sorbate), Nature- identical lading",
+        "cid, potassium sorbate), permitted stabliser,",
+        "did, potassium sorbate), permitted stabliser,",
+    ],
+    
+    //MARK: - Cobalamin
+    .cobalamin: [
+        "Cobalamin",
+        "O % Cobalamin",
+    ],
+    
+    //MARK: - Magnesium
+    .magnesium: [
+        "(from Magnesium Oxide, Magnesium",
+        "(from Magnesium Oxide, Magnesium Citrate",
+        "Magnesium",
+        "Magnesium (mg)",
+        "Magnesium 90",
+        "Magnesium/M",
+        "Magnesiuml",
+        "and Magnesium Aspartate)",
+    ],
+    
+    //MARK: - Zinc
+    .zinc: [
+        "Zinc",
+        "Zinc (from Organic Food Blend)",
+        "Zinc (mg)",
+        "Zinc from Organic Food Blend)",
+        "Zinc/Zink/#f",
+    ],
+    
+    //MARK: - Iodine
+    .iodine: [
+        "Iodine (from Organic Food Blend)",
+        "lodine (from Organic Food Blend)",
+    ],
+    
+    //MARK: - Selenium
+    .selenium: [
+        "Selenium (from Organic Food Blend)",
+        "Selenium 1",
+        "Selenium from Organic",
+    ],
+    
+    //MARK: - Manganese
+    .manganese: [
+        "Manganese (from Organic Food Blend)",
+        "Manganese Ol",
+    ],
+    
+    //MARK: - Chromium
+    .chromium: [
+        "Chromium (from Organic Food Blend)",
+    ],
+    
+    //MARK: - Thiamin
+    .thiamin: [
+        "IRON, THIAMINE MONON",
+        "IRON, THIAMINE MOlIQli",
+        "Thiamin",
+        "Thiamin (Vitamin B1 from Organic Food Blend)",
+        "Thiamin (v",
+        "Thiamin (vitamin Bl from Organic Food Blend) 1.56 mg",
+        "Thiamin 03m gEN",
+        "Thiamin 03mg3N",
+        "Thiamin 2%",
+        "vitamin B2 (riboflavin), vitamin B1 (thiamin",
+    ],
+    
+    //MARK: - Folate
+    .folate: [
+        "IRON, THIAMINE MONON",
+        "IRON, THIAMINE MOlIQli",
+        "Thiamin",
+        "Thiamin (Vitamin B1 from Organic Food Blend)",
+        "Thiamin (v",
+        "Thiamin (vitamin Bl from Organic Food Blend) 1.56 mg",
+        "Thiamin 03m gEN",
+        "Thiamin 03mg3N",
+        "Thiamin 2%",
+        "vitamin B2 (riboflavin), vitamin B1 (thiamin",
+    ],
+    
+    //MARK: - Folic Acid
+    .folicAcid: [
+        "(folic acid)",
+        "Folic Acid",
+        "Folic Acid 0%",
+        "Folic Acid 01.",
+        "hydrochloride), folic acid,",
+    ],
+    
+    //MARK: - Biotin
+    .biotin: [
+        "Biotin (from Organic Food Blend)",
+        "Biotin 8ma: 253",
+        "Biotin 8mc4 251",
+        "Biotin 8mcz 253",
+    ],
+    
+    //MARK: - Pantothenic Acid
+    .pantothenicAcid: [
+        "Pantothenic Acid (from Organic Food Blend)"
+    ],
+    
+    //MARK: - Riboflavin
+    .riboflavin: [
+        "Riboflavin",
+        "Riboflavin (Vitamin B2 from Organic Food Blend) 1.95 mg",
+        "Riboflavin (Vitamin E",
+        "Riboflavin (vitamin B2 from Organic Food Blend) 1.95 mg",
+        "vitamin B2 (riboflavin), vitamin B1 (thiamin",
+    ],
+    
+    //MARK: - Niacin
+    .niacin: [
+        "@ serving size 1 Shake (11 f1 oz) Niacin 4mg 25%",
+        "@ serving size 1 Shake (11 fl o2) Niacin 4mg 25%",
+        "Niacin",
+        "Niacin (from Organic Food Blend)",
+        "Niacin 4mg 25,",
+        "niacinamide, vitamin B6 Ipyridoxine hydiochloridel,",
+        "niacinamide. vitamin B6 (pyridoxine hydrochloride),",
+    ],
+    
+    //MARK: - Vitamin A
+    .vitaminA: [
+        "10 % Vit A",
+        "2.000 calorie diet. Vitamin A 0% CPRDONO OLDCO PSTARZO NONRE MAK LE MO ACINC CTIDES S THEMNORLEL NIERDE LINAS Vitamin C 0% Calcium 30%• Iron",
+        "2.000 calorie diet. Vitamin A 0% SPROTO OLD CO PASTA CO NOIRE MAX LIE MO ACINE CUT DIES S THEMNORLEL FIERDE LINES Vitamin C 0% Calcium 30% • Iron",
+        "Vitamin A",
+        "Vitamin A (as Beta Carotene",
+        "Vitamin A 0%",
+        "Vitamin A 0% Vitamin C 0%",
+        "Vitamin A 0% Vitamin C 2% Calcium 20%",
+        "Vitamin A 0%eVitamin C 0%",
+        "Vitamin A 08/d•.Vi",
+        "Vitamin A 2%",
+        "Vitamin A 230 mo 8",
+        "Vitamin A 4% Vitamin ( 0% • Calcium 2% • Iron 0%",
+        "Vitamin A O %",
+        "Vitamin A O%",
+        "Vitamin A O'/,",
+        "Vitamin A O'/0",
+        "Vitamin A O'/0 Vitamin C 2 % Calcium 20/ Iron O;,",
+        "Vitamina A/Vitamin A 0%",
+        "based on a 2,000 calorie diet. Vit A 0% • Vit C 0% • Calcium 15% • Iron 0% • Vit D 15% •",
+        "based on a 2,000 calorie diet. Vitamin A 4% - Vitamin C 0% - Calcium 15% - Iron 0% - Vitamin D 15%",
+    ],
+    
+    //MARK: - Vitamin C
+    .vitaminC: [
+        "2.000 calorie diet. Vitamin A 0% CPRDONO OLDCO PSTARZO NONRE MAK LE MO ACINC CTIDES S THEMNORLEL NIERDE LINAS Vitamin C 0% Calcium 30%• Iron",
+        "2.000 calorie diet. Vitamin A 0% SPROTO OLD CO PASTA CO NOIRE MAX LIE MO ACINE CUT DIES S THEMNORLEL FIERDE LINES Vitamin C 0% Calcium 30% • Iron",
+        "4 % Vit C",
+        "Vitamin A 0% Vitamin C 0%",
+        "Vitamin A 0% Vitamin C 2% Calcium 20%",
+        "Vitamin A 0%eVitamin C 0%",
+        "Vitamin A O'/0 Vitamin C 2 % Calcium 20/ Iron O;,",
+        "Vitamin C",
+        "Vitamin C (from Organic Food Blend)",
+        "Vitamin C 0%",
+        "Vitamin C 20mg",
+        "Vitamin C 6%",
+        "Vitamin C O %",
+        "Vitamin C O'/,",
+        "Vitamin C O'/0",
+        "Vitamina C/Vitamin C 0%",
+        "Vitamina CVitamin C 0%",
+        "Vitamina Vitamin C 0%",
+        "based on a 2,000 calorie diet. Vit A 0% • Vit C 0% • Calcium 15% • Iron 0% • Vit D 15% •",
+        "based on a 2,000 calorie diet. Vitamin A 4% - Vitamin C 0% - Calcium 15% - Iron 0% - Vitamin D 15%",
+        "tamin A 6% • Vitamin C 0% Questioned Conner 001 00 la",
+        "tamin A 6% • Vitamin C 0% Questone Conneth 001 00",
+        "vitamin A, vitamin C and Calcium",
+    ],
+    
+    //MARK: - Vitamin D
+    .vitaminD: [
+        "1 % Vitamin D",
+        "1% Vitamin D",
+        "Nutrition Facts Vitamin D Omcg O% * Calcium 30mg 2%",
+        "Nutrition Facts Vitamin D Omg O% * Calcium 30mg 2%",
+        "VITAMIN D (68% RI* PER 100g)",
+        "Vit. D 0mcg 0%",
+        "Vit. D 0mcg 0% Calcium 58mg 4%",
+        "Vit. D Omcg O %",
+        "Vit. D/Vit. D 0mcg 0%",
+        "Vit. D/Vit. D Omcg O /",
+        "Vitamin D",
+        "Vitamin D (D3 from Lichen)",
+        "Vitamin D 0.4mcg",
+        "Vitamin D 0mcg",
+        "Vitamin D 0mcg 0% • Calcium 130mg 10% Iron 0mg 0% Potassium 20mg 0%",
+        "Vitamin D 0mcg 0% • Calcium 130mg 10% Iron Omg 0% Potassium 20mg 0%",
+        "Vitamin D Omcg",
+        "Vitamin D Omcg O % .calcium130mg10 % • Iron Omg O % • Potassium 20mg O %",
+        "based on a 2,000 calorie diet. Vit A 0% • Vit C 0% • Calcium 15% • Iron 0% • Vit D 15% •",
+        "based on a 2,000 calorie diet. Vitamin A 4% - Vitamin C 0% - Calcium 15% - Iron 0% - Vitamin D 15%",
+    ],
+    
+    //MARK: - Vitamin B1
+    .vitaminB1: [
+        "Thiamin (Vitamin B1 from Organic Food Blend)",
+        "Vitamin 81",
+        "vitamin B2 (riboflavin), vitamin B1 (thiamin",
+    ],
+    
+    //MARK: - Vitamin B3
+    .vitaminB3: [
+        "Vitamin B3",
+    ],
+    
+    //MARK: - Vitamin B6
+    .vitaminB6: [
+        "Vitamin B6",
+        "Vitamin B6 (from",
+        "Vitamin B6 (from Organic Food Blend)",
+        "niacinamide, vitamin B6 Ipyridoxine hydiochloridel,",
+        "niacinamide. vitamin B6 (pyridoxine hydrochloride),",
+    ],
+    
+    //MARK: - Vitamin B12
+    .vitaminB12: [
+        "Vitamin 812",
+        "Vitamin B12",
+        "Vitamin B12 (Methy cobalamin from",
+        "Vitamin B12 (Methycobalamin from",
+        "Vitamin B12 (Methylcobalamin from",
+    ],
+    
+    //MARK: - Vitamin E
+    .vitaminE: [
+        "Riboflavin (Vitamin E",
+        "Vitamin E (from Organic Food Blend)",
+    ],
+    
+    //MARK: - Vitamin K
+    .vitaminK: [
+        "Vitamin K (from Saccharomyces cerevisiae)",
+    ],
+    
+    //MARK: - Vitamin K2
+    .vitaminK2: [
+        "Vitamin K2 (as menaquinone-7)",
+    ],
 ]
