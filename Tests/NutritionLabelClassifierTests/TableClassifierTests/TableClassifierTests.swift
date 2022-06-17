@@ -40,8 +40,9 @@ final class TableClassifierTests: XCTestCase {
             classifier.onCompletion = {
                 
                 let tableClassifier = TableClassifier(visionResult: classifier.visionResult)
+                let _ = tableClassifier.getObservations()
                 
-                let attributes = tableClassifier.extractAttributeTextColumns().map {
+                let attributes = tableClassifier.attributeTextColumns.map {
                     $0.map { $0.map { $0.attribute } }
                 }
                 guard attributes == attributeExpectations[id.uuidString] else {
@@ -53,10 +54,12 @@ final class TableClassifierTests: XCTestCase {
                         print("    🤖❌ Got back: \(attributes)")
                     }
                     numberOfFailedTests += 1
+                    
+                    XCTAssertEqual(attributes, attributeExpectations[id.uuidString], self.m("Attributes"))
                     return
                 }
                 
-                let values = tableClassifier.extractValueTextColumnGroups().map {
+                let values = tableClassifier.valueTextColumns.map {
                     $0.map { $0.map { $0.map { $0?.value } } }
                 }
 
@@ -69,13 +72,14 @@ final class TableClassifierTests: XCTestCase {
                         print("    🤖❌ Got back: \(values)")
                     }
                     numberOfFailedTests += 1
+                    
+                    XCTAssertEqual(values, valueExpectations[id.uuidString], self.m("Values"))
                     return
                 }
                 
                 print("🤖✅ \(id)")
                 numberOfPassedTests += 1
 
-                XCTAssertEqual(attributes, attributeExpectations[id.uuidString], self.m("Attributes"))
             }
             
             classifier.classify()

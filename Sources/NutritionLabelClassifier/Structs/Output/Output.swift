@@ -64,6 +64,14 @@ public struct ValueText {
     public let attributeText: RecognizedText? = nil
 }
 
+extension ValueText: Hashable {
+    public func hash(into hasher: inout Hasher) {
+        hasher.combine(value)
+        hasher.combine(text)
+        hasher.combine(attributeText)
+    }
+}
+
 public struct DoubleText {
     public let double: Double
     public let text: RecognizedText

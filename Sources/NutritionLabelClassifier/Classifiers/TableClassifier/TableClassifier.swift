@@ -89,10 +89,10 @@ class TableClassifier {
                     continue
                 }
                 
-                let columnOfTexts = getColumnOfValueLabelTexts(startingFrom: text)
-                    .sorted(by: { $0.rect.minY < $1.rect.minY })
+//                let columnOfTexts = getColumnOfValueLabelTexts(startingFrom: text)
+//                    .sorted(by: { $0.rect.minY < $1.rect.minY })
                 
-                candidates.append(columnOfTexts)
+//                candidates.append(columnOfTexts)
             }
         }
         
@@ -120,10 +120,12 @@ class TableClassifier {
         }
     }
     
-    func getColumnOfValueLabelTexts(startingFrom startingText: RecognizedText) -> [RecognizedText] {
-        
+    func getColumnOfValueTexts(startingFrom startingValueText: ValueText) -> [ValueText] {
+
         let BoundingBoxMaxXDeltaThreshold = 0.05
-        var array: [RecognizedText] = [startingText]
+        let startingText = startingValueText.text
+        
+        var array: [ValueText] = [startingValueText]
         
         //TODO: Remove using only first array of texts
         for recognizedTexts in [visionResult.accurateRecognitionWithLanugageCorrection ?? []] {
@@ -139,12 +141,13 @@ class TableClassifier {
                 }
 
                 /// Until we reach a non-nutrient-attribute text
-                guard let _ = Value(fromString: text.string) else {
+                guard let value = Value(fromString: text.string) else {
                     break
                 }
+                let valueText = ValueText(value: value, text: text)
                 
                 /// Insert these into the start of our column of labels as we read them in
-                array.insert(text, at: 0)
+                array.insert(valueText, at: 0)
             }
 
             /// Now do the same thing downwards
@@ -157,11 +160,12 @@ class TableClassifier {
                     continue
                 }
 
-                guard let _ = Value(fromString: text.string) else {
+                guard let value = Value(fromString: text.string) else {
                     break
                 }
+                let valueText = ValueText(value: value, text: text)
                 
-                array.append(text)
+                array.append(valueText)
             }
         }
 
