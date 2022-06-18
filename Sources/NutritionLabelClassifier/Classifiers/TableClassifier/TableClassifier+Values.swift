@@ -25,7 +25,7 @@ extension TableClassifier {
         
         var groups: [[[ValueText?]]] = []
         
-        var columns: [[RecognizedText]] = []
+        var columnsOfTexts: [[RecognizedText]] = []
         
         for recognizedTexts in [visionResult.accurateRecognitionWithLanugageCorrection ?? []] {
             for text in recognizedTexts {
@@ -36,51 +36,75 @@ extension TableClassifier {
                 let columnOfTexts = getColumnOfValueRecognizedTexts(startingFrom: text)
                     .sorted(by: { $0.rect.minY < $1.rect.minY })
                 
-                columns.append(columnOfTexts)
+                columnsOfTexts.append(columnOfTexts)
             }
         }
         
-        /// Process columns:
-        /// - Remove duplicates
-        /// - Remove anything values above energy for each column
+        return groupsOfColumns(from: columnsOfTexts)
+    }
+    
+    func groupsOfColumns(from columnsOfTexts: [[RecognizedText]]) -> [[[ValueText?]]] {
+        
+        var columns = columnsOfTexts
+
+        /// Process columns
+        removeDuplicates(&columns)
+        removeTextsAboveEnergy(&columns)
+        pickTopColumns(&columns)
+        sort(&columns)
+        let groupedColumnsOfTexts = group(columns)
+        var groupedColumnsOfValueTexts = groupedColumnsOfValueTexts(from: groupedColumnsOfTexts)
+        insertNilForMissedValues(&groupedColumnsOfValueTexts)
+
+        return groupedColumnsOfValueTexts
+    }
+    
+    func groupedColumnsOfValueTexts(from groupedColumnsOfTexts: [[[RecognizedText]]]) -> [[[ValueText?]]] {
+        return []
+    }
+
+    /// - Group columns if `attributeTextColumns.count > 1`
+    ///     Compare `minX` of shortest text from each value-column to `minX` of shortest attribute in each attribute-column
+    func group(_ columnsOfTexts: [[RecognizedText]]) -> [[[RecognizedText]]] {
+        return []
+    }
+
+    /// - Order columns
+    ///     Compare `midX`'s of shortest text from each column
+    func sort(_ columnsOfTexts: inout [[RecognizedText]]) {
+        
+    }
+
+    /// - Insert `nil`s wherever values failed to be recognized
+    ///     Do this if we have a mismatch of element counts between columns
+    func insertNilForMissedValues(_ groupedColumnsOfValueTexts: inout [[[ValueText?]]]) {
+        
+    }
+    
+    /// - Remove anything values above energy for each column
+    func removeTextsAboveEnergy(_ columnsOfTexts: inout [[RecognizedText]]) {
+        
+    }
+    
+    func pickTopColumns(_ columnsOfTexts: inout [[RecognizedText]]) {
         /// - Group columns based on their positions
         ///     Use `midX` of shortest text, checking if it lies within the shortest text of each column group (any element should
+        let groupedColumnsOfTexts = groupedColumnsOfTexts(from: columnsOfTexts)
+        
         /// - Pick the column with the most elements in each group
-        /// - Insert `nil`s wherever values failed to be recognized
-        ///     Do this if we have a mismatch of element counts between columns
-        /// - Determine order of columns
-        ///     Compare `midX`'s of shortest text from each column
-        /// - Group columns if `attributeTextColumns.count > 1`
-        ///     Compare `minX` of shortest text from each value-column to `minX` of shortest attribute in each attribute-column
-        
-        columns = Array(
-            columns
-                .uniqued()
-                .sorted(by: { $0.count > $1.count })
-                .filter { $0.count >= Int(Double(attributeTextColumns.smallestCount) * 0.3) }
-                .prefix(attributeTextColumns.maximumNumberOfValueColumns)
-        )
-        
-        let columnsOfValueTexts = columnsOfValuesTexts(fromRecognizedTextColumns: columns)
-        return groupsOfColumns(fromColumnsOfValueTexts: columnsOfValueTexts)
+        columnsOfTexts = pickTopColumns(from: groupedColumnsOfTexts)
     }
-    
-    func columnsOfValuesTexts(fromRecognizedTextColumns columns: [[RecognizedText]]) -> [[ValueText?]] {
-        
-//        chooseEnergyValues(&columns)
-//
-//        columns = columns.sorted(by: {
-//            $0.averageMidX < $1.averageMidX
-//        })
 
+    func pickTopColumns(from groupedColumnsOfTexts: [[[RecognizedText]]]) -> [[RecognizedText]] {
         return []
     }
     
-    func groupsOfColumns(fromColumnsOfValueTexts columns: [[ValueText?]]) -> [[[ValueText?]]] {
-        
-//        groups = [columns]
-        
+    func groupedColumnsOfTexts(from columnsOfTexts: [[RecognizedText]]) -> [[[RecognizedText]]] {
         return []
+    }
+    
+    func removeDuplicates(_ columnsOfTexts: inout [[RecognizedText]]) {
+        columnsOfTexts = columnsOfTexts.uniqued()
     }
     
     //MARK: Helpers
