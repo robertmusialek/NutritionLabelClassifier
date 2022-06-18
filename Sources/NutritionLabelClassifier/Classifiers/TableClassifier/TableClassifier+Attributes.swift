@@ -223,7 +223,7 @@ extension TableClassifier {
                 }
                 
                 /// Until we reach a non-nutrient-attribute text
-                guard text.string.containsNutrientOrTitleAttributes else {
+                guard text.string.containsNutrientAttributesOrSkippableTableElements else {
                     if skipPassUsed {
                         print("    ✋🏽 ending search because no nutrient attributes can be detected in string AND skip pass was used")
                         break
@@ -266,7 +266,7 @@ extension TableClassifier {
                     continue
                 }
                 
-                guard text.string.containsNutrientOrTitleAttributes else {
+                guard text.string.containsNutrientAttributesOrSkippableTableElements else {
                     if skipPassUsed {
                         print("    ✋🏽 ending search because no nutrient attributes can be detected in string AND skip pass was used")
                         break
@@ -322,7 +322,7 @@ extension String {
         return true
     }
     
-    var containsNutrientOrTitleAttributes: Bool {
+    var containsNutrientAttributesOrSkippableTableElements: Bool {
         containsNutrientAttributes || isSkippableTableElement
     }
     

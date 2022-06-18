@@ -153,28 +153,51 @@ extension TableClassifier {
         guard let attributeTextColumns = attributeTextColumns else { return [] }
         
         var columnsOfTexts = initialColumnsOfTexts
+        var groups: [[[RecognizedText]]] = []
         
         /// For each Attribute Column
-        for attributeTextColumn in attributeTextColumns {
+        for i in attributeTextColumns.indices {
+            let attributeTextColumn = attributeTextColumns[i]
             
-            /// Get the minX
-            guard let minX = attributeTextColumn.minX else { continue }
+            /// Get the minX of the shortest attribute
+            guard let attributeColumnMinX = attributeTextColumn.shortestText?.rect.minX else { continue }
             
-            var numberOfGroupedColumns = 0
-            while numberOfGroupedColumns != 2 && !columnsOfTexts.isEmpty {
-                let nextColumn = columnsOfTexts.removeFirst()
+            var group: [[RecognizedText]] = []
+            while group.count < 2 && !columnsOfTexts.isEmpty {
+                let column = columnsOfTexts.removeFirst()
                 
-                guard let nextColumnMaxX = nextColumn.maxX,
-                      let attributeColumnMinX = attributeTextColumn.minX,
-                      nextColumnMaxX > attributeColumnMinX else {
+                /// Skip columns that are clearly to the left of this `attributeTextColumn`
+                guard let columnMaxX = column.shortestText?.rect.maxX,
+                      columnMaxX > attributeColumnMinX else {
                     continue
                 }
+                
+                /// If we have another attribute column
+                if i < attributeTextColumns.count - 1 {
+                    /// If we have reached columns that is to the right of it
+                    guard let nextAttributeColumnMinX = attributeTextColumns[i+1].shortestText?.rect.minX,
+                          columnMaxX < nextAttributeColumnMinX else
+                    {
+                        /// Make sure we re-insert the column so that it's extracted by that column
+                        columnsOfTexts.insert(column, at: 0)
+                        
+                        /// Stop the loop so that the next attribute column is focused on
+                        break
+                    }
+                }
+                
+                /// Skip columns that contain all nutrient attributes
+                guard !column.allElementsContainNutrientAttributes else {
+                    continue
+                }
+                
+                group.append(column)
             }
             
+            groups.append(group)
         }
-        //TODO: Handle attributeTextColumns with count > 1
-        ///     Compare `minX` of shortest text from each value-column to `minX` of shortest attribute in each attribute-column
-        return []
+        
+        return groups
     }
     
     func groupedColumnsOfDetectedValueTexts(from groupedColumnsOfTexts: [[[RecognizedText]]]) -> [[[[ValueText]]]] {
@@ -220,7 +243,9 @@ extension Array where Element == ValueText {
     var maxX: CGFloat? {
         map { $0.text.rect.maxX }.sorted(by: { $0 > $1 }).first
     }
-
+    var shortestText: RecognizedText? {
+        map { $0.text }.shortestText
+    }
 }
 
 extension Array where Element == RecognizedText {
@@ -230,7 +255,9 @@ extension Array where Element == RecognizedText {
     var maxX: CGFloat? {
         map { $0.rect.maxX }.sorted(by: { $0 > $1 }).first
     }
-
+    var allElementsContainNutrientAttributes: Bool {
+        allSatisfy { $0.string.containsNutrientAttributes }
+    }
 }
 
 extension Array where Element == AttributeText {
@@ -239,6 +266,10 @@ extension Array where Element == AttributeText {
     }
     var maxX: CGFloat? {
         map { $0.text.rect.maxX }.sorted(by: { $0 > $1 }).first
+    }
+    
+    var shortestText: RecognizedText? {
+        map { $0.text }.shortestText
     }
 }
 
