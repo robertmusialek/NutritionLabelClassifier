@@ -65,6 +65,11 @@ public struct Value {
         static let standardPattern =
         #"^(?:[^0-9.:]*(?: |\()|^\/?)([0-9.:]+)[ ]*(\#(units))+(?: .*|\).*$|\/?$)$"#
     }
+    
+    var hasEnergyUnit: Bool {
+        guard let unit = unit else { return false }
+        return unit.isEnergy
+    }
 }
 
 struct NumberRegex {

@@ -1,32 +1,5 @@
 import Foundation
 
-extension NutritionUnit: CustomStringConvertible {
-    public var description: String {
-        switch self {
-        case .mg:
-            return "mg"
-        case .kj:
-            return "kJ"
-        case .mcg:
-            return "mcg"
-        case .kcal:
-            return "kcal"
-        case .p:
-            return "%"
-        case .g:
-            return "g"
-        case .cup:
-            return "cup"
-        case .oz:
-            return "oz"
-        case .ml:
-            return "ml"
-        case .tbsp:
-            return "tbsp"
-        }
-    }
-}
-
 public enum NutritionUnit: Int, CaseIterable {
     case kcal
     case cup
@@ -47,6 +20,10 @@ public enum NutritionUnit: Int, CaseIterable {
             }
         }
         return nil
+    }
+    
+    var isEnergy: Bool {
+        self == .kcal || self == .kj
     }
     
     var isAllowedInHeader: Bool {
@@ -117,4 +94,31 @@ public enum NutritionUnit: Int, CaseIterable {
     }
     
     static var allUnitsRegexOptions = allUnits.joined(separator: "|")
+}
+
+extension NutritionUnit: CustomStringConvertible {
+    public var description: String {
+        switch self {
+        case .mg:
+            return "mg"
+        case .kj:
+            return "kJ"
+        case .mcg:
+            return "mcg"
+        case .kcal:
+            return "kcal"
+        case .p:
+            return "%"
+        case .g:
+            return "g"
+        case .cup:
+            return "cup"
+        case .oz:
+            return "oz"
+        case .ml:
+            return "ml"
+        case .tbsp:
+            return "tbsp"
+        }
+    }
 }

@@ -48,8 +48,9 @@ extension TableClassifier {
         var columns = columnsOfTexts
 
         /// Process columns
-        removeDuplicates(&columns)
         removeTextsAboveEnergy(&columns)
+        removeDuplicates(&columns)
+        
         pickTopColumns(&columns)
         sort(&columns)
         let groupedColumnsOfTexts = group(columns)
@@ -69,38 +70,10 @@ extension TableClassifier {
         return []
     }
 
-    /// - Order columns
-    ///     Compare `midX`'s of shortest text from each column
-    func sort(_ columnsOfTexts: inout [[RecognizedText]]) {
-        
-    }
-
     /// - Insert `nil`s wherever values failed to be recognized
     ///     Do this if we have a mismatch of element counts between columns
     func insertNilForMissedValues(_ groupedColumnsOfValueTexts: inout [[[ValueText?]]]) {
         
-    }
-    
-    /// - Remove anything values above energy for each column
-    func removeTextsAboveEnergy(_ columnsOfTexts: inout [[RecognizedText]]) {
-        
-    }
-    
-    func pickTopColumns(_ columnsOfTexts: inout [[RecognizedText]]) {
-        /// - Group columns based on their positions
-        ///     Use `midX` of shortest text, checking if it lies within the shortest text of each column group (any element should
-        let groupedColumnsOfTexts = groupedColumnsOfTexts(from: columnsOfTexts)
-        
-        /// - Pick the column with the most elements in each group
-        columnsOfTexts = pickTopColumns(from: groupedColumnsOfTexts)
-    }
-
-    func pickTopColumns(from groupedColumnsOfTexts: [[[RecognizedText]]]) -> [[RecognizedText]] {
-        return []
-    }
-    
-    func groupedColumnsOfTexts(from columnsOfTexts: [[RecognizedText]]) -> [[[RecognizedText]]] {
-        return []
     }
     
     func removeDuplicates(_ columnsOfTexts: inout [[RecognizedText]]) {
@@ -167,6 +140,128 @@ extension TableClassifier {
         }
 
         return array
+    }
+    
+    /// - Remove anything values above energy for each column
+    func removeTextsAboveEnergy(_ columnsOfTexts: inout [[RecognizedText]]) {
+        for i in columnsOfTexts.indices {
+            var column = columnsOfTexts[i]
+            guard column.hasTextsAboveEnergyValue else { continue }
+            column.removeTextsAboveEnergyValue()
+            columnsOfTexts[i] = column
+        }
+    }
+    
+    /// - Order columns
+    ///     Compare `midX`'s of shortest text from each column
+    func sort(_ columnsOfTexts: inout [[RecognizedText]]) {
+        
+    }
+}
+
+extension TableClassifier {
+    func pickTopColumns(_ columnsOfTexts: inout [[RecognizedText]]) {
+        let groupedColumnsOfTexts = groupedColumnsOfTexts(from: columnsOfTexts)
+        columnsOfTexts = pickTopColumns(from: groupedColumnsOfTexts)
+    }
+
+    /// - Pick the column with the most elements in each group
+    func pickTopColumns(from groupedColumnsOfTexts: [[[RecognizedText]]]) -> [[RecognizedText]] {
+        return []
+    }
+    
+    /// - Group columns based on their positions
+    func groupedColumnsOfTexts(from columnsOfTexts: [[RecognizedText]]) -> [[[RecognizedText]]] {
+        var groups: [[[RecognizedText]]] = []
+        for column in columnsOfTexts {
+            
+            var didAdd = false
+            for i in groups.indices {
+                if column.belongsTo(groups[i]) {
+                    groups[i].append(column)
+                    didAdd = true
+                    break
+                }
+            }
+            
+            if !didAdd {
+                groups.append([column])
+            }
+        }
+        return groups
+    }
+}
+
+/// Array of Groups
+extension Array where Element == [[RecognizedText]] {
+    var strings: [[[String]]] {
+        map { $0.strings }
+    }
+}
+
+/// Group
+extension Array where Element == [RecognizedText] {
+    var strings: [[String]] {
+        map { $0.strings }
+    }
+    
+    var shortestText: RecognizedText? {
+        let shortestTexts = compactMap { $0.shortestText }
+        return shortestTexts.sorted(by: { $0.rect.width < $1.rect.width }).first
+    }
+}
+
+/// Column
+extension Array where Element == RecognizedText {
+    
+    var strings: [String] {
+        map { $0.string }
+    }
+    /// Use `midX` of shortest text, checking if it lies within the shortest text of any column in each group
+    func belongsTo(_ group: [[RecognizedText]]) -> Bool {
+        guard let midX = self.midXOfShortestText,
+              let shortestText = group.shortestText
+        else {
+            return false
+        }
+        
+        return midX >= shortestText.rect.minX && midX <= shortestText.rect.maxX
+    }
+    
+    var midXOfShortestText: CGFloat? {
+        shortestText?.rect.midX
+    }
+    
+    var shortestText: RecognizedText? {
+        sorted(by: { $0.rect.width < $1.rect.width }).first
+    }
+
+    mutating func removeTextsAboveEnergyValue() {
+        guard let index = indexOfFirstEnergyValue else { return }
+        removeFirst(index)
+    }
+    
+    var indexOfFirstEnergyValue: Int? {
+        for i in indices {
+            if self[i].containsEnergyValue {
+                return i
+            }
+        }
+        return nil
+    }
+    
+    var hasTextsAboveEnergyValue: Bool {
+        /// Return false if we didn't detect an energy value
+        guard let index = indexOfFirstEnergyValue else { return false }
+        /// Return true if its not the first element
+        return index != 0
+    }
+}
+
+extension RecognizedText {
+    var containsEnergyValue: Bool {
+        let values = Value.detect(in: self.string)
+        return values.contains(where: { $0.hasEnergyUnit })
     }
 }
 
