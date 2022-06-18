@@ -40,6 +40,19 @@ extension TableClassifier {
             }
         }
         
+        /// Process columns:
+        /// - Remove duplicates
+        /// - Remove anything values above energy for each column
+        /// - Group columns based on their positions
+        ///     Use `midX` of shortest text, checking if it lies within the shortest text of each column group (any element should
+        /// - Pick the column with the most elements in each group
+        /// - Insert `nil`s wherever values failed to be recognized
+        ///     Do this if we have a mismatch of element counts between columns
+        /// - Determine order of columns
+        ///     Compare `midX`'s of shortest text from each column
+        /// - Group columns if `attributeTextColumns.count > 1`
+        ///     Compare `minX` of shortest text from each value-column to `minX` of shortest attribute in each attribute-column
+        
         columns = Array(
             columns
                 .uniqued()
