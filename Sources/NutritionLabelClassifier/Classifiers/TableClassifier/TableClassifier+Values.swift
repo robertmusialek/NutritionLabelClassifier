@@ -29,7 +29,7 @@ extension TableClassifier {
         
         for recognizedTexts in [visionResult.accurateRecognitionWithLanugageCorrection ?? []] {
             for text in recognizedTexts {
-                guard let value = Value(fromString: text.string) else {
+                guard text.string.containsValues else {
                     continue
                 }
                 
@@ -50,30 +50,15 @@ extension TableClassifier {
         /// Process columns
         removeTextsAboveEnergy(&columns)
         removeDuplicates(&columns)
-        
         pickTopColumns(&columns)
         sort(&columns)
         let groupedColumnsOfTexts = group(columns)
-        var groupedColumnsOfValueTexts = groupedColumnsOfValueTexts(from: groupedColumnsOfTexts)
+        let groupedColumnsOfDetectedValueTexts = groupedColumnsOfDetectedValueTexts(from: groupedColumnsOfTexts)
+        
+        var groupedColumnsOfValueTexts = pickValueTexts(from: groupedColumnsOfDetectedValueTexts)
         insertNilForMissedValues(&groupedColumnsOfValueTexts)
 
         return groupedColumnsOfValueTexts
-    }
-    
-    func groupedColumnsOfValueTexts(from groupedColumnsOfTexts: [[[RecognizedText]]]) -> [[[ValueText?]]] {
-        return []
-    }
-
-    /// - Group columns if `attributeTextColumns.count > 1`
-    ///     Compare `minX` of shortest text from each value-column to `minX` of shortest attribute in each attribute-column
-    func group(_ columnsOfTexts: [[RecognizedText]]) -> [[[RecognizedText]]] {
-        return []
-    }
-
-    /// - Insert `nil`s wherever values failed to be recognized
-    ///     Do this if we have a mismatch of element counts between columns
-    func insertNilForMissedValues(_ groupedColumnsOfValueTexts: inout [[[ValueText?]]]) {
-        
     }
     
     func removeDuplicates(_ columnsOfTexts: inout [[RecognizedText]]) {
@@ -155,7 +140,111 @@ extension TableClassifier {
     /// - Order columns
     ///     Compare `midX`'s of shortest text from each column
     func sort(_ columnsOfTexts: inout [[RecognizedText]]) {
+        columnsOfTexts.sort(by: {
+            guard let midX0 = $0.midXOfShortestText, let midX1 = $1.midXOfShortestText else {
+                return false
+            }
+            return midX0 < midX1
+        })
+    }
+    
+    /// - Group columns if `attributeTextColumns.count > 1`
+    func group(_ initialColumnsOfTexts: [[RecognizedText]]) -> [[[RecognizedText]]] {
+        guard let attributeTextColumns = attributeTextColumns else { return [] }
         
+        var columnsOfTexts = initialColumnsOfTexts
+        
+        /// For each Attribute Column
+        for attributeTextColumn in attributeTextColumns {
+            
+            /// Get the minX
+            guard let minX = attributeTextColumn.minX else { continue }
+            
+            var numberOfGroupedColumns = 0
+            while numberOfGroupedColumns != 2 && !columnsOfTexts.isEmpty {
+                let nextColumn = columnsOfTexts.removeFirst()
+                
+                guard let nextColumnMaxX = nextColumn.maxX,
+                      let attributeColumnMinX = attributeTextColumn.minX,
+                      nextColumnMaxX > attributeColumnMinX else {
+                    continue
+                }
+            }
+            
+        }
+        //TODO: Handle attributeTextColumns with count > 1
+        ///     Compare `minX` of shortest text from each value-column to `minX` of shortest attribute in each attribute-column
+        return []
+    }
+    
+    func groupedColumnsOfDetectedValueTexts(from groupedColumnsOfTexts: [[[RecognizedText]]]) -> [[[[ValueText]]]] {
+        groupedColumnsOfTexts.map { group in
+            group.map { column in
+                column.map { text in
+                    Value.detect(in: text.string)
+                        .map { value in
+                            ValueText(value: value, text: text)
+                        }
+                }
+            }
+        }
+    }
+    
+    func pickValueTexts(from groupedColumnsOfDetectedValueTexts: [[[[ValueText]]]]) -> [[[ValueText?]]] {
+        for group in groupedColumnsOfDetectedValueTexts {
+            for column in group {
+                for valueTexts in column {
+                    if valueTexts.count > 1 {
+                        print("🔥 \(valueTexts)")
+                    }
+                    for valueText in valueTexts {
+                        
+                    }
+                }
+            }
+        }
+        return []
+    }
+    
+    /// - Insert `nil`s wherever values failed to be recognized
+    ///     Do this if we have a mismatch of element counts between columns
+    func insertNilForMissedValues(_ groupedColumnsOfValueTexts: inout [[[ValueText?]]]) {
+        
+    }
+}
+
+extension Array where Element == ValueText {
+    var minX: CGFloat? {
+        map { $0.text.rect.minX }.sorted(by: { $0 < $1 }).first
+    }
+    var maxX: CGFloat? {
+        map { $0.text.rect.maxX }.sorted(by: { $0 > $1 }).first
+    }
+
+}
+
+extension Array where Element == RecognizedText {
+    var minX: CGFloat? {
+        map { $0.rect.minX }.sorted(by: { $0 < $1 }).first
+    }
+    var maxX: CGFloat? {
+        map { $0.rect.maxX }.sorted(by: { $0 > $1 }).first
+    }
+
+}
+
+extension Array where Element == AttributeText {
+    var minX: CGFloat? {
+        map { $0.text.rect.minX }.sorted(by: { $0 < $1 }).first
+    }
+    var maxX: CGFloat? {
+        map { $0.text.rect.maxX }.sorted(by: { $0 > $1 }).first
+    }
+}
+
+extension Array where Element == [[[ValueText]]] {
+    var descriptions: [[[[String]]]] {
+        map { $0.map { $0.map { $0.map { $0.description } } } }
     }
 }
 
@@ -167,7 +256,12 @@ extension TableClassifier {
 
     /// - Pick the column with the most elements in each group
     func pickTopColumns(from groupedColumnsOfTexts: [[[RecognizedText]]]) -> [[RecognizedText]] {
-        return []
+        var topColumns: [[RecognizedText]] = []
+        for group in groupedColumnsOfTexts {
+            guard let top = group.sorted(by: { $0.count > $1.count }).first else { continue }
+            topColumns.append(top)
+        }
+        return topColumns
     }
     
     /// - Group columns based on their positions

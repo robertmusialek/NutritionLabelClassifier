@@ -72,6 +72,12 @@ extension ValueText: Hashable {
     }
 }
 
+extension ValueText: CustomStringConvertible {
+    public var description: String {
+        value.description
+    }
+}
+
 public struct DoubleText {
     public let double: Double
     public let text: RecognizedText

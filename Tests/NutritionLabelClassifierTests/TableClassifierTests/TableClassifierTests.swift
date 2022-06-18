@@ -34,7 +34,7 @@ final class TableClassifierTests: XCTestCase {
             }
             
             currentTestCaseId = id
-            print("🧪 Testing: \(id)")
+            print("🔥 Testing: \(id)")
             
             let classifier = NutritionLabelClassifier(image: image, contentSize: image.size)
             classifier.onCompletion = {
@@ -47,8 +47,10 @@ final class TableClassifierTests: XCTestCase {
                 }
                 guard attributes == attributeExpectations[id.uuidString] else {
                     print("🤖❌ Attributes for: \(id)")
-                    if let expectation = attributeExpectations[id.uuidString]! {
-                        print("    🤖❌ Expected: \(expectation)")
+                    if let expectation = attributeExpectations[id.uuidString] {
+                        if let expectation = expectation {
+                            print("    🤖❌ Expected: \(expectation)")
+                        }
                     }
                     if let attributes = attributes {
                         print("    🤖❌ Got back: \(attributes)")
@@ -66,8 +68,10 @@ final class TableClassifierTests: XCTestCase {
 
                 guard values == valueExpectations[id.uuidString] else {
                     print("🤖❌ Values for: \(id)")
-                    if let expectation = valueExpectations[id.uuidString]! {
-                        print("    🤖❌ Expected: \(expectation.valuesGroupDescription)")
+                    if let expectation = valueExpectations[id.uuidString] {
+                        if let expectation = expectation {                            
+                            print("    🤖❌ Expected: \(expectation.valuesGroupDescription)")
+                        }
                     }
                     if let values = values {
                         print("    🤖❌ Got back: \(values.valuesGroupDescription)")
