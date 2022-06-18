@@ -330,6 +330,16 @@ extension String {
         Attribute.haveNutrientAttribute(in: self)
     }
     
+    var isPercentageValue: Bool {
+        let values = Value.detect(in: self)
+        guard values.count == 1,
+              let first = values.first
+        else {
+            return false
+        }
+        return first.unit == .p
+    }
+    
     var containsValues: Bool {
         Value.haveValues(in: self)
     }

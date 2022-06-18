@@ -74,54 +74,50 @@ extension TableClassifier {
 
         print("🔢Getting column starting from: \(startingText.string)")
 
-        //TODO: Remove using only first array of texts
-        for recognizedTexts in [visionResult.accurateRecognitionWithLanugageCorrection ?? []] {
+        /// Now go upwards to get nutrient-attribute texts in same column as it
+        let textsAbove = visionResult.arrayOfTexts.filterSameColumn(as: startingText, preceding: true, removingOverlappingTexts: false).filter { !$0.string.isEmpty }.reversed()
+        
+        print("🔢  ⬆️ textsAbove: \(textsAbove.map { $0.string } )")
+
+        for text in textsAbove {
+            print("🔢    Checking: \(text.string)")
+            let boundingBoxMaxXDelta = abs(text.boundingBox.maxX - startingText.boundingBox.maxX)
             
-            /// Now go upwards to get nutrient-attribute texts in same column as it
-            let textsAbove = recognizedTexts.filterSameColumn(as: startingText, preceding: true, removingOverlappingTexts: false).filter { !$0.string.isEmpty }.reversed()
-            
-            print("🔢  ⬆️ textsAbove: \(textsAbove.map { $0.string } )")
-
-            for text in textsAbove {
-                print("🔢    Checking: \(text.string)")
-                let boundingBoxMaxXDelta = abs(text.boundingBox.maxX - startingText.boundingBox.maxX)
-                
-                guard boundingBoxMaxXDelta < BoundingBoxMaxXDeltaThreshold else {
-                    print("🔢    ignoring because boundingBoxMaxXDelta = \(boundingBoxMaxXDelta)")
-                    continue
-                }
-
-                /// Until we reach a non-value-attribute text
-                guard text.string.containsNutrientAttributes else {
-                    print("🔢    ✋🏽 ending search because a string wihtout any values was encountered")
-                    break
-                }
-
-                /// Insert these into the start of our column of labels as we read them in
-                array.insert(text, at: 0)
+            guard boundingBoxMaxXDelta < BoundingBoxMaxXDeltaThreshold else {
+                print("🔢    ignoring because boundingBoxMaxXDelta = \(boundingBoxMaxXDelta)")
+                continue
             }
 
-            /// Now do the same thing downwards
-            let textsBelow = recognizedTexts.filterSameColumn(as: startingText, preceding: false, removingOverlappingTexts: false).filter { !$0.string.isEmpty }
-            
-            print("🔢  ⬇️ textsBelow: \(textsBelow.map { $0.string } )")
-
-            for text in textsBelow {
-                print("🔢    Checking: \(text.string)")
-                let boundingBoxMaxXDelta = abs(text.boundingBox.maxX - startingText.boundingBox.maxX)
-                
-                guard boundingBoxMaxXDelta < BoundingBoxMaxXDeltaThreshold else {
-                    print("🔢    ignoring because boundingBoxMaxXDelta = \(boundingBoxMaxXDelta)")
-                    continue
-                }
-
-                guard text.string.containsValues else {
-                    print("🔢    ✋🏽 ending search because a string without any values was encountered")
-                    break
-                }
-                
-                array.append(text)
+            /// Until we reach a non-value-attribute text
+            guard text.string.containsNutrientAttributes else {
+                print("🔢    ✋🏽 ending search because a string wihtout any values was encountered")
+                break
             }
+
+            /// Insert these into the start of our column of labels as we read them in
+            array.insert(text, at: 0)
+        }
+
+        /// Now do the same thing downwards
+        let textsBelow = visionResult.arrayOfTexts.filterSameColumn(as: startingText, preceding: false, removingOverlappingTexts: false).filter { !$0.string.isEmpty }
+        
+        print("🔢  ⬇️ textsBelow: \(textsBelow.map { $0.string } )")
+
+        for text in textsBelow {
+            print("🔢    Checking: \(text.string)")
+            let boundingBoxMaxXDelta = abs(text.boundingBox.maxX - startingText.boundingBox.maxX)
+            
+            guard boundingBoxMaxXDelta < BoundingBoxMaxXDeltaThreshold else {
+                print("🔢    ignoring because boundingBoxMaxXDelta = \(boundingBoxMaxXDelta)")
+                continue
+            }
+
+            guard text.string.containsValues else {
+                print("🔢    ✋🏽 ending search because a string without any values was encountered")
+                break
+            }
+            
+            array.append(text)
         }
 
         return array
@@ -190,8 +186,22 @@ extension TableClassifier {
                 guard !column.allElementsContainNutrientAttributes else {
                     continue
                 }
-                
-                group.append(column)
+
+                /// Skip columns that contain all percentage values
+                guard !column.allElementsArePercentageValues else {
+                    continue
+                }
+
+                //TODO: Write this
+                /// If this column has more elements than the existing (first) column and contains any texts belonging to it, replace it
+                if let existing = group.first,
+                    column.count > existing.count,
+                    column.containsTextsFrom(existing)
+                {
+                    group[0] = column
+                } else {
+                    group.append(column)
+                }
             }
             
             groups.append(group)
@@ -257,6 +267,14 @@ extension Array where Element == RecognizedText {
     }
     var allElementsContainNutrientAttributes: Bool {
         allSatisfy { $0.string.containsNutrientAttributes }
+    }
+    
+    var allElementsArePercentageValues: Bool {
+        allSatisfy { $0.string.isPercentageValue }
+    }
+    
+    func containsTextsFrom(_ array: [RecognizedText]) -> Bool {
+        contains { array.contains($0) }
     }
 }
 
@@ -484,5 +502,64 @@ extension Array where Element == [[Value?]] {
         }
         description += "}"
         return description
+    }
+}
+
+extension Array where Element == [RecognizedText] {
+    
+    func filterSameColumn(as recognizedText: RecognizedText, preceding: Bool = false, removingOverlappingTexts: Bool = true) -> [RecognizedText] {
+        
+        //TODO: Rewrite this by removing first!
+        //Also create test cases for it starting with spicy chips
+        let candidates = first!.filter {
+            $0.isInSameColumnAs(recognizedText)
+            && (preceding ? $0.rect.maxY < recognizedText.rect.maxY : $0.rect.minY > recognizedText.rect.minY)
+        }.sorted {
+            $0.rect.minY < $1.rect.minY
+        }
+
+        var column: [RecognizedText] = []
+        var discarded: [RecognizedText] = []
+        for candidate in candidates {
+
+            guard !discarded.contains(candidate) else {
+                continue
+            }
+            let row = candidates.filter {
+                $0.isInSameRowAs(candidate)
+            }
+            guard row.count > 1, let first = row.first else {
+                column.append(candidate)
+                continue
+            }
+            
+            /// Deal with multiple recognizedTexts we may have grabbed from the same row due to them both overlapping with `recognizedText` by choosing the one that intersects with it the most
+            if removingOverlappingTexts {
+                var closest = first
+                for rowElement in row {
+                    /// first normalize the y values of both rects, `rowElement`, `closest` to `recognizedText` in new temporary variables, by assigning both the same y values (`origin.y` and `size.height`)
+                    let yNormalizedRect = rowElement.rect.rectWithYValues(of: recognizedText.rect)
+                    let closestYNormalizedRect = closest.rect.rectWithYValues(of: recognizedText.rect)
+
+                    let intersection = yNormalizedRect.intersection(recognizedText.rect)
+                    let closestIntersection = closestYNormalizedRect.intersection(recognizedText.rect)
+
+                    let intersectionRatio = intersection.width / rowElement.rect.width
+                    let closestIntersectionRatio = closestIntersection.width / closest.rect.width
+
+                    if intersectionRatio > closestIntersectionRatio {
+                        closest = rowElement
+                    }
+                    
+                    discarded.append(rowElement)
+                }
+                column.append(closest)
+            } else {
+                column = candidates
+                break
+            }
+        }
+        
+        return column
     }
 }
