@@ -321,7 +321,20 @@ extension String {
         }
         return true
     }
-    
+
+    var isSkippableValueElement: Bool {
+        let regexes = [
+            #"daily value"#,
+            #"akg"#
+        ]
+        for regex in regexes {
+            if self.matchesRegex(regex) {
+                return true
+            }
+        }
+        return false
+    }
+
     var containsNutrientAttributesOrSkippableTableElements: Bool {
         containsNutrientAttributes || isSkippableTableElement
     }

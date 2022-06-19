@@ -14,21 +14,122 @@ extension Array where Element == [AttributeText] {
     }
 }
 
+
+extension Array where Element == [RecognizedText] {
+    
+    func extractValueTextsInSameColumn(as recognizedText: RecognizedText,
+                                       preceding: Bool = false,
+                                       ignoreSingularPercentValues: Bool = true) -> [[ValueText]]
+    {
+        //TODO: Rewrite this by removing first!
+        //Also create test cases for it starting with spicy chips
+        let texts = first!.filter {
+            $0.isInSameColumnAs(recognizedText)
+            && (preceding ? $0.rect.maxY < recognizedText.rect.maxY : $0.rect.minY > recognizedText.rect.minY)
+        }.sorted {
+            preceding ? $0.rect.minY > $1.rect.minY : $0.rect.minY < $1.rect.minY
+        }
+        
+        /// Now go through the texts
+        var valueTexts: [[ValueText]] = []
+        var discarded: [RecognizedText] = []
+        for text in texts {
+            guard !discarded.contains(text) else {
+                continue
+            }
+            
+            /// Get texts on same row arrange by their `minX` values
+            let textsOnSameRow = texts.filter {
+                $0.isInSameRowAs(text)
+            }.sorted {
+                $0.rect.minX < $1.rect.minX
+            }
+            
+            guard let leftMostText = textsOnSameRow.first else {
+                continue
+            }
+            discarded.append(contentsOf: textsOnSameRow)
+            
+            let values = Value.detect(in: leftMostText.string)
+            /// End the loop if any non-value, non-skippable texts are encountered
+            guard values.count > 0 || text.string.isSkippableValueElement else {
+                continue
+            }
+
+            /// Discard any singular % values
+            if values.count == 1, let first = values.first {
+                guard first.unit != .p else {
+                    continue
+                }
+            }
+            
+            /// Stop if a second energy value is encountered, as this usually indicates the bottom of the table where strings containing the representative diet (stating something like `2000 kcal diet`) are found.
+            //TODO: Write this
+            
+            valueTexts.append(
+                values.map {
+                    ValueText(value: $0, text: leftMostText)
+                }
+            )
+        }
+        
+//        var column: [RecognizedText] = []
+//        var discarded: [RecognizedText] = []
+//        for candidate in candidates {
+//
+//            guard !discarded.contains(candidate) else {
+//                continue
+//            }
+//            let row = candidates.filter {
+//                $0.isInSameRowAs(candidate)
+//            }
+//            guard row.count > 1, let first = row.first else {
+//                column.append(candidate)
+//                continue
+//            }
+//
+//            /// Deal with multiple recognizedTexts we may have grabbed from the same row due to them both overlapping with `recognizedText` by choosing the one that intersects with it the most
+//            if removingOverlappingTexts {
+//                var closest = first
+//                for rowElement in row {
+//                    /// first normalize the y values of both rects, `rowElement`, `closest` to `recognizedText` in new temporary variables, by assigning both the same y values (`origin.y` and `size.height`)
+//                    let yNormalizedRect = rowElement.rect.rectWithYValues(of: recognizedText.rect)
+//                    let closestYNormalizedRect = closest.rect.rectWithYValues(of: recognizedText.rect)
+//
+//                    let intersection = yNormalizedRect.intersection(recognizedText.rect)
+//                    let closestIntersection = closestYNormalizedRect.intersection(recognizedText.rect)
+//
+//                    let intersectionRatio = intersection.width / rowElement.rect.width
+//                    let closestIntersectionRatio = closestIntersection.width / closest.rect.width
+//
+//                    if intersectionRatio > closestIntersectionRatio {
+//                        closest = rowElement
+//                    }
+//
+//                    discarded.append(rowElement)
+//                }
+//                column.append(closest)
+//            } else {
+//                column = candidates
+//                break
+//            }
+//        }
+        
+        return valueTexts
+    }
+}
+
 extension TableClassifier {
     
     /// Groups of `ValueText` columns, 1 for each `AttributeText` column
     func extractValueTextColumnGroups() -> [[[ValueText?]]]? {
         
-        guard let attributeTextColumns = self.attributeTextColumns else {
-            return nil
-        }
-        
-        var groups: [[[ValueText?]]] = []
-        
+        guard let _ = self.attributeTextColumns else { return nil }
         var columnsOfTexts: [[RecognizedText]] = []
         
         for recognizedTexts in [visionResult.accurateRecognitionWithLanugageCorrection ?? []] {
             for text in recognizedTexts {
+                //TODO: Make sure text.string also isn't a Serving value (like Serving Size etc)
                 guard text.string.containsValues else {
                     continue
                 }
@@ -74,15 +175,18 @@ extension TableClassifier {
 
         print("🔢Getting column starting from: \(startingText.string)")
 
+        //TODO: Use new extractValuesInSameColumn function along with changing code to handle ValueTexts
         /// Now go upwards to get nutrient-attribute texts in same column as it
-        let textsAbove = visionResult.arrayOfTexts.filterSameColumn(as: startingText, preceding: true, removingOverlappingTexts: false).filter { !$0.string.isEmpty }.reversed()
-        
+        let textsAbove: [RecognizedText] = []
+//        let textsAbove = visionResult.arrayOfTexts.extractValuesInSameColumn(as: startingText, preceding: true).filter { !$0.string.isEmpty }
+//
         print("🔢  ⬆️ textsAbove: \(textsAbove.map { $0.string } )")
 
         for text in textsAbove {
             print("🔢    Checking: \(text.string)")
             let boundingBoxMaxXDelta = abs(text.boundingBox.maxX - startingText.boundingBox.maxX)
             
+            //TODO: remove this for values
             guard boundingBoxMaxXDelta < BoundingBoxMaxXDeltaThreshold else {
                 print("🔢    ignoring because boundingBoxMaxXDelta = \(boundingBoxMaxXDelta)")
                 continue
@@ -99,7 +203,9 @@ extension TableClassifier {
         }
 
         /// Now do the same thing downwards
-        let textsBelow = visionResult.arrayOfTexts.filterSameColumn(as: startingText, preceding: false, removingOverlappingTexts: false).filter { !$0.string.isEmpty }
+//        let textsBelow = visionResult.arrayOfTexts.extractValuesInSameColumn(as: startingText, preceding: false).filter { !$0.string.isEmpty }
+        let textsBelow: [RecognizedText] = []
+        let valueTextsBelow = visionResult.arrayOfTexts.extractValueTextsInSameColumn(as: startingText, preceding: false)
         
         print("🔢  ⬇️ textsBelow: \(textsBelow.map { $0.string } )")
 
@@ -502,64 +608,5 @@ extension Array where Element == [[Value?]] {
         }
         description += "}"
         return description
-    }
-}
-
-extension Array where Element == [RecognizedText] {
-    
-    func filterSameColumn(as recognizedText: RecognizedText, preceding: Bool = false, removingOverlappingTexts: Bool = true) -> [RecognizedText] {
-        
-        //TODO: Rewrite this by removing first!
-        //Also create test cases for it starting with spicy chips
-        let candidates = first!.filter {
-            $0.isInSameColumnAs(recognizedText)
-            && (preceding ? $0.rect.maxY < recognizedText.rect.maxY : $0.rect.minY > recognizedText.rect.minY)
-        }.sorted {
-            $0.rect.minY < $1.rect.minY
-        }
-
-        var column: [RecognizedText] = []
-        var discarded: [RecognizedText] = []
-        for candidate in candidates {
-
-            guard !discarded.contains(candidate) else {
-                continue
-            }
-            let row = candidates.filter {
-                $0.isInSameRowAs(candidate)
-            }
-            guard row.count > 1, let first = row.first else {
-                column.append(candidate)
-                continue
-            }
-            
-            /// Deal with multiple recognizedTexts we may have grabbed from the same row due to them both overlapping with `recognizedText` by choosing the one that intersects with it the most
-            if removingOverlappingTexts {
-                var closest = first
-                for rowElement in row {
-                    /// first normalize the y values of both rects, `rowElement`, `closest` to `recognizedText` in new temporary variables, by assigning both the same y values (`origin.y` and `size.height`)
-                    let yNormalizedRect = rowElement.rect.rectWithYValues(of: recognizedText.rect)
-                    let closestYNormalizedRect = closest.rect.rectWithYValues(of: recognizedText.rect)
-
-                    let intersection = yNormalizedRect.intersection(recognizedText.rect)
-                    let closestIntersection = closestYNormalizedRect.intersection(recognizedText.rect)
-
-                    let intersectionRatio = intersection.width / rowElement.rect.width
-                    let closestIntersectionRatio = closestIntersection.width / closest.rect.width
-
-                    if intersectionRatio > closestIntersectionRatio {
-                        closest = rowElement
-                    }
-                    
-                    discarded.append(rowElement)
-                }
-                column.append(closest)
-            } else {
-                column = candidates
-                break
-            }
-        }
-        
-        return column
     }
 }
