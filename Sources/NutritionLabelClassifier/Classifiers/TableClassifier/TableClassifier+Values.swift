@@ -15,6 +15,23 @@ extension Array where Element == [AttributeText] {
 }
 
 
+extension Array where Element == [ValueText] {
+    var containsValueWithEnergyUnit: Bool {
+        contains(where: { $0.containsValueWithEnergyUnit })
+    }
+}
+
+extension Array where Element == ValueText {
+    var containsValueWithEnergyUnit: Bool {
+        contains(where: { $0.value.hasEnergyUnit })
+    }
+}
+extension Array where Element == Value {
+    var containsValueWithEnergyUnit: Bool {
+        contains(where: { $0.hasEnergyUnit } )
+    }
+}
+
 extension Array where Element == [RecognizedText] {
     
     func extractValueTextsInSameColumn(as recognizedText: RecognizedText,
@@ -34,26 +51,38 @@ extension Array where Element == [RecognizedText] {
         var valueTexts: [[ValueText]] = []
         var discarded: [RecognizedText] = []
         for text in texts {
+            
             guard !discarded.contains(text) else {
                 continue
             }
             
             /// Get texts on same row arrange by their `minX` values
             let textsOnSameRow = texts.filter {
-                $0.isInSameRowAs(text)
+                ($0.rect.minY < text.rect.maxY
+                && $0.rect.maxY > text.rect.minY
+                && $0.rect.maxX < text.rect.minX)
+                || $0 == text
             }.sorted {
                 $0.rect.minX < $1.rect.minX
             }
             
-            guard let leftMostText = textsOnSameRow.first else {
+            guard let pickedText = textsOnSameRow.first,
+                  !discarded.contains(pickedText)
+            else {
                 continue
             }
             discarded.append(contentsOf: textsOnSameRow)
             
-            let values = Value.detect(in: leftMostText.string)
+            let values = Value.detect(in: pickedText.string)
             /// End the loop if any non-value, non-skippable texts are encountered
             guard values.count > 0 || text.string.isSkippableValueElement else {
                 continue
+            }
+            
+            /// Stop if a second energy value is encountered, only after a non-energy value has been added—as this usually indicates the bottom of the table where strings containing the representative diet (stating something like `2000 kcal diet`) are found.
+            if valueTexts.containsValueWithEnergyUnit, values.containsValueWithEnergyUnit,
+               let last = valueTexts.last, last.contains(where: { !$0.value.hasEnergyUnit }) {
+                break
             }
 
             /// Discard any singular % values
@@ -63,59 +92,20 @@ extension Array where Element == [RecognizedText] {
                 }
             }
             
-            /// Stop if a second energy value is encountered, as this usually indicates the bottom of the table where strings containing the representative diet (stating something like `2000 kcal diet`) are found.
-            //TODO: Write this
-            
             valueTexts.append(
                 values.map {
-                    ValueText(value: $0, text: leftMostText)
+                    ValueText(value: $0, text: pickedText)
                 }
             )
         }
         
-//        var column: [RecognizedText] = []
-//        var discarded: [RecognizedText] = []
-//        for candidate in candidates {
-//
-//            guard !discarded.contains(candidate) else {
-//                continue
-//            }
-//            let row = candidates.filter {
-//                $0.isInSameRowAs(candidate)
-//            }
-//            guard row.count > 1, let first = row.first else {
-//                column.append(candidate)
-//                continue
-//            }
-//
-//            /// Deal with multiple recognizedTexts we may have grabbed from the same row due to them both overlapping with `recognizedText` by choosing the one that intersects with it the most
-//            if removingOverlappingTexts {
-//                var closest = first
-//                for rowElement in row {
-//                    /// first normalize the y values of both rects, `rowElement`, `closest` to `recognizedText` in new temporary variables, by assigning both the same y values (`origin.y` and `size.height`)
-//                    let yNormalizedRect = rowElement.rect.rectWithYValues(of: recognizedText.rect)
-//                    let closestYNormalizedRect = closest.rect.rectWithYValues(of: recognizedText.rect)
-//
-//                    let intersection = yNormalizedRect.intersection(recognizedText.rect)
-//                    let closestIntersection = closestYNormalizedRect.intersection(recognizedText.rect)
-//
-//                    let intersectionRatio = intersection.width / rowElement.rect.width
-//                    let closestIntersectionRatio = closestIntersection.width / closest.rect.width
-//
-//                    if intersectionRatio > closestIntersectionRatio {
-//                        closest = rowElement
-//                    }
-//
-//                    discarded.append(rowElement)
-//                }
-//                column.append(closest)
-//            } else {
-//                column = candidates
-//                break
-//            }
-//        }
-        
         return valueTexts
+    }
+}
+
+extension Array where Element == [ValueText] {
+    var strings: [[String]] {
+        map { $0.map { $0.value.description } }
     }
 }
 
@@ -125,7 +115,7 @@ extension TableClassifier {
     func extractValueTextColumnGroups() -> [[[ValueText?]]]? {
         
         guard let _ = self.attributeTextColumns else { return nil }
-        var columnsOfTexts: [[RecognizedText]] = []
+        var columnsOfValueTexts: [[[ValueText]]] = []
         
         for recognizedTexts in [visionResult.accurateRecognitionWithLanugageCorrection ?? []] {
             for text in recognizedTexts {
@@ -134,16 +124,154 @@ extension TableClassifier {
                     continue
                 }
                 
-                let columnOfTexts = getColumnOfValueRecognizedTexts(startingFrom: text)
-                    .sorted(by: { $0.rect.minY < $1.rect.minY })
+                let columnOfTexts = getColumnOfValueTexts(startingFrom: text)
+//                    .sorted(by: { $0.rect.minY < $1.rect.minY })
                 
-                columnsOfTexts.append(columnOfTexts)
+                columnsOfValueTexts.append(columnOfTexts)
             }
         }
         
-        return groupsOfColumns(from: columnsOfTexts)
+        return groupsOfColumns(from: columnsOfValueTexts)
+    }
+
+    func groupsOfColumns(from columnsOfValueTexts: [[[ValueText]]]) -> [[[ValueText?]]] {
+        
+        var columns = columnsOfValueTexts
+
+        removeTextsAboveEnergy(&columns)
+        removeTextsBelowLastAttribute(&columns)
+        removeDuplicates(&columns)
+        pickTopColumns(&columns)
+        sort(&columns)
+//        let groupedColumnsOfTexts = group(columns)
+//        let groupedColumnsOfDetectedValueTexts = groupedColumnsOfDetectedValueTexts(from: groupedColumnsOfTexts)
+//
+//        var groupedColumnsOfValueTexts = pickValueTexts(from: groupedColumnsOfDetectedValueTexts)
+//        insertNilForMissedValues(&groupedColumnsOfValueTexts)
+//
+//        return groupedColumnsOfValueTexts
+
+        return []
     }
     
+    func removeTextsBelowLastAttribute(_ columnsOfTexts: inout [[[ValueText]]]) {
+        //TODO-NEXT: Do this after making structs for TextOfValues replacing [ValueText] and ValuesColumn, replacing [[TextOfValues]]
+        /// For each `ValuesColumn`
+        ///
+    }
+    
+    /// - Remove anything values above energy for each column
+    func removeTextsAboveEnergy(_ columnsOfTexts: inout [[[ValueText]]]) {
+        for i in columnsOfTexts.indices {
+            var column = columnsOfTexts[i]
+            guard column.hasValueTextsAboveEnergyValue else { continue }
+            column.removeValueTextRowsAboveEnergyValue()
+            columnsOfTexts[i] = column
+        }
+    }
+    
+    func removeDuplicates(_ columnsOfTexts: inout [[[ValueText]]]) {
+        columnsOfTexts = columnsOfTexts.uniqued()
+    }
+    
+    /// - Order columns
+    ///     Compare `midX`'s of shortest text from each column
+    func sort(_ columnsOfTexts: inout [[[ValueText]]]) {
+        columnsOfTexts.sort(by: {
+            guard let midX0 = $0.compactMap({ $0.first?.text }).midXOfShortestText,
+                    let midX1 = $1.compactMap({ $0.first?.text }).midXOfShortestText else {
+                return false
+            }
+            return midX0 < midX1
+        })
+    }
+    
+    /// - Group columns if `attributeTextColumns.count > 1`
+    func group(_ initialColumnsOfTexts: [[[ValueText]]]) -> [[[[ValueText]]]] {
+//        guard let attributeTextColumns = attributeTextColumns else { return [] }
+//
+//        var columnsOfTexts = initialColumnsOfTexts
+//        var groups: [[[RecognizedText]]] = []
+//
+//        /// For each Attribute Column
+//        for i in attributeTextColumns.indices {
+//            let attributeTextColumn = attributeTextColumns[i]
+//
+//            /// Get the minX of the shortest attribute
+//            guard let attributeColumnMinX = attributeTextColumn.shortestText?.rect.minX else { continue }
+//
+//            var group: [[RecognizedText]] = []
+//            while group.count < 2 && !columnsOfTexts.isEmpty {
+//                let column = columnsOfTexts.removeFirst()
+//
+//                /// Skip columns that are clearly to the left of this `attributeTextColumn`
+//                guard let columnMaxX = column.shortestText?.rect.maxX,
+//                      columnMaxX > attributeColumnMinX else {
+//                    continue
+//                }
+//
+//                /// If we have another attribute column
+//                if i < attributeTextColumns.count - 1 {
+//                    /// If we have reached columns that is to the right of it
+//                    guard let nextAttributeColumnMinX = attributeTextColumns[i+1].shortestText?.rect.minX,
+//                          columnMaxX < nextAttributeColumnMinX else
+//                    {
+//                        /// Make sure we re-insert the column so that it's extracted by that column
+//                        columnsOfTexts.insert(column, at: 0)
+//
+//                        /// Stop the loop so that the next attribute column is focused on
+//                        break
+//                    }
+//                }
+//
+//                /// Skip columns that contain all nutrient attributes
+//                guard !column.allElementsContainNutrientAttributes else {
+//                    continue
+//                }
+//
+//                /// Skip columns that contain all percentage values
+//                guard !column.allElementsArePercentageValues else {
+//                    continue
+//                }
+//
+//                //TODO: Write this
+//                /// If this column has more elements than the existing (first) column and contains any texts belonging to it, replace it
+//                if let existing = group.first,
+//                    column.count > existing.count,
+//                    column.containsTextsFrom(existing)
+//                {
+//                    group[0] = column
+//                } else {
+//                    group.append(column)
+//                }
+//            }
+//
+//            groups.append(group)
+//        }
+//
+//        return groups
+        return []
+    }
+    
+    //MARK: Helpers
+    func getColumnOfValueTexts(startingFrom startingText: RecognizedText) -> [[ValueText]] {
+
+        let startingValueText = Value.detect(in: startingText.string).map { ValueText(value: $0, text: startingText) }
+        var array: [[ValueText]] = [startingValueText]
+
+        let valueTextsAbove = visionResult.arrayOfTexts.extractValueTextsInSameColumn(as: startingText, preceding: true).reversed()
+        array.insert(contentsOf: valueTextsAbove, at: 0)
+        let valueTextsBelow = visionResult.arrayOfTexts.extractValueTextsInSameColumn(as: startingText, preceding: false)
+        array.append(contentsOf: valueTextsBelow)
+        
+//        print("🔢Getting column starting from: \(startingText.string)")
+//        print("🔢  ⬆️ textsAbove: \(valueTextsAbove.map { $0.string } )")
+//        print("🔢  ⬇️ textsBelow: \(textsBelow.map { $0.string } )")
+
+        return array
+    }
+    
+    //MARK: - Legacy
     func groupsOfColumns(from columnsOfTexts: [[RecognizedText]]) -> [[[ValueText?]]] {
         
         var columns = columnsOfTexts
@@ -162,11 +290,6 @@ extension TableClassifier {
         return groupedColumnsOfValueTexts
     }
     
-    func removeDuplicates(_ columnsOfTexts: inout [[RecognizedText]]) {
-        columnsOfTexts = columnsOfTexts.uniqued()
-    }
-    
-    //MARK: Helpers
     func getColumnOfValueRecognizedTexts(startingFrom startingText: RecognizedText) -> [RecognizedText] {
 
         let BoundingBoxMaxXDeltaThreshold = 0.05
@@ -175,7 +298,6 @@ extension TableClassifier {
 
         print("🔢Getting column starting from: \(startingText.string)")
 
-        //TODO: Use new extractValuesInSameColumn function along with changing code to handle ValueTexts
         /// Now go upwards to get nutrient-attribute texts in same column as it
         let textsAbove: [RecognizedText] = []
 //        let textsAbove = visionResult.arrayOfTexts.extractValuesInSameColumn(as: startingText, preceding: true).filter { !$0.string.isEmpty }
@@ -186,7 +308,6 @@ extension TableClassifier {
             print("🔢    Checking: \(text.string)")
             let boundingBoxMaxXDelta = abs(text.boundingBox.maxX - startingText.boundingBox.maxX)
             
-            //TODO: remove this for values
             guard boundingBoxMaxXDelta < BoundingBoxMaxXDeltaThreshold else {
                 print("🔢    ignoring because boundingBoxMaxXDelta = \(boundingBoxMaxXDelta)")
                 continue
@@ -227,6 +348,10 @@ extension TableClassifier {
         }
 
         return array
+    }
+    
+    func removeDuplicates(_ columnsOfTexts: inout [[RecognizedText]]) {
+        columnsOfTexts = columnsOfTexts.uniqued()
     }
     
     /// - Remove anything values above energy for each column
@@ -298,7 +423,6 @@ extension TableClassifier {
                     continue
                 }
 
-                //TODO: Write this
                 /// If this column has more elements than the existing (first) column and contains any texts belonging to it, replace it
                 if let existing = group.first,
                     column.count > existing.count,
@@ -404,6 +528,45 @@ extension Array where Element == [[[ValueText]]] {
 }
 
 extension TableClassifier {
+    func pickTopColumns(_ columnsOfTexts: inout [[[ValueText]]]) {
+        let groupedColumnsOfTexts = groupedColumnsOfTexts(from: columnsOfTexts)
+        columnsOfTexts = pickTopColumns(from: groupedColumnsOfTexts)
+    }
+
+    /// - Pick the column with the most elements in each group
+    func pickTopColumns(from groupedColumnsOfTexts: [[[[ValueText]]]]) -> [[[ValueText]]] {
+        var topColumns: [[[ValueText]]] = []
+        for group in groupedColumnsOfTexts {
+            guard let top = group.sorted(by: { $0.count > $1.count }).first else { continue }
+            topColumns.append(top)
+        }
+        return topColumns
+    }
+    
+    /// - Group columns based on their positions
+    func groupedColumnsOfTexts(from columnsOfTexts: [[[ValueText]]]) -> [[[[ValueText]]]] {
+        var groups: [[[[ValueText]]]] = []
+        for column in columnsOfTexts {
+
+            var didAdd = false
+            for i in groups.indices {
+                //TODO-NEXT: Belongs to needs to be modified to recognize columns in spicy chips
+                if column.belongsTo(groups[i]) {
+                    groups[i].append(column)
+                    didAdd = true
+                    break
+                }
+            }
+
+            if !didAdd {
+                groups.append([column])
+            }
+        }
+        return groups
+    }
+}
+
+extension TableClassifier {
     func pickTopColumns(_ columnsOfTexts: inout [[RecognizedText]]) {
         let groupedColumnsOfTexts = groupedColumnsOfTexts(from: columnsOfTexts)
         columnsOfTexts = pickTopColumns(from: groupedColumnsOfTexts)
@@ -460,6 +623,26 @@ extension Array where Element == [RecognizedText] {
     }
 }
 
+extension Array where Element == [[ValueText]] {
+    var shortestText: RecognizedText? {
+        let shortestTexts = compactMap { $0.compactMap { $0.first?.text }.shortestText }
+        return shortestTexts.sorted(by: { $0.rect.width < $1.rect.width }).first
+    }
+}
+
+extension Array where Element == [ValueText] {
+    /// Use `midX` of shortest text, checking if it lies within the shortest text of any column in each group
+    func belongsTo(_ group: [[[ValueText]]]) -> Bool {
+        guard let midX = self.compactMap({ $0.first?.text }).midXOfShortestText,
+              let shortestText = group.shortestText
+        else {
+            return false
+        }
+        
+        return midX >= shortestText.rect.minX && midX <= shortestText.rect.maxX
+    }
+}
+
 /// Column
 extension Array where Element == RecognizedText {
     
@@ -500,6 +683,29 @@ extension Array where Element == RecognizedText {
     }
     
     var hasTextsAboveEnergyValue: Bool {
+        /// Return false if we didn't detect an energy value
+        guard let index = indexOfFirstEnergyValue else { return false }
+        /// Return true if its not the first element
+        return index != 0
+    }
+}
+
+extension Array where Element == [ValueText] {
+    mutating func removeValueTextRowsAboveEnergyValue() {
+        guard let index = indexOfFirstEnergyValue else { return }
+        removeFirst(index)
+    }
+    
+    var indexOfFirstEnergyValue: Int? {
+        for i in indices {
+            if self[i].containsValueWithEnergyUnit {
+                return i
+            }
+        }
+        return nil
+    }
+    
+    var hasValueTextsAboveEnergyValue: Bool {
         /// Return false if we didn't detect an energy value
         guard let index = indexOfFirstEnergyValue else { return false }
         /// Return true if its not the first element
