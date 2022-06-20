@@ -72,10 +72,32 @@ public struct Value {
     }
 }
 
-struct NumberRegex {
-    /// Recognizes number in a string using comma as decimal place (matches `39,3` and `2,05` but not `2,000` or `1,2,3`)
-    static let usingCommaAsDecimalPlace = #"^[0-9]*,[0-9][0-9]?([^0-9]|$)"#
-    static let isFraction = #"^([0-9]+)\/([0-9]+)"#
+extension Value {
+    /// Detects `Value`s in a provided `string` in the order that they appear
+    static func detect(in string: String) -> [Value] {
+        var array: [(value: Value, positionOfMatch: Int)] = []
+        print("🔢      👁 detecting values in: \(string)")
+
+        let regex = #"([0-9.]+[ ]*(?:\#(Value.Regex.units)|))"#
+        if let matches = matches(for: regex, in: string), !matches.isEmpty {
+            
+            for match in matches {
+                guard let value = Value(fromString: match.string) else {
+                    print("🔢      👁   - '\(match.string)' @ \(match.position): ⚠️ Couldn't get value")
+                    continue
+                }
+                print("🔢      👁   - '\(match.string)' @ \(match.position): \(value.description)")
+                array.append((value, match.position))
+            }
+        }
+        
+        array.sort(by: { $0.positionOfMatch < $1.positionOfMatch })
+        return array.map { $0.value }
+    }
+    
+    static func haveValues(in string: String) -> Bool {
+        detect(in: string).count > 0
+    }
 }
 
 extension Value: Equatable {
@@ -101,3 +123,11 @@ extension Value: CustomStringConvertible {
         }
     }
 }
+
+//TODO: Move this
+struct NumberRegex {
+    /// Recognizes number in a string using comma as decimal place (matches `39,3` and `2,05` but not `2,000` or `1,2,3`)
+    static let usingCommaAsDecimalPlace = #"^[0-9]*,[0-9][0-9]?([^0-9]|$)"#
+    static let isFraction = #"^([0-9]+)\/([0-9]+)"#
+}
+
