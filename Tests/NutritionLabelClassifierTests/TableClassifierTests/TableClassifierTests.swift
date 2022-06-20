@@ -62,8 +62,9 @@ final class TableClassifierTests: XCTestCase {
                     return
                 }
                 
-                let values = tableClassifier.valueTextColumns.map {
-                    $0.map { $0.map { $0.map { $0?.value } } }
+                //TODO: make this a variable on the struct itself
+                let values = tableClassifier.extractedValues.map {
+                    $0.valueTextColumnGroups.map { $0.map { $0.map { $0?.value } } }
                 }
 
                 guard values == valueExpectations[id.uuidString] else {

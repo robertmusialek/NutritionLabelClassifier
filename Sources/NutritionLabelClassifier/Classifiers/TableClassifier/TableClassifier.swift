@@ -27,13 +27,14 @@ class TableClassifier {
         .getObservations()
     }
     
+    //TODO: Use a custom struct for columns of AttributeText as well
     var attributeTextColumns: [[AttributeText]]? = nil
-    var valueTextColumns: [[[ValueText?]]]? = nil
+    var extractedValues: ExtractedValues? = nil
     
     func getObservations() -> [Observation] {
 
         attributeTextColumns = extractAttributeTextColumns()
-        valueTextColumns = extractValueTextColumnGroups()
+        extractedValues = extractValueTextColumnGroups()
         
         return observations
 //        /// Identify column of labels

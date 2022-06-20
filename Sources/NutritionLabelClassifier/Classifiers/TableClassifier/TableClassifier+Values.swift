@@ -3,12 +3,13 @@ import VisionSugar
 import TabularData
 import UIKit
 
-extension TableClassifier {
+struct ExtractedValues {
     
     /// Groups of `ValueText` columns, 1 for each `AttributeText` column
-    func extractValueTextColumnGroups() -> [[[ValueText?]]]? {
+    let valueTextColumnGroups: [[[ValueText?]]]
+    
+    init(visionResult: VisionResult, attributeTextColumns: [[AttributeText]]?) {
         
-        guard let _ = self.attributeTextColumns else { return nil }
         var columnsOfValueTexts: [[[ValueText]]] = []
         
         for recognizedTexts in [visionResult.accurateRecognitionWithLanugageCorrection ?? []] {
@@ -17,19 +18,32 @@ extension TableClassifier {
                 guard text.string.containsValues else {
                     continue
                 }
-                
-                let columnOfTexts = getColumnOfValueTexts(startingFrom: text)
-//                    .sorted(by: { $0.rect.minY < $1.rect.minY })
-                
-                columnsOfValueTexts.append(columnOfTexts)
+                columnsOfValueTexts.append(Self.getColumnOfValueTexts(startingFrom: text, in: visionResult.arrayOfTexts))
             }
         }
         
-        return groupsOfColumns(from: columnsOfValueTexts)
+        self.valueTextColumnGroups = Self.groupsOfColumns(from: columnsOfValueTexts)
     }
+    
+    static func getColumnOfValueTexts(startingFrom startingText: RecognizedText, in arrayOfTexts: [[RecognizedText]]) -> [[ValueText]] {
 
-    func groupsOfColumns(from columnsOfValueTexts: [[[ValueText]]]) -> [[[ValueText?]]] {
+        let startingValueText = Value.detect(in: startingText.string).map { ValueText(value: $0, text: startingText) }
+        var array: [[ValueText]] = [startingValueText]
+
+        let valueTextsAbove = arrayOfTexts.extractValueTextsInSameColumn(as: startingText, preceding: true).reversed()
+        array.insert(contentsOf: valueTextsAbove, at: 0)
+        let valueTextsBelow = arrayOfTexts.extractValueTextsInSameColumn(as: startingText, preceding: false)
+        array.append(contentsOf: valueTextsBelow)
         
+//        print("🔢Getting column starting from: \(startingText.string)")
+//        print("🔢  ⬆️ textsAbove: \(valueTextsAbove.map { $0.string } )")
+//        print("🔢  ⬇️ textsBelow: \(textsBelow.map { $0.string } )")
+
+        return array
+    }
+    
+    static func groupsOfColumns(from columnsOfValueTexts: [[[ValueText]]]) -> [[[ValueText?]]] {
+         
         var columns = columnsOfValueTexts
 
         removeTextsAboveEnergy(&columns)
@@ -48,14 +62,8 @@ extension TableClassifier {
         return []
     }
     
-    func removeTextsBelowLastAttribute(_ columnsOfTexts: inout [[[ValueText]]]) {
-        //TODO-NEXT: Do this after making structs for TextOfValues replacing [ValueText] and ValuesColumn, replacing [[TextOfValues]]
-        /// For each `ValuesColumn`
-        ///
-    }
-    
     /// - Remove anything values above energy for each column
-    func removeTextsAboveEnergy(_ columnsOfTexts: inout [[[ValueText]]]) {
+    static func removeTextsAboveEnergy(_ columnsOfTexts: inout [[[ValueText]]]) {
         for i in columnsOfTexts.indices {
             var column = columnsOfTexts[i]
             guard column.hasValueTextsAboveEnergyValue else { continue }
@@ -64,13 +72,19 @@ extension TableClassifier {
         }
     }
     
-    func removeDuplicates(_ columnsOfTexts: inout [[[ValueText]]]) {
+    static func removeTextsBelowLastAttribute(_ columnsOfTexts: inout [[[ValueText]]]) {
+        //TODO-NEXT: Do this after making structs for TextOfValues replacing [ValueText] and ValuesColumn, replacing [[TextOfValues]]
+        /// For each `ValuesColumn`
+        ///
+    }
+
+    static func removeDuplicates(_ columnsOfTexts: inout [[[ValueText]]]) {
         columnsOfTexts = columnsOfTexts.uniqued()
     }
     
     /// - Order columns
     ///     Compare `midX`'s of shortest text from each column
-    func sort(_ columnsOfTexts: inout [[[ValueText]]]) {
+    static func sort(_ columnsOfTexts: inout [[[ValueText]]]) {
         columnsOfTexts.sort(by: {
             guard let midX0 = $0.compactMap({ $0.first?.text }).midXOfShortestText,
                     let midX1 = $1.compactMap({ $0.first?.text }).midXOfShortestText else {
@@ -81,7 +95,7 @@ extension TableClassifier {
     }
     
     /// - Group columns if `attributeTextColumns.count > 1`
-    func group(_ initialColumnsOfTexts: [[[ValueText]]]) -> [[[[ValueText]]]] {
+    static func group(_ initialColumnsOfTexts: [[[ValueText]]]) -> [[[[ValueText]]]] {
 //        guard let attributeTextColumns = attributeTextColumns else { return [] }
 //
 //        var columnsOfTexts = initialColumnsOfTexts
@@ -147,13 +161,13 @@ extension TableClassifier {
         return []
     }
     
-    func pickTopColumns(_ columnsOfTexts: inout [[[ValueText]]]) {
+    static func pickTopColumns(_ columnsOfTexts: inout [[[ValueText]]]) {
         let groupedColumnsOfTexts = groupedColumnsOfTexts(from: columnsOfTexts)
         columnsOfTexts = pickTopColumns(from: groupedColumnsOfTexts)
     }
 
     /// - Pick the column with the most elements in each group
-    func pickTopColumns(from groupedColumnsOfTexts: [[[[ValueText]]]]) -> [[[ValueText]]] {
+    static func pickTopColumns(from groupedColumnsOfTexts: [[[[ValueText]]]]) -> [[[ValueText]]] {
         var topColumns: [[[ValueText]]] = []
         for group in groupedColumnsOfTexts {
             guard let top = group.sorted(by: { $0.count > $1.count }).first else { continue }
@@ -163,7 +177,7 @@ extension TableClassifier {
     }
     
     /// - Group columns based on their positions
-    func groupedColumnsOfTexts(from columnsOfTexts: [[[ValueText]]]) -> [[[[ValueText]]]] {
+    static func groupedColumnsOfTexts(from columnsOfTexts: [[[ValueText]]]) -> [[[[ValueText]]]] {
         var groups: [[[[ValueText]]]] = []
         for column in columnsOfTexts {
 
@@ -183,21 +197,12 @@ extension TableClassifier {
         }
         return groups
     }
+}
+
+extension TableClassifier {
     
-    func getColumnOfValueTexts(startingFrom startingText: RecognizedText) -> [[ValueText]] {
-
-        let startingValueText = Value.detect(in: startingText.string).map { ValueText(value: $0, text: startingText) }
-        var array: [[ValueText]] = [startingValueText]
-
-        let valueTextsAbove = visionResult.arrayOfTexts.extractValueTextsInSameColumn(as: startingText, preceding: true).reversed()
-        array.insert(contentsOf: valueTextsAbove, at: 0)
-        let valueTextsBelow = visionResult.arrayOfTexts.extractValueTextsInSameColumn(as: startingText, preceding: false)
-        array.append(contentsOf: valueTextsBelow)
-        
-//        print("🔢Getting column starting from: \(startingText.string)")
-//        print("🔢  ⬆️ textsAbove: \(valueTextsAbove.map { $0.string } )")
-//        print("🔢  ⬇️ textsBelow: \(textsBelow.map { $0.string } )")
-
-        return array
-    }    
+    func extractValueTextColumnGroups() -> ExtractedValues? {
+        guard let _ = self.attributeTextColumns else { return nil }
+        return ExtractedValues(visionResult: visionResult, attributeTextColumns: attributeTextColumns)
+    }
 }
