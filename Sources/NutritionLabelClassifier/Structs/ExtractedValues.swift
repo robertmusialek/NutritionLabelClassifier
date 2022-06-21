@@ -28,7 +28,7 @@ struct ExtractedValues {
         let startingValueText = Value.detect(in: startingText.string).map { ValueText(value: $0, text: startingText) }
         var array: [[ValueText]] = [startingValueText]
 
-        //TODO-NEXT (3): Rewrite ValuesTextColumn to do both above and below extraction in one swoop and return the complete column (with the starting text converted to a ValuesText
+        //TODO-NEXT (1): Rewrite ValuesTextColumn to do both above and below extraction in one swoop and return the complete column (with the starting text converted to a ValuesText
 
         let valueTextsAbove = arrayOfTexts.extractValueTextsInSameColumn(as: startingText, preceding: true).reversed()
         array.insert(contentsOf: valueTextsAbove, at: 0)
@@ -74,7 +74,7 @@ struct ExtractedValues {
     }
     
     static func removeTextsBelowLastAttribute(_ columnsOfTexts: inout [[[ValueText]]]) {
-        //TODO-NEXT (2): Do this after making structs for TextOfValues replacing [ValueText] and ValuesColumn, replacing [[TextOfValues]]
+        //TODO-NEXT (3): Do this after making structs for TextOfValues replacing [ValueText] and ValuesColumn, replacing [[TextOfValues]]
         /// For each `ValuesColumn`
         ///
     }
@@ -184,7 +184,7 @@ struct ExtractedValues {
 
             var didAdd = false
             for i in groups.indices {
-                //TODO-NEXT (1): Belongs to needs to be modified to recognize columns in spicy chips
+                //TODO-NEXT (2): Belongs to needs to be modified to recognize columns in spicy chips
                 if column.belongsTo(groups[i]) {
                     groups[i].append(column)
                     didAdd = true

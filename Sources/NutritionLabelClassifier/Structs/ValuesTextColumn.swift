@@ -4,8 +4,15 @@ import VisionSugar
 struct ValuesTextColumn {
 
     let valuesTexts: [ValuesText]
-    
+
     init(startingText: RecognizedText, from array: [[RecognizedText]], preceding: Bool = false) {
+        //TODO: Think of a structure for this with repetition
+        let above = Self.something(startingText: startingText, from: array, preceding: true)
+        let below = Self.something(startingText: startingText, from: array, preceding: false)
+        self.valuesTexts = above + [] + below
+    }
+    
+    static func something(startingText: RecognizedText, from array: [[RecognizedText]], preceding: Bool) -> [ValuesText] {
         
         //TODO: Write this to possibly go through all arrays, or better yet—the actual VisionResult (even if we're just using the first—ie. accurately recognized with language correction), so that it can contextually handle the array of texts without having to assume what they are
         let texts = array.first!.filter {
@@ -42,7 +49,12 @@ struct ValuesTextColumn {
             }
             discarded.append(contentsOf: textsOnSameRow)
 
-            guard let valuesText = ValuesText(pickedText) else {
+            /// Return nil if any non-skippable texts are encountered
+            guard !text.string.isSkippableValueElement else {
+                continue
+            }
+
+            guard let valuesText = ValuesText(pickedText), !valuesText.isSingularPercentValue else {
                 continue
             }
             
@@ -55,6 +67,6 @@ struct ValuesTextColumn {
             valuesTexts.append(valuesText)
         }
         
-        self.valuesTexts = valuesTexts
+        return valuesTexts
     }
 }

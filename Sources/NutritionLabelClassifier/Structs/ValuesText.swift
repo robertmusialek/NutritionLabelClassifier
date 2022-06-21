@@ -7,24 +7,22 @@ struct ValuesText {
     
     init?(_ text: RecognizedText) {
         let values = Value.detect(in: text.string)
-        /// End the loop if any non-value, non-skippable texts are encountered
-        guard values.count > 0 || text.string.isSkippableValueElement else {
+        guard values.count > 0 else {
             return nil
-        }
-
-        /// Discard any singular % values
-        if values.count == 1, let first = values.first {
-            guard first.unit != .p else {
-                return nil
-            }
-        }
-
+        }        
         self.text = text
         self.values = values
     }
 
     var containsValueWithEnergyUnit: Bool {
         values.containsValueWithEnergyUnit
+    }
+    
+    var isSingularPercentValue: Bool {
+        if values.count == 1, let first = values.first, first.unit == .p {
+            return true
+        }
+        return false
     }
 }
 
