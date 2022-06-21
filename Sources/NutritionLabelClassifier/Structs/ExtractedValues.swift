@@ -8,50 +8,33 @@ struct ExtractedValues {
     
     init(visionResult: VisionResult, attributeTextColumns: [[AttributeText]]?) {
         
-        var columns: [[[ValueText]]] = []
+        var columns: [ValuesTextColumn] = []
         
         for recognizedTexts in [visionResult.accurateRecognitionWithLanugageCorrection ?? []] {
             for text in recognizedTexts {
                 //TODO: Make sure text.string also isn't a Serving value (like Serving Size etc)
-                guard text.string.containsValues else {
+                
+                guard let column = ValuesTextColumn(startingFrom: text, in: visionResult) else {
                     continue
                 }
-                columns.append(Self.getColumnOfValueTexts(startingFrom: text, in: visionResult.arrayOfTexts))
+                columns.append(column)
             }
         }
         
-        self.valueTextColumnGroups = Self.groupsOfColumns(from: columns)
+        self.valueTextColumnGroups = Self.group(valuesTextColumns: columns)
     }
     
-    static func getColumnOfValueTexts(startingFrom startingText: RecognizedText, in arrayOfTexts: [[RecognizedText]]) -> [[ValueText]] {
-
-        let startingValueText = Value.detect(in: startingText.string).map { ValueText(value: $0, text: startingText) }
-        var array: [[ValueText]] = [startingValueText]
-
-        //TODO-NEXT (1): Rewrite ValuesTextColumn to do both above and below extraction in one swoop and return the complete column (with the starting text converted to a ValuesText
-
-        let valueTextsAbove = arrayOfTexts.extractValueTextsInSameColumn(as: startingText, preceding: true).reversed()
-        array.insert(contentsOf: valueTextsAbove, at: 0)
-        let valueTextsBelow = arrayOfTexts.extractValueTextsInSameColumn(as: startingText, preceding: false)
-        array.append(contentsOf: valueTextsBelow)
-        
-        //[above, starting, below]
-//        print("🔢Getting column starting from: \(startingText.string)")
-//        print("🔢  ⬆️ textsAbove: \(valueTextsAbove.map { $0.string } )")
-//        print("🔢  ⬇️ textsBelow: \(textsBelow.map { $0.string } )")
-
-        return array
-    }
-    
-    static func groupsOfColumns(from columnsOfValueTexts: [[[ValueText]]]) -> [[[ValueText?]]] {
+    static func group(valuesTextColumns: [ValuesTextColumn]) -> [[[ValueText?]]] {
          
-        var columns = columnsOfValueTexts
+        var columns = valuesTextColumns
 
+        //TODO-NEXT (1) Test these
         removeTextsAboveEnergy(&columns)
         removeTextsBelowLastAttribute(&columns)
         removeDuplicates(&columns)
         pickTopColumns(&columns)
         sort(&columns)
+        
 //        let groupedColumnsOfTexts = group(columns)
 //        let groupedColumnsOfDetectedValueTexts = groupedColumnsOfDetectedValueTexts(from: groupedColumnsOfTexts)
 //
@@ -64,31 +47,66 @@ struct ExtractedValues {
     }
     
     /// - Remove anything values above energy for each column
-    static func removeTextsAboveEnergy(_ columnsOfTexts: inout [[[ValueText]]]) {
-        for i in columnsOfTexts.indices {
-            var column = columnsOfTexts[i]
-            guard column.hasValueTextsAboveEnergyValue else { continue }
-            column.removeValueTextRowsAboveEnergyValue()
-            columnsOfTexts[i] = column
+    static func removeTextsAboveEnergy(_ columns: inout [ValuesTextColumn]) {
+        for i in columns.indices {
+            var column = columns[i]
+            guard column.hasValuesAboveEnergyValue else { continue }
+            column.removeValuesTextsAboveEnergy()
+            columns[i] = column
         }
     }
     
-    static func removeTextsBelowLastAttribute(_ columnsOfTexts: inout [[[ValueText]]]) {
+    static func removeTextsBelowLastAttribute(_ columns: inout [ValuesTextColumn]) {
         //TODO-NEXT (3): Do this after making structs for TextOfValues replacing [ValueText] and ValuesColumn, replacing [[TextOfValues]]
         /// For each `ValuesColumn`
         ///
     }
 
-    static func removeDuplicates(_ columnsOfTexts: inout [[[ValueText]]]) {
-        columnsOfTexts = columnsOfTexts.uniqued()
+    static func removeDuplicates(_ columns: inout [ValuesTextColumn]) {
+        columns = columns.uniqued()
+    }
+    
+    static func pickTopColumns(_ columns: inout [ValuesTextColumn]) {
+        let groups = groupedColumnsOfTexts(from: columns)
+        columns = pickTopColumns(from: groups)
+    }
+
+    /// - Group columns based on their positions
+    static func groupedColumnsOfTexts(from columns: [ValuesTextColumn]) -> [[ValuesTextColumn]] {
+        var groups: [[ValuesTextColumn]] = []
+        for column in columns {
+
+            var didAdd = false
+            for i in groups.indices {
+                if column.belongsTo(groups[i]) {
+                    groups[i].append(column)
+                    didAdd = true
+                    break
+                }
+            }
+
+            if !didAdd {
+                groups.append([column])
+            }
+        }
+        return groups
+    }
+    
+    /// - Pick the column with the most elements in each group
+    static func pickTopColumns(from groupedColumns: [[ValuesTextColumn]]) -> [ValuesTextColumn] {
+        var topColumns: [ValuesTextColumn] = []
+        for group in groupedColumns {
+            guard let top = group.sorted(by: { $0.valuesTexts.count > $1.valuesTexts.count }).first else { continue }
+            topColumns.append(top)
+        }
+        return topColumns
     }
     
     /// - Order columns
     ///     Compare `midX`'s of shortest text from each column
-    static func sort(_ columnsOfTexts: inout [[[ValueText]]]) {
-        columnsOfTexts.sort(by: {
-            guard let midX0 = $0.compactMap({ $0.first?.text }).midXOfShortestText,
-                    let midX1 = $1.compactMap({ $0.first?.text }).midXOfShortestText else {
+    static func sort(_ columns: inout [ValuesTextColumn]) {
+        columns.sort(by: {
+            guard let midX0 = $0.midXOfShortestText, let midX1 = $1.midXOfShortestText else {
                 return false
             }
             return midX0 < midX1
@@ -160,42 +178,5 @@ struct ExtractedValues {
 //
 //        return groups
         return []
-    }
-    
-    static func pickTopColumns(_ columnsOfTexts: inout [[[ValueText]]]) {
-        let groupedColumnsOfTexts = groupedColumnsOfTexts(from: columnsOfTexts)
-        columnsOfTexts = pickTopColumns(from: groupedColumnsOfTexts)
-    }
-
-    /// - Pick the column with the most elements in each group
-    static func pickTopColumns(from groupedColumnsOfTexts: [[[[ValueText]]]]) -> [[[ValueText]]] {
-        var topColumns: [[[ValueText]]] = []
-        for group in groupedColumnsOfTexts {
-            guard let top = group.sorted(by: { $0.count > $1.count }).first else { continue }
-            topColumns.append(top)
-        }
-        return topColumns
-    }
-    
-    /// - Group columns based on their positions
-    static func groupedColumnsOfTexts(from columnsOfTexts: [[[ValueText]]]) -> [[[[ValueText]]]] {
-        var groups: [[[[ValueText]]]] = []
-        for column in columnsOfTexts {
-
-            var didAdd = false
-            for i in groups.indices {
-                //TODO-NEXT (2): Belongs to needs to be modified to recognize columns in spicy chips
-                if column.belongsTo(groups[i]) {
-                    groups[i].append(column)
-                    didAdd = true
-                    break
-                }
-            }
-
-            if !didAdd {
-                groups.append([column])
-            }
-        }
-        return groups
     }
 }

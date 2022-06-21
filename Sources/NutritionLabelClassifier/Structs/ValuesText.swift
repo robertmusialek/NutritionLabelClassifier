@@ -26,6 +26,13 @@ struct ValuesText {
     }
 }
 
+extension ValuesText: Hashable {
+    func hash(into hasher: inout Hasher) {
+        hasher.combine(values)
+        hasher.combine(text)
+    }
+}
+
 extension Array where Element == ValuesText {
     var containsValueWithEnergyUnit: Bool {
         contains(where: { $0.containsValueWithEnergyUnit })

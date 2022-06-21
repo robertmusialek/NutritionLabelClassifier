@@ -90,11 +90,21 @@ extension Array where Element == [ValueText] {
         return midX >= shortestText.rect.minX && midX <= shortestText.rect.maxX
     }
 
+    //TODO-NEXT: Remove
     mutating func removeValueTextRowsAboveEnergyValue() {
         guard let index = indexOfFirstEnergyValue else { return }
         removeFirst(index)
     }
     
+    //TODO-NEXT: Remove
+    var hasValueTextsAboveEnergyValue: Bool {
+        /// Return false if we didn't detect an energy value
+        guard let index = indexOfFirstEnergyValue else { return false }
+        /// Return true if its not the first element
+        return index != 0
+    }
+
+    //TODO-NEXT: Remove
     var indexOfFirstEnergyValue: Int? {
         for i in indices {
             if self[i].containsValueWithEnergyUnit {
@@ -102,13 +112,6 @@ extension Array where Element == [ValueText] {
             }
         }
         return nil
-    }
-    
-    var hasValueTextsAboveEnergyValue: Bool {
-        /// Return false if we didn't detect an energy value
-        guard let index = indexOfFirstEnergyValue else { return false }
-        /// Return true if its not the first element
-        return index != 0
     }
     
     var containsValueWithEnergyUnit: Bool {
@@ -123,6 +126,7 @@ extension Array where Element == [ValueText] {
 //MARK: [[[ValueText]]]
 
 extension Array where Element == [[ValueText]] {
+    //TODO-NEXT: Remove
     var shortestText: RecognizedText? {
         let shortestTexts = compactMap { $0.compactMap { $0.first?.text }.shortestText }
         return shortestTexts.sorted(by: { $0.rect.width < $1.rect.width }).first
@@ -175,6 +179,7 @@ extension Array where Element == RecognizedText {
         return midX >= shortestText.rect.minX && midX <= shortestText.rect.maxX
     }
     
+    //TODO-NEXT: Remove
     var midXOfShortestText: CGFloat? {
         shortestText?.rect.midX
     }

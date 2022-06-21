@@ -1,72 +1,79 @@
 import VisionSugar
+import SwiftUI
 
 //TODO: Create test cases for it starting with spicy chips
 struct ValuesTextColumn {
 
-    let valuesTexts: [ValuesText]
+    var valuesTexts: [ValuesText]
 
-    init(startingText: RecognizedText, from array: [[RecognizedText]], preceding: Bool = false) {
-        //TODO: Think of a structure for this with repetition
-        let above = Self.something(startingText: startingText, from: array, preceding: true)
-        let below = Self.something(startingText: startingText, from: array, preceding: false)
-        self.valuesTexts = above + [] + below
+    init?(startingFrom text: RecognizedText, in visionResult: VisionResult) {
+        guard let valuesText = ValuesText(text), valuesText.isSingularPercentValue else {
+            return nil
+        }
+
+        let above = visionResult.columnOfValues(startingFrom: text, preceding: true)
+        let below = visionResult.columnOfValues(startingFrom: text, preceding: false)
+        self.valuesTexts = above + [valuesText] + below
+    }
+}
+
+extension ValuesTextColumn: Hashable {
+    func hash(into hasher: inout Hasher) {
+        hasher.combine(valuesTexts)
+    }
+}
+
+/// Helpers for `ExtractedValues.removeTextsAboveEnergy(_:)`
+extension ValuesTextColumn {
+    
+    var hasValuesAboveEnergyValue: Bool {
+        /// Return false if we didn't detect an energy value
+        guard let index = indexOfFirstEnergyValue else { return false }
+        /// Return true if its not the first element
+        return index != 0
     }
     
-    static func something(startingText: RecognizedText, from array: [[RecognizedText]], preceding: Bool) -> [ValuesText] {
-        
-        //TODO: Write this to possibly go through all arrays, or better yet—the actual VisionResult (even if we're just using the first—ie. accurately recognized with language correction), so that it can contextually handle the array of texts without having to assume what they are
-        let texts = array.first!.filter {
-            $0.isInSameColumnAs(startingText)
-            && (preceding ? $0.rect.maxY < startingText.rect.maxY : $0.rect.minY > startingText.rect.minY)
-        }.sorted {
-            preceding ? $0.rect.minY > $1.rect.minY : $0.rect.minY < $1.rect.minY
+    var indexOfFirstEnergyValue: Int? {
+        for i in valuesTexts.indices {
+            if valuesTexts[i].containsValueWithEnergyUnit {
+                return i
+            }
         }
-        
-        var valuesTexts: [ValuesText] = []
-        var discarded: [RecognizedText] = []
-        
-        /// Now go through the texts
-        for text in texts {
+        return nil
+    }
+    
+    mutating func removeValuesTextsAboveEnergy() {
+        guard let index = indexOfFirstEnergyValue else { return }
+        valuesTexts.removeFirst(index)
+    }
+}
 
-            guard !discarded.contains(text) else {
-                continue
-            }
-
-            //TODO: Shouldn't we check all arrays here so that we grab the FastRecognized results that may not have been grabbed as a fallback?
-            /// Get texts on same row arranged by their `minX` values
-            let textsOnSameRow = texts.filter {
-                ($0.rect.minY < text.rect.maxY
-                && $0.rect.maxY > text.rect.minY
-                && $0.rect.maxX < text.rect.minX)
-                || $0 == text
-            }.sorted {
-                $0.rect.minX < $1.rect.minX
-            }
-
-            /// Pick the left most text on the row, making sure it isn't
-            guard let pickedText = textsOnSameRow.first, !discarded.contains(pickedText) else {
-                continue
-            }
-            discarded.append(contentsOf: textsOnSameRow)
-
-            /// Return nil if any non-skippable texts are encountered
-            guard !text.string.isSkippableValueElement else {
-                continue
-            }
-
-            guard let valuesText = ValuesText(pickedText), !valuesText.isSingularPercentValue else {
-                continue
-            }
-            
-            /// Stop if a second energy value is encountered after a non-energy value has been added—as this usually indicates the bottom of the table where strings containing the representative diet (stating something like `2000 kcal diet`) are found.
-            if valuesTexts.containsValueWithEnergyUnit, valuesText.containsValueWithEnergyUnit,
-               let last = valuesTexts.last, !last.containsValueWithEnergyUnit {
-                break
-            }
-
-            valuesTexts.append(valuesText)
+extension ValuesTextColumn {
+    
+    /// Use `midX` of shortest text, checking if it lies within the shortest text of any column in each group
+    func belongsTo(_ group: [ValuesTextColumn]) -> Bool {
+        //TODO-NEXT (2): Belongs to needs to be modified to recognize columns in spicy chips
+        guard let midX = valuesTexts.compactMap({ $0.text }).midXOfShortestText,
+              let shortestText = group.shortestText
+        else {
+            return false
         }
-        
-        return valuesTexts
+
+        return midX >= shortestText.rect.minX && midX <= shortestText.rect.maxX
+    }
+    
+    var shortestText: RecognizedText? {
+        valuesTexts.compactMap { $0.text }.shortestText
+    }
+    
+    var midXOfShortestText: CGFloat? {
+        shortestText?.rect.midX
+    }
+}
+
+extension Array where Element == ValuesTextColumn {
+    var shortestText: RecognizedText? {
+        let shortestTexts = compactMap { $0.shortestText }
+        return shortestTexts.sorted(by: { $0.rect.width < $1.rect.width }).first
     }
 }
