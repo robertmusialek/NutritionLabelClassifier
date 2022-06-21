@@ -209,6 +209,7 @@ extension Array where Element == RecognizedText {
 
 extension Array where Element == [RecognizedText] {
     
+    //TODO: Legacy, to be removed, replaced with ValuesTextColumn
     func extractValueTextsInSameColumn(as recognizedText: RecognizedText,
                                        preceding: Bool = false,
                                        ignoreSingularPercentValues: Bool = true) -> [[ValueText]]
