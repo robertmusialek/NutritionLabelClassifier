@@ -28,7 +28,7 @@ struct ExtractedValues {
          
         var columns = valuesTextColumns
 
-        //TODO-NEXT (1) Test these
+        //TODO-NEXT (1) Test these. We seem to be getting less columns than we used to
         removeTextsAboveEnergy(&columns)
         removeTextsBelowLastAttribute(&columns)
         removeDuplicates(&columns)

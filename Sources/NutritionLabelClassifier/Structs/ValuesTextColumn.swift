@@ -17,6 +17,28 @@ struct ValuesTextColumn {
     }
 }
 
+extension ValuesText: CustomDebugStringConvertible {
+    var debugDescription: String {
+        return "[" + values.map { $0.description }.joined(separator: ", ") + "]"
+    }
+    var description: String {
+        return "[" + values.map { $0.description }.joined(separator: ", ") + "]"
+    }
+}
+
+extension Array where Element == ValuesTextColumn {
+    var descriptions: [String] {
+        return map { $0.desc }
+    }
+}
+
+extension ValuesTextColumn {
+    //TODO: Rename this
+    var desc: String {
+        return "[" + valuesTexts.map { $0.debugDescription }.joined(separator: ", ") + "]"
+    }
+}
+
 extension ValuesTextColumn: Hashable {
     func hash(into hasher: inout Hasher) {
         hasher.combine(valuesTexts)
