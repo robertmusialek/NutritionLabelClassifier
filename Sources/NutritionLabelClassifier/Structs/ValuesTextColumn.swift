@@ -81,7 +81,7 @@ extension ValuesTextColumn {
     
     mutating func removeValueTextsBelowAttributeText(_ attributeText: AttributeText) {
         guard let index = indexOfFirstValueTextBelowAttributeText(attributeText) else { return }
-        valuesTexts.removeFirst(index)
+        valuesTexts.removeLast(valuesTexts.count - index)
     }
 }
 

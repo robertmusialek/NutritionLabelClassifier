@@ -123,16 +123,18 @@ struct ExtractedAttributes {
 }
 
 extension ExtractedAttributes {
+    
+    //TODO: Write tests for these
     var bottomAttributeText: AttributeText? {
         let columns = attributeTextColumns
         var bottomAttributeText: AttributeText? = nil
         for column in columns {
             for attributeText in column {
-                guard let attributeText = bottomAttributeText else {
+                guard let bottom = bottomAttributeText else {
                     bottomAttributeText = attributeText
                     continue
                 }
-                if attributeText.text.rect.maxY > attributeText.text.rect.maxY {
+                if attributeText.text.rect.maxY > bottom.text.rect.maxY {
                     bottomAttributeText = attributeText
                 }
             }

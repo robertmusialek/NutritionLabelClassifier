@@ -60,8 +60,6 @@ struct ExtractedValues {
     }
     
     static func removeTextsBelowLastAttribute(_ columns: inout [ValuesTextColumn], extractedAttributes: ExtractedAttributes) {
-        //TODO-NEXT (3): Do this after making structs for TextOfValues replacing [ValueText] and ValuesColumn, replacing [[TextOfValues]]
-        /// For each `ValuesColumn`
         guard let bottomAttributeText = extractedAttributes.bottomAttributeText else {
             return
         }
