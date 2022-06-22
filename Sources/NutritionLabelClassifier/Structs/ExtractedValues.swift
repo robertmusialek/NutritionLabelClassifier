@@ -36,11 +36,14 @@ struct ExtractedValues {
          
         var columns = valuesTextColumns
 
-        removeTextsAboveEnergy(&columns)
-        removeTextsBelowLastAttribute(&columns, extractedAttributes: extractedAttributes)
-        removeDuplicates(&columns)
-        pickTopColumns(&columns)
-        sort(&columns)
+        columns.removeTextsAboveEnergy()
+        columns.removeTextsBelowLastAttribute(extractedAttributes: extractedAttributes)
+        columns.removeEmptyColumns()
+        columns.removeDuplicateColumns()
+        columns.pickTopColumns()
+        columns.sort()
+        
+        //TODO-NEXT 0: Get the missing 5g by considering other recognized texts
         
         //TODO-NEXT 1:
 //        let groupedColumnsOfTexts = group(columns)
@@ -55,40 +58,47 @@ struct ExtractedValues {
     }
     
     /// - Remove anything values above energy for each column
-    static func removeTextsAboveEnergy(_ columns: inout [ValuesTextColumn]) {
-        for i in columns.indices {
-            var column = columns[i]
+}
+
+extension Array where Element == ValuesTextColumn {
+    mutating func removeTextsAboveEnergy() {
+        for i in indices {
+            var column = self[i]
             guard column.hasValuesAboveEnergyValue else { continue }
             column.removeValuesTextsAboveEnergy()
-            columns[i] = column
+            self[i] = column
         }
     }
     
-    static func removeTextsBelowLastAttribute(_ columns: inout [ValuesTextColumn], extractedAttributes: ExtractedAttributes) {
+    mutating func removeTextsBelowLastAttribute(extractedAttributes: ExtractedAttributes) {
         guard let bottomAttributeText = extractedAttributes.bottomAttributeText else {
             return
         }
 
-        for i in columns.indices {
-            var column = columns[i]
+        for i in self.indices {
+            var column = self[i]
             column.removeValueTextsBelowAttributeText(bottomAttributeText)
-            columns[i] = column
+            self[i] = column
         }
     }
 
-    static func removeDuplicates(_ columns: inout [ValuesTextColumn]) {
-        columns = columns.uniqued()
+    mutating func removeDuplicateColumns() {
+        self = self.uniqued()
     }
     
-    static func pickTopColumns(_ columns: inout [ValuesTextColumn]) {
-        let groups = groupedColumnsOfTexts(from: columns)
-        columns = pickTopColumns(from: groups)
+    mutating func removeEmptyColumns() {
+        removeAll { $0.valuesTexts.count == 0 }
+    }
+    
+    mutating func pickTopColumns() {
+        let groups = groupedColumnsOfTexts()
+        self = Self.pickTopColumns(from: groups)
     }
 
     /// - Group columns based on their positions
-    static func groupedColumnsOfTexts(from columns: [ValuesTextColumn]) -> [[ValuesTextColumn]] {
+    mutating func groupedColumnsOfTexts() -> [[ValuesTextColumn]] {
         var groups: [[ValuesTextColumn]] = []
-        for column in columns {
+        for column in self {
 
             var didAdd = false
             for i in groups.indices {
@@ -118,8 +128,8 @@ struct ExtractedValues {
     
     /// - Order columns
     ///     Compare `midX`'s of shortest text from each column
-    static func sort(_ columns: inout [ValuesTextColumn]) {
-        columns.sort(by: {
+    mutating func sort() {
+        sort(by: {
             guard let midX0 = $0.midXOfShortestText, let midX1 = $1.midXOfShortestText else {
                 return false
             }

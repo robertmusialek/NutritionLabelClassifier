@@ -123,7 +123,7 @@ extension ValuesTextColumn {
         group.contains {
             let rect = $0.columnRect
             let yNormalizedRect = columnRect.rectWithYValues(of: rect)
-            return rect.intersection(yNormalizedRect).isNull
+            return !rect.intersection(yNormalizedRect).isNull
         }
         
 //        guard let midX = valuesTexts.compactMap({ $0.text }).midXOfShortestText,
