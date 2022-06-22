@@ -7,11 +7,11 @@ struct ValuesTextColumn {
     var valuesTexts: [ValuesText]
 
     init?(startingFrom text: RecognizedText, in visionResult: VisionResult) {
-        guard let valuesText = ValuesText(text), valuesText.isSingularPercentValue else {
+        guard let valuesText = ValuesText(text), !valuesText.isSingularPercentValue else {
             return nil
         }
 
-        let above = visionResult.columnOfValues(startingFrom: text, preceding: true)
+        let above = visionResult.columnOfValues(startingFrom: text, preceding: true).reversed()
         let below = visionResult.columnOfValues(startingFrom: text, preceding: false)
         self.valuesTexts = above + [valuesText] + below
     }

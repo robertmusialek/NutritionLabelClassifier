@@ -14,9 +14,12 @@ struct ExtractedValues {
             for text in recognizedTexts {
                 //TODO: Make sure text.string also isn't a Serving value (like Serving Size etc)
                 
+                print("1️⃣ Getting ValuesTextColumn starting from: '\(text.string)'")
                 guard let column = ValuesTextColumn(startingFrom: text, in: visionResult) else {
+                    print("1️⃣   ❌ Did not get a ValuesTextColumn")
                     continue
                 }
+                print("1️⃣   Got a ValuesTextColumn with: \(column.valuesTexts.count) valuesTexts")
                 columns.append(column)
             }
         }
@@ -28,13 +31,13 @@ struct ExtractedValues {
          
         var columns = valuesTextColumns
 
-        //TODO-NEXT (1) Test these. We seem to be getting less columns than we used to
         removeTextsAboveEnergy(&columns)
         removeTextsBelowLastAttribute(&columns)
         removeDuplicates(&columns)
         pickTopColumns(&columns)
         sort(&columns)
         
+        //TODO-NEXT 1: 
 //        let groupedColumnsOfTexts = group(columns)
 //        let groupedColumnsOfDetectedValueTexts = groupedColumnsOfDetectedValueTexts(from: groupedColumnsOfTexts)
 //
