@@ -26,7 +26,7 @@ extension Feature: Hashable {
     }
 }
 
-//MARK: - Refactor and remove these
+//MARK: - Refactor and move these
 
 extension RecognizedText {
     var isValueBasedAttribute: Bool {
@@ -49,5 +49,14 @@ extension RecognizedText {
     
     var containsPercentage: Bool {
         string.matchesRegex(#"[0-9]+[.,]*[0-9]*[ ]*%"#)
+    }
+    
+    var containsServingAttribute: Bool {
+        servingArtefacts.contains(where: {
+            guard let attribute = $0.attribute else {
+                return false
+            }
+            return attribute.isServingAttribute
+        })
     }
 }

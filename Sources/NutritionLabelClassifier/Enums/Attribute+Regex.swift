@@ -10,7 +10,9 @@ extension Attribute {
         case .servingsPerContainerAmount:
             return #"(?:servings |serving5 |)per (container|pack(age|)|tub|pot)"#
         case .servingAmount:
-            return #"((serving size|size:|dose de referencia)|^size$)"#
+            return #"((serving size|size:|dose de referencia|takaran)|^size$)"#
+            /// Legacy, in case things break — TODO: Write tests for this and the other serving attributes
+//            return #"((serving size|size:|dose de referencia)|^size$)"#
         case .energy:
             return Regex.energy
             

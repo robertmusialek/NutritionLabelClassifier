@@ -12,9 +12,14 @@ struct ExtractedValues {
         
         for recognizedTexts in [visionResult.accurateRecognitionWithLanugageCorrection ?? []] {
             for text in recognizedTexts {
-                //TODO: Make sure text.string also isn't a Serving value (like Serving Size etc)
-                
+
                 print("1️⃣ Getting ValuesTextColumn starting from: '\(text.string)'")
+
+                guard !text.containsServingAttribute else {
+                    print("1️⃣   ↪️ Contains serving attribute")
+                    continue
+                }
+                
                 guard let column = ValuesTextColumn(startingFrom: text, in: visionResult) else {
                     print("1️⃣   ❌ Did not get a ValuesTextColumn")
                     continue
