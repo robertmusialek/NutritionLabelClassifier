@@ -121,3 +121,22 @@ struct ExtractedAttributes {
 //        }
     }
 }
+
+extension ExtractedAttributes {
+    var bottomAttributeText: AttributeText? {
+        let columns = attributeTextColumns
+        var bottomAttributeText: AttributeText? = nil
+        for column in columns {
+            for attributeText in column {
+                guard let attributeText = bottomAttributeText else {
+                    bottomAttributeText = attributeText
+                    continue
+                }
+                if attributeText.text.rect.maxY > attributeText.text.rect.maxY {
+                    bottomAttributeText = attributeText
+                }
+            }
+        }
+        return bottomAttributeText
+    }
+}

@@ -64,8 +64,23 @@ extension ValuesTextColumn {
         return nil
     }
     
+    func indexOfFirstValueTextBelowAttributeText(_ attributeText: AttributeText) -> Int? {
+        let thresholdY = 0.0
+        for i in valuesTexts.indices {
+            if valuesTexts[i].text.rect.minY > attributeText.text.rect.maxY + thresholdY {
+                return i
+            }
+        }
+        return nil
+    }
+    
     mutating func removeValuesTextsAboveEnergy() {
         guard let index = indexOfFirstEnergyValue else { return }
+        valuesTexts.removeFirst(index)
+    }
+    
+    mutating func removeValueTextsBelowAttributeText(_ attributeText: AttributeText) {
+        guard let index = indexOfFirstValueTextBelowAttributeText(attributeText) else { return }
         valuesTexts.removeFirst(index)
     }
 }

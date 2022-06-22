@@ -6,7 +6,7 @@ struct ExtractedValues {
     /// Groups of `ValueText` columns, 1 for each `AttributeText` column
     let valueTextColumnGroups: [[[ValueText?]]]
     
-    init(visionResult: VisionResult, attributeTextColumns: [[AttributeText]]?) {
+    init(visionResult: VisionResult, extractedAttributes: ExtractedAttributes) {
         
         var columns: [ValuesTextColumn] = []
         
@@ -24,20 +24,20 @@ struct ExtractedValues {
             }
         }
         
-        self.valueTextColumnGroups = Self.group(valuesTextColumns: columns)
+        self.valueTextColumnGroups = Self.group(valuesTextColumns: columns, extractedAttributes: extractedAttributes)
     }
     
-    static func group(valuesTextColumns: [ValuesTextColumn]) -> [[[ValueText?]]] {
+    static func group(valuesTextColumns: [ValuesTextColumn], extractedAttributes: ExtractedAttributes) -> [[[ValueText?]]] {
          
         var columns = valuesTextColumns
 
         removeTextsAboveEnergy(&columns)
-        removeTextsBelowLastAttribute(&columns)
+        removeTextsBelowLastAttribute(&columns, extractedAttributes: extractedAttributes)
         removeDuplicates(&columns)
         pickTopColumns(&columns)
         sort(&columns)
         
-        //TODO-NEXT 1: 
+        //TODO-NEXT 1:
 //        let groupedColumnsOfTexts = group(columns)
 //        let groupedColumnsOfDetectedValueTexts = groupedColumnsOfDetectedValueTexts(from: groupedColumnsOfTexts)
 //
@@ -59,10 +59,18 @@ struct ExtractedValues {
         }
     }
     
-    static func removeTextsBelowLastAttribute(_ columns: inout [ValuesTextColumn]) {
+    static func removeTextsBelowLastAttribute(_ columns: inout [ValuesTextColumn], extractedAttributes: ExtractedAttributes) {
         //TODO-NEXT (3): Do this after making structs for TextOfValues replacing [ValueText] and ValuesColumn, replacing [[TextOfValues]]
         /// For each `ValuesColumn`
-        ///
+        guard let bottomAttributeText = extractedAttributes.bottomAttributeText else {
+            return
+        }
+
+        for i in columns.indices {
+            var column = columns[i]
+            column.removeValueTextsBelowAttributeText(bottomAttributeText)
+            columns[i] = column
+        }
     }
 
     static func removeDuplicates(_ columns: inout [ValuesTextColumn]) {

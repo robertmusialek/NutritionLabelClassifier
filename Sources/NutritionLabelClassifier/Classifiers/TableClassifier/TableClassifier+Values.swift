@@ -6,7 +6,7 @@ import UIKit
 extension TableClassifier {
     
     func extractValueTextColumnGroups() -> ExtractedValues? {
-        guard let _ = self.attributeTextColumns else { return nil }
-        return ExtractedValues(visionResult: visionResult, attributeTextColumns: attributeTextColumns)
+        guard let extractedAttributes = self.extractedAttributes else { return nil }
+        return ExtractedValues(visionResult: visionResult, extractedAttributes: extractedAttributes)
     }
 }

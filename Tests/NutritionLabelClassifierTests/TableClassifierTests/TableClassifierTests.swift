@@ -42,8 +42,8 @@ final class TableClassifierTests: XCTestCase {
                 let tableClassifier = TableClassifier(visionResult: classifier.visionResult)
                 let _ = tableClassifier.getObservations()
                 
-                let attributes = tableClassifier.attributeTextColumns.map {
-                    $0.map { $0.map { $0.attribute } }
+                let attributes = tableClassifier.extractedAttributes.map {
+                    $0.attributeTextColumns.map { $0.map { $0.attribute } }
                 }
                 guard attributes == attributeExpectations[id.uuidString] else {
                     print("🤖❌ Attributes for: \(id)")
