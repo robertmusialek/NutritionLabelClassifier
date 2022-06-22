@@ -11,10 +11,10 @@ extension TableClassifier {
         return attributes?.attributeTextColumns
     }
     
+    //TODO-NEXT: Remove these if not needed
     var attributeTexts: [RecognizedText] {
         visionResult.arrayOfTexts.reduce([]) { $0 + $1.attributeTexts }
     }
-    
     var inlineAttributeTexts: [RecognizedText] {
         visionResult.arrayOfTexts.reduce([]) { $0 + $1.inlineAttributeTexts }
     }
