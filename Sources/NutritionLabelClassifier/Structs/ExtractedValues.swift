@@ -38,9 +38,10 @@ struct ExtractedValues {
 
         columns.removeTextsAboveEnergy()
         columns.removeTextsBelowLastAttribute(extractedAttributes: extractedAttributes)
-        columns.removeEmptyColumns()
         columns.removeDuplicateColumns()
         columns.pickTopColumns()
+        columns.removeEmptyColumns()
+        columns.removeColumnsWithServingAttributes()
         columns.sort()
         
         //TODO-NEXT 0: Get the missing 5g by considering other recognized texts
@@ -61,6 +62,10 @@ struct ExtractedValues {
 }
 
 extension Array where Element == ValuesTextColumn {
+    mutating func removeColumnsWithServingAttributes() {
+        removeAll { $0.containsServingAttribute }
+    }
+    
     mutating func removeTextsAboveEnergy() {
         for i in indices {
             var column = self[i]

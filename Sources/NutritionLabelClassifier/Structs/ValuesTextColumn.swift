@@ -48,6 +48,9 @@ extension ValuesTextColumn: Hashable {
 /// Helpers for `ExtractedValues.removeTextsAboveEnergy(_:)`
 extension ValuesTextColumn {
     
+    var containsServingAttribute: Bool {
+        valuesTexts.containsServingAttribute
+    }
     var hasValuesAboveEnergyValue: Bool {
         /// Return false if we didn't detect an energy value
         guard let index = indexOfFirstEnergyValue else { return false }

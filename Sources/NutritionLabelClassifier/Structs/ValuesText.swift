@@ -37,4 +37,8 @@ extension Array where Element == ValuesText {
     var containsValueWithEnergyUnit: Bool {
         contains(where: { $0.containsValueWithEnergyUnit })
     }
+    
+    var containsServingAttribute: Bool {
+        contains(where: { $0.text.containsServingAttribute })
+    }
 }
