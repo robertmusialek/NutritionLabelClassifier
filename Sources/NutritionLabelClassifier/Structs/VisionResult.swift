@@ -22,6 +22,58 @@ struct VisionResult {
 }
 
 extension VisionResult {
+    var mostTextsAreInline: Bool {
+        var attributes: [Attribute] = []
+        var inlineAttributes: [Attribute] = []
+        
+        /// Go through all recognized texts
+        for recognizedTexts in arrayOfTexts {
+            for text in recognizedTexts {
+                
+                guard !text.string.isSkippableRecognizedText else {
+                    continue
+                }
+                /// Each time we detect a non-mineral, non-vitamin attribute for the first time—whether inline or not—add it to the `attributes` array
+                let detectedAttributes = Attribute.detect(in: text.string)
+                for detectedAttribute in detectedAttributes {
+                    /// Ignore non-nutrient attributes and energy (because it's usually not inline)
+                    guard detectedAttribute.isNutrientAttribute,
+                          detectedAttribute.isCoreTableNutrient,
+                          detectedAttribute != .energy
+                    else {
+                        continue
+                    }
+                    
+                    if !attributes.contains(detectedAttribute) {
+                        attributes.append(detectedAttribute)
+                    }
+                }
+                
+                /// Each time we detect an inline version of an attribute, add it to the `inlineAttributes` array
+                let nutrients = text.string.nutrients
+                for nutrient in nutrients {
+                    guard nutrient.attribute != .energy,
+                          nutrient.attribute.isCoreTableNutrient
+                    else {
+                        continue
+                    }
+
+                    if !inlineAttributes.contains(nutrient.attribute) {
+                        inlineAttributes.append(nutrient.attribute)
+                    }
+                }
+            }
+        }
+        
+        let ratio = Double(inlineAttributes.count) / Double(attributes.count)
+        
+        //TODO: Tweak this threshold
+        print("🧮 Ratio is: \(ratio)")
+        return ratio >= 0.75
+    }
+}
+
+extension VisionResult {
     
     func columnOfValues(startingFrom startingText: RecognizedText, preceding: Bool) -> [ValuesText] {
         
@@ -81,5 +133,125 @@ extension VisionResult {
         }
         
         return valuesTexts
+    }
+}
+
+extension VisionResult {
+    func getColumnOfNutrientLabelTexts(startingFrom startingText: RecognizedText) -> [RecognizedText] {
+        
+        print("Getting column starting from: \(startingText.string)")
+
+        let BoundingBoxMinXDeltaThreshold = 0.20
+        var array: [RecognizedText] = [startingText]
+        
+        for recognizedTexts in arrayOfTexts {
+            
+            var skipPassUsed = false
+            
+            /// Now go upwards to get nutrient-attribute texts in same column as it
+            let textsAbove = recognizedTexts.filterColumn(of: startingText, preceding: true).filter { !$0.string.isEmpty }.reversed()
+            
+            print("  ⬆️ textsAbove: \(textsAbove.map { $0.string } )")
+
+            for text in textsAbove {
+                print("    Checking: \(text.string)")
+                let boundingBoxMinXDelta = abs(text.boundingBox.minX - startingText.boundingBox.minX)
+                
+                /// Ignore `text`s that are clearly not in-line with the `startingText`, in terms of its `boundingBox.minX` being more than `0.05` from the `startingText`s
+                guard boundingBoxMinXDelta < BoundingBoxMinXDeltaThreshold else {
+                    print("    ignoring because boundingBoxMinXDelta = \(boundingBoxMinXDelta)")
+                    continue
+                }
+                
+                /// Until we reach a non-nutrient-attribute text
+                guard text.string.containsNutrientAttributesOrSkippableTableElements else {
+                    if skipPassUsed {
+                        print("    ✋🏽 ending search because no nutrient attributes can be detected in string AND skip pass was used")
+                        break
+                    } else if text.string.terminatesColumnWiseAttributeSearch {
+                        print("    ✋🏽 ending search because cannot use skipPass")
+                        break
+                    } else {
+                        print("    ignoring and using up skipPass")
+                        skipPassUsed = true
+                        continue
+                    }
+                }
+                
+                skipPassUsed = false
+
+                /// Skip over title attributes, but don't stop searching because of them
+                guard !text.string.isSkippableTableElement else {
+                    continue
+                }
+
+                /// Insert these into the start of our column of labels as we read them in
+                array.insert(text, at: 0)
+            }
+
+            /// Reset skipPass
+            skipPassUsed = false
+            
+            /// Now do the same thing downwards
+            let textsBelow = recognizedTexts.filterColumn(of: startingText, preceding: false).filter { !$0.string.isEmpty }
+            
+            print("  ⬇️ textsBelow: \(textsBelow.map { $0.string } )")
+
+            for text in textsBelow {
+                print("    Checking: \(text.string)")
+                let boundingBoxMinXDelta = abs(text.boundingBox.minX - startingText.boundingBox.minX)
+                
+                /// Ignore `text`s that are clearly not in-line with the `startingText`, in terms of its `boundingBox.minX` being more than `0.05` from the `startingText`s
+                guard boundingBoxMinXDelta < BoundingBoxMinXDeltaThreshold else {
+                    print("    ignoring because boundingBoxMinXDelta = \(boundingBoxMinXDelta)")
+                    continue
+                }
+                
+                guard text.string.containsNutrientAttributesOrSkippableTableElements else {
+                    if skipPassUsed {
+                        print("    ✋🏽 ending search because no nutrient attributes can be detected in string AND skip pass was used")
+                        break
+                    } else if text.string.terminatesColumnWiseAttributeSearch {
+                        print("    ✋🏽 ending search because cannot use skipPass")
+                        break
+                    } else {
+                        print("    ignoring and using up skipPass")
+                        skipPassUsed = true
+                        continue
+                    }
+                }
+                
+                skipPassUsed = false
+                
+                /// Skip over title attributes, but don't stop searching because of them
+                guard !text.string.isSkippableTableElement else {
+                    continue
+                }
+                
+                array.append(text)
+            }
+        }
+
+        print("    ✨Got: \(array.description)")
+        print(" ")
+        print(" ")
+        return array
+    }
+    
+    func getUniqueAttributeTextsFrom(_ texts: [RecognizedText]) -> [AttributeText]? {
+        var attributeTexts: [AttributeText] = []
+        for text in texts {
+            let attributes = Attribute.detect(in: text.string)
+            for attribute in attributes {
+                /// Make sure each `Attribute` detected in this text hasn't already been added, and is also a nutrient (for edge cases where strings containing both a nutrient and a serving (or other type) of attribute may have been picked up and then the nutrient attribute disregarded
+                guard !attributeTexts.contains(where: { $0.attribute == attribute }),
+                      !attributeTexts.contains(where: { $0.attribute.isSameAttribute(as: attribute) }),
+                      attribute.isNutrientAttribute
+                else { continue }
+                
+                attributeTexts.append(AttributeText(attribute: attribute, text: text))
+            }
+        }
+        return attributeTexts.count > 0 ? attributeTexts : nil
     }
 }

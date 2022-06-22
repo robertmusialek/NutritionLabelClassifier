@@ -135,7 +135,6 @@ extension String {
     }
 }
 
-//
 extension String {
     var indexOfFirstNumeral: Int? {
         guard let firstNumeral = firstNumeral,
@@ -158,5 +157,87 @@ extension String {
             substring = nil
         }
         return substring?.trimmingWhitespaces
+    }
+    
+    var isSkippableRecognizedText: Bool {
+        if cleanedAttributeString
+            .matchesRegex(#"(not a significant source of|source negligeable)"#) {
+            return true
+        }
+        
+        /// If it's a string like `cholesterol, fibre, vitamin A, vitamin C, calcium`, return true
+        if !capturedGroups(using: #"[^,]*,[^,]*"#).isEmpty {
+            return true
+        }
+        
+        return false
+    }
+    
+    var isSkippableTableElement: Bool {
+        guard let attribute = Attribute(fromString: self),
+            attribute.isTableAttribute else {
+            return false
+        }
+        return true
+    }
+
+    var isSkippableValueElement: Bool {
+        let regexes = [
+            #"daily value"#,
+            #"akg"#
+        ]
+        for regex in regexes {
+            if self.matchesRegex(regex) {
+                return true
+            }
+        }
+        return false
+    }
+
+    var containsNutrientAttributesOrSkippableTableElements: Bool {
+        containsNutrientAttributes || isSkippableTableElement
+    }
+    
+    var containsNutrientAttributes: Bool {
+        Attribute.haveNutrientAttribute(in: self)
+    }
+    
+    var isPercentageValue: Bool {
+        let values = Value.detect(in: self)
+        guard values.count == 1,
+              let first = values.first
+        else {
+            return false
+        }
+        return first.unit == .p
+    }
+    
+    var containsValues: Bool {
+        Value.haveValues(in: self)
+    }
+    
+    var terminatesColumnWiseAttributeSearch: Bool {
+        /// Keep adding lists of string that would stop the search immediately by ignoring the `skipPass` even if available
+        if self.matchesRegex(#"daily value"#) {
+            return true
+        }
+        return false
+    }
+}
+
+//TODO: Rename, document and move to SwiftSugar
+func matches(for regex: String, in text: String) -> [(string: String, position: Int)]? {
+    do {
+        let regex = try NSRegularExpression(pattern: regex)
+        let results = regex.matches(in: text,
+                                    range: NSRange(text.startIndex..., in: text))
+        let matches = results.map {
+            (string: String(text[Range($0.range, in: text)!]),
+             position: $0.range.lowerBound)
+        }
+        return matches.count > 0 ? matches : nil
+    } catch let error {
+        print("invalid regex: \(error.localizedDescription)")
+        return nil
     }
 }

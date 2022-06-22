@@ -347,20 +347,39 @@ public enum Attribute: String, CaseIterable {
     }
 }
 
-extension String {
-    var cleanedAttributeString: String {
-        var cleaned = trimmingWhitespaces
-            .lowercased()
-            .folding(options: .diacriticInsensitive, locale: .current)
-
-        /// Fix Vision misreads
-        cleaned = cleaned.replacingOccurrences(of: "serving5", with: "servings")
-        if cleaned.hasPrefix("i container") {
-            cleaned = cleaned.replacingFirstOccurrence(of: "i container", with: "1 container")
-        }
-        cleaned = cleaned.replacingOccurrences(of: "l tbsp", with: "1 tbsp")
+extension Attribute {
+    
+    /// Detects `Attribute`s in a provided `string` in the order that they appear
+    static func detect(in string: String) -> [Attribute] {
+        var array: [(attribute: Attribute, positionOfMatch: Int)] = []
         
-        return cleaned
+        for attribute in Self.allCases {
+            guard let regex = attribute.regex else { continue }
+            if let match = matches(for: regex, in: string.cleanedAttributeString)?.first {
+//                print("🧬 \(attribute.rawValue): \(string)")
+                array.append((attribute, match.position))
+            }
+        }
+        
+        array.sort(by: { $0.positionOfMatch < $1.positionOfMatch })
+        
+        var filtered: [(attribute: Attribute, positionOfMatch: Int)] = []
+        for i in array.indices {
+            let element = array[i]
+            guard !filtered.contains(where: { element.attribute.shouldIgnoreAttributeIfOnSameString(as: $0.attribute)}) else {
+                continue
+            }
+            filtered.append(element)
+        }
+        return filtered.map { $0.attribute }
+    }
+
+    static func haveAttributes(in string: String) -> Bool {
+        detect(in: string).count > 0
+    }
+    
+    static func haveNutrientAttribute(in string: String) -> Bool {
+        detect(in: string).contains(where: { $0.isNutrientAttribute })
     }
 }
 
@@ -516,5 +535,22 @@ extension Attribute: CustomStringConvertible {
         case .vitaminK2:
             return "Vitamin K2"
         }
+    }
+}
+
+extension String {
+    var cleanedAttributeString: String {
+        var cleaned = trimmingWhitespaces
+            .lowercased()
+            .folding(options: .diacriticInsensitive, locale: .current)
+
+        /// Fix Vision misreads
+        cleaned = cleaned.replacingOccurrences(of: "serving5", with: "servings")
+        if cleaned.hasPrefix("i container") {
+            cleaned = cleaned.replacingFirstOccurrence(of: "i container", with: "1 container")
+        }
+        cleaned = cleaned.replacingOccurrences(of: "l tbsp", with: "1 tbsp")
+        
+        return cleaned
     }
 }

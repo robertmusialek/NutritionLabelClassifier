@@ -1,6 +1,7 @@
 import SwiftUI
 import VisionSugar
 
+//TODO: Remove any used ones
 //MARK: [[AttributeText]]
 
 extension Array where Element == [AttributeText] {
@@ -208,6 +209,14 @@ extension Array where Element == RecognizedText {
         /// Return true if its not the first element
         return index != 0
     }
+    
+    var attributeTexts: [RecognizedText] {
+        filter { $0.string.containsNutrientAttributes }
+    }
+    
+    var inlineAttributeTexts: [RecognizedText] {
+        filter { $0.string.containsInlineNutrients }
+    }
 }
 
 //MARK: [[RecognizedText]]
@@ -314,5 +323,76 @@ extension Array where Element == AttributeText {
     
     var shortestText: RecognizedText? {
         map { $0.text }.shortestText
+    }
+    
+    var averageMidX: CGFloat {
+        guard count > 0 else { return 0 }
+        let sum = self.reduce(0, { $0 + $1.text.rect.midX })
+        return sum / Double(count)
+    }
+    
+    var attributeDescription: String {
+        map{ $0.attribute }.description
+    }
+    
+    func contains(_ attribute: Attribute) -> Bool {
+        contains(where: { $0.attribute == attribute })
+    }
+    
+    func containsAnyAttributeIn(_ array: [AttributeText]) -> Bool {
+        contains(where: { array.map({$0.attribute}).contains($0.attribute) })
+    }
+}
+
+//MARK: [[AttributeText]]
+extension Array where Element == [AttributeText] {
+    
+    var attributeDescription: String {
+        map { $0.map { $0.attribute } }.description
+    }
+    
+    func containsArrayWithAnAttributeFrom(_ arrayToCheck: [AttributeText]) -> Bool {
+        for array in self {
+            if array.containsAnyAttributeIn(arrayToCheck) {
+                return true
+            }
+        }
+        return false
+    }
+    
+    func indexOfSuperset(of array: [AttributeText]) -> Int? {
+        let arrayAsSet = Set(array.map { $0.attribute })
+        for i in indices {
+            let set = Set(self[i].map { $0.attribute })
+            if arrayAsSet.isSubset(of: set) {
+                return i
+            }
+        }
+        return nil
+    }
+    
+    func indexOfSubset(of array: [AttributeText]) -> Int? {
+        let arrayAsSet = Set(array.map { $0.attribute })
+        for i in indices {
+            let set = Set(self[i].map { $0.attribute })
+            if set.isSubset(of: arrayAsSet) {
+                return i
+            }
+        }
+        return nil
+    }
+
+    func indexOfArrayContainingAnyAttribute(in arrayToCheck: [AttributeText]) -> Int? {
+        for i in indices {
+            let array = self[i]
+            if array.contains(where: { arrayElement in
+                arrayToCheck.contains { arrayToCheckElement in
+                    arrayToCheckElement.attribute == arrayElement.attribute
+                }
+            }) {
+                return i
+            }
+        }
+        return nil
     }
 }
