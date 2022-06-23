@@ -133,16 +133,9 @@ extension VisionResult {
 
             //TODO: Shouldn't we check all arrays here so that we grab the FastRecognized results that may not have been grabbed as a fallback?
             /// Get texts on same row arranged by their `minX` values
-            let textsOnSameRow = columnOfTexts.filter {
-                ($0.rect.minY < text.rect.maxY
-                && $0.rect.maxY > text.rect.minY
-                && $0.rect.maxX < text.rect.minX)
-                || $0 == text
-            }.sorted {
-                $0.rect.minX < $1.rect.minX
-            }
+            let textsOnSameRow = columnOfTexts.textsOnSameRow(as: text)
 
-            /// Pick the left most text on the row, making sure it isn't
+            /// Pick the left most text on the row, making sure it hasn't been discarded
             guard let pickedText = textsOnSameRow.first, !discarded.contains(pickedText) else {
                 continue
             }
@@ -154,6 +147,7 @@ extension VisionResult {
             }
 
             guard let valuesText = ValuesText(pickedText), !valuesText.isSingularPercentValue else {
+                //TODO-NEXT: Test with when pickedText.string == 'g'. We basically want to recognize this, and then check the other arrays of the VisionResult by grabbing any texts in those that overlap with this one and happen to have a non-singular percent value within it. In which case—we use that one!
                 continue
             }
             
