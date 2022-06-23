@@ -10,6 +10,8 @@ struct ExtractedValues {
         
         var columns: [ValuesTextColumn] = []
         
+        let start = CFAbsoluteTimeGetCurrent()
+        
         for recognizedTexts in [visionResult.accurateRecognitionWithLanugageCorrection ?? []] {
             for text in recognizedTexts {
 
@@ -29,11 +31,14 @@ struct ExtractedValues {
             }
         }
         
-        self.valueTextColumnGroups = Self.group(valuesTextColumns: columns, extractedAttributes: extractedAttributes)
+        print("⏱ extracting columns took: \(CFAbsoluteTimeGetCurrent()-start)s")
+        self.valueTextColumnGroups = Self.process(valuesTextColumns: columns, extractedAttributes: extractedAttributes)
     }
     
-    static func group(valuesTextColumns: [ValuesTextColumn], extractedAttributes: ExtractedAttributes) -> [[[ValueText?]]] {
-         
+    static func process(valuesTextColumns: [ValuesTextColumn], extractedAttributes: ExtractedAttributes) -> [[[ValueText?]]] {
+
+        let start = CFAbsoluteTimeGetCurrent()
+
         var columns = valuesTextColumns
 
         columns.removeTextsAboveEnergy()
@@ -54,6 +59,8 @@ struct ExtractedValues {
 //        insertNilForMissedValues(&groupedColumnsOfValueTexts)
 //
 //        return groupedColumnsOfValueTexts
+
+        print("⏱ processing columns took: \(CFAbsoluteTimeGetCurrent()-start)s")
 
         return []
     }

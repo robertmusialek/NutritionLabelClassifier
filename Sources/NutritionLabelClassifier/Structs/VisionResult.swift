@@ -73,25 +73,59 @@ extension VisionResult {
     }
 }
 
-extension VisionResult {
-    
-    func columnOfValues(startingFrom startingText: RecognizedText, preceding: Bool) -> [ValuesText] {
-        
-        //TODO: Write this to possibly go through all arrays, or better yet—the actual VisionResult (even if we're just using the first—ie. accurately recognized with language correction), so that it can contextually handle the array of texts without having to assume what they are
-        let array = self.arrayOfTexts
-        
-        let texts = array.first!.filter {
+extension Array where Element == RecognizedText {
+    func column(startingFrom startingText: RecognizedText, preceding: Bool) -> [RecognizedText] {
+        filter {
             $0.isInSameColumnAs(startingText)
             && (preceding ? $0.rect.maxY < startingText.rect.maxY : $0.rect.minY > startingText.rect.minY)
         }.sorted {
             preceding ? $0.rect.minY > $1.rect.minY : $0.rect.minY < $1.rect.minY
         }
+    }
+    
+    func textsOnSameRow(as text: RecognizedText) -> [RecognizedText] {
+        filter {
+            let overlapsVertically = $0.rect.minY < text.rect.maxY && $0.rect.maxY > text.rect.minY
+            let isOnSameLine = (overlapsVertically && $0.rect.maxX < text.rect.minX)
+            return isOnSameLine || $0 == text
+        }.sorted {
+            $0.rect.minX < $1.rect.minX
+        }
+    }
+}
+
+extension VisionResult {
+    
+    enum TextSet {
+        case accurate
+        case accurateWithoutLanguageCorrection
+        case fast
+    }
+    
+    func array(for textSet: TextSet) -> [RecognizedText]? {
+        switch textSet {
+        case .accurate:
+            return accurateRecognitionWithLanugageCorrection
+        case .accurateWithoutLanguageCorrection:
+            return accurateRecognitionWithoutLanugageCorrection
+        case .fast:
+            return fastRecognition
+        }
+    }
+    
+    func column(startingFrom startingText: RecognizedText, preceding: Bool, textSet: TextSet) -> [RecognizedText] {
+        guard let array = array(for: textSet) else { return [] }
+        return array.column(startingFrom: startingText, preceding: preceding)
+    }
+    
+    func columnOfValueTexts(startingFrom startingText: RecognizedText, preceding: Bool) -> [ValuesText] {
         
-        var valuesTexts: [ValuesText] = []
+        let columnOfTexts = column(startingFrom: startingText, preceding: true, textSet: .accurate)
+        var column: [ValuesText] = []
         var discarded: [RecognizedText] = []
         
         /// Now go through the texts
-        for text in texts {
+        for text in columnOfTexts {
 
             guard !discarded.contains(text) else {
                 continue
@@ -99,7 +133,7 @@ extension VisionResult {
 
             //TODO: Shouldn't we check all arrays here so that we grab the FastRecognized results that may not have been grabbed as a fallback?
             /// Get texts on same row arranged by their `minX` values
-            let textsOnSameRow = texts.filter {
+            let textsOnSameRow = columnOfTexts.filter {
                 ($0.rect.minY < text.rect.maxY
                 && $0.rect.maxY > text.rect.minY
                 && $0.rect.maxX < text.rect.minX)
@@ -124,15 +158,15 @@ extension VisionResult {
             }
             
             /// Stop if a second energy value is encountered after a non-energy value has been added—as this usually indicates the bottom of the table where strings containing the representative diet (stating something like `2000 kcal diet`) are found.
-            if valuesTexts.containsValueWithEnergyUnit, valuesText.containsValueWithEnergyUnit,
-               let last = valuesTexts.last, !last.containsValueWithEnergyUnit {
+            if column.containsValueWithEnergyUnit, valuesText.containsValueWithEnergyUnit,
+               let last = column.last, !last.containsValueWithEnergyUnit {
                 break
             }
 
-            valuesTexts.append(valuesText)
+            column.append(valuesText)
         }
         
-        return valuesTexts
+        return column
     }
 }
 
