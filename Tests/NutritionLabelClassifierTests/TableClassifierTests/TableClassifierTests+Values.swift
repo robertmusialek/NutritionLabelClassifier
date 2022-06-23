@@ -86,11 +86,11 @@ let valueExpectations: [String: [[[Value?]]]?] = [
 //let SingledOutTestCase: UUID? = UUID(uuidString: "B1E5C59E-7B94-4570-B226-DD9D17BC743E")!
 
 /// Spicy chips
-//let SingledOutTestCase: UUID? = UUID(uuidString: "C19F126E-6D6E-464A-B7C4-718AA4384CC2")!
+let SingledOutTestCase: UUID? = UUID(uuidString: "C19F126E-6D6E-464A-B7C4-718AA4384CC2")!
 
 // 🥳 Looks like it's passing for these
 //let SingledOutTestCase: UUID? = UUID(uuidString: "B2C50752-AE52-493A-AD79-69DA4EA74504")!
 //let SingledOutTestCase: UUID? = UUID(uuidString: "75C66881-51E5-4A42-92E6-F3B3953BC8E6")!
 //let SingledOutTestCase: UUID? = UUID(uuidString: "9C26D1D5-50B2-4933-B906-29824617FD96")!
 //let SingledOutTestCase: UUID? = UUID(uuidString: "DE476A74-8174-4E9C-81DA-450F578F039D")!
-let SingledOutTestCase: UUID? = UUID(uuidString: "CDD8E0DD-7D2B-4802-9C1D-54EFFBB71E58")!
+//let SingledOutTestCase: UUID? = UUID(uuidString: "CDD8E0DD-7D2B-4802-9C1D-54EFFBB71E58")!
