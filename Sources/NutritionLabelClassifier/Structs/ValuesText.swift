@@ -24,6 +24,24 @@ struct ValuesText {
         }
         return false
     }
+    
+    var isSingularNutritionUnitValue: Bool {
+        if values.count == 1, let first = values.first, let unit = first.unit, unit.isNutrientUnit {
+            return true
+        }
+        return false
+    }
+}
+
+extension NutritionUnit {
+    var isNutrientUnit: Bool {
+        switch self {
+        case .mcg, .mg, .g:
+            return true
+        default:
+            return false
+        }
+    }
 }
 
 extension ValuesText: Hashable {

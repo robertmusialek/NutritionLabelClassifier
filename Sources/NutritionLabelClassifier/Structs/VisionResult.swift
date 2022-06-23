@@ -1,4 +1,5 @@
 import VisionSugar
+import SwiftUI
 
 struct VisionResult {
 
@@ -120,7 +121,7 @@ extension VisionResult {
     
     func columnOfValueTexts(startingFrom startingText: RecognizedText, preceding: Bool) -> [ValuesText] {
         
-        let columnOfTexts = column(startingFrom: startingText, preceding: true, textSet: .accurate)
+        let columnOfTexts = column(startingFrom: startingText, preceding: preceding, textSet: .accurate)
         var column: [ValuesText] = []
         var discarded: [RecognizedText] = []
         
@@ -146,11 +147,10 @@ extension VisionResult {
                 continue
             }
 
-            guard let valuesText = ValuesText(pickedText), !valuesText.isSingularPercentValue else {
-                //TODO-NEXT: Test with when pickedText.string == 'g'. We basically want to recognize this, and then check the other arrays of the VisionResult by grabbing any texts in those that overlap with this one and happen to have a non-singular percent value within it. In which case—we use that one!
+            guard let valuesText = valuesText(for: pickedText) else {
                 continue
             }
-            
+                        
             /// Stop if a second energy value is encountered after a non-energy value has been added—as this usually indicates the bottom of the table where strings containing the representative diet (stating something like `2000 kcal diet`) are found.
             if column.containsValueWithEnergyUnit, valuesText.containsValueWithEnergyUnit,
                let last = column.last, !last.containsValueWithEnergyUnit {
@@ -161,6 +161,73 @@ extension VisionResult {
         }
         
         return column
+    }
+    
+    func valuesText(for pickedText: RecognizedText) -> ValuesText? {
+        guard !pickedText.string.containsServingAttribute else {
+            return nil
+        }
+        
+        /// First try and get a valid `ValuesText` here
+        if let valuesText = ValuesText(pickedText), !valuesText.isSingularPercentValue {
+            return valuesText
+        }
+        
+        /// If this failed, check the other arrays of the VisionResult by grabbing any texts in those that overlap with this one and happen to have a non-singular percent value within it.
+        for overlappingText in alternativeTexts(overlapping: pickedText) {
+            guard !overlappingText.string.containsServingAttribute else {
+                continue
+            }
+            if let valuesText = ValuesText(overlappingText), valuesText.isSingularNutritionUnitValue {
+                return valuesText
+            }
+        }
+        return nil
+    }
+    
+    /// Be default, we will search the arrays other than `.accurate` as we're assuming that the to be the primary one we're searching through (during which this function is used to find alternatives)
+    func alternativeTexts(overlapping text: RecognizedText, in textSets: [TextSet] = [.accurateWithoutLanguageCorrection, .fast]) -> [RecognizedText] {
+        var texts: [RecognizedText] = []
+        for textSet in textSets {
+            guard let array = array(for: textSet) else {
+                continue
+            }
+            for arrayText in array {
+                /// Skip any texts that have the same string as the one we're finding alternatives for
+                guard arrayText.string != text.string else {
+                    continue
+                }
+                
+                /// Get the intersection and skip any texts that don't overlap what we're looking for
+                let intersection = arrayText.rect.intersection(text.rect)
+                guard !intersection.isNull else {
+                    continue
+                }
+                
+                /// Get the ratio of the intersection to whichever the smaller of the two rects are, and only add it if it covers at least 90%
+                let smallerRect = CGRect.smaller(of: arrayText.rect, and: text.rect)
+                let ratioOfIntersectionToSmallerRect = intersection.area / smallerRect.area
+                
+                if ratioOfIntersectionToSmallerRect > 0.9 {
+                    texts.append(arrayText)
+                }
+            }
+        }
+        return texts
+    }
+}
+
+extension CGRect {
+    
+    static func smaller(of rect1: CGRect, and rect2: CGRect) -> CGRect {
+        if rect1.area < rect2.area {
+            return rect1
+        } else {
+            return rect2
+        }
+    }
+    var area: CGFloat {
+        size.width * size.height
     }
 }
 
