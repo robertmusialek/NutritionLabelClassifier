@@ -23,6 +23,9 @@ extension Array where Element == Value {
     var containsValueWithKjUnit: Bool {
         contains(where: { $0.unit == .kj } )
     }
+    var containingUnit: [Value] {
+        filter { $0.unit != nil }
+    }
     var containsValueWithKcalUnit: Bool {
         contains(where: { $0.unit == .kcal } )
     }
@@ -143,7 +146,7 @@ extension Array where Element == [[ValueText]] {
 //MARK: [[[[ValueText]]]]
 
 extension Array where Element == [[[ValueText]]] {
-    var descriptions: [[[[String]]]] {
+    var desc: [[[[String]]]] {
         map { $0.map { $0.map { $0.map { $0.description } } } }
     }
 }
@@ -347,6 +350,12 @@ extension Array where Element == AttributeText {
     
     func containsAnyAttributeIn(_ array: [AttributeText]) -> Bool {
         contains(where: { array.map({$0.attribute}).contains($0.attribute) })
+    }
+    
+    var rect: CGRect {
+        reduce(.zero) {
+            $0.union($1.text.rect)
+        }
     }
 }
 

@@ -14,8 +14,33 @@ let valueExpectations: [String: [[[Value?]]]?] = [
             [v(530, .kcal), v(28, .g), v(13, .g), v(0, .g), v(2, .g), v(66, .g), v(15, .g), v(5, .g), v(650, .mg)]
         ]
     ],
-        
-        
+    
+    "B1E5C59E-7B94-4570-B226-DD9D17BC743E" : [
+        [
+            [v(295, .kcal), v(11, .g), v(7.7, .g), v(43, .g), v(25, .g), v(2.2, .g), v(4.9, .g), v(0.81, .g)],
+            [v(236, .kcal), v(9, .g), v(6.2, .g), v(34, .g), v(20, .g), v(1.8, .g), v(3.9, .g), v(0.65, .g)]
+        ]
+    ],
+
+    "75C66881-51E5-4A42-92E6-F3B3953BC8E6": [
+        [
+            [v(337, .kcal), v(35.1, .g), v(22, .g), v(8.6, .g), v(0.7, .g), v(1.2, .g), v(121, .mg), v(3.3, .g), v(3.3, .g), v(0, .g), v(2.1, .g), v(0.07, .g), v(30, .mg)],
+            [v(67, .kcal), v(7, .g), v(4.4, .g), v(1.7, .g), v(0.1, .g), v(0.2, .g), v(24, .mg), v(0.7, .g), v(0.7, .g), v(0, .g), v(0.4, .g), v(0.01, .g), v(6, .mg)]
+        ]
+    ],
+    "9C26D1D5-50B2-4933-B906-29824617FD96": [
+        [
+            [v(337, .kcal), v(35.1, .g), v(22, .g), v(8.6, .g), v(0.7, .g), v(1.2, .g), v(121, .mg), v(3.3, .g), v(3.3, .g), v(0, .g), v(2.1, .g), v(0.07, .g), v(30, .mg)],
+            [v(67, .kcal), v(7, .g), v(4.4, .g), v(1.7, .g), v(0.1, .g), v(0.2, .g), v(24, .mg), v(0.7, .g), v(0.7, .g), v(0, .g), v(0.4, .g), v(0.01, .g), v(6, .mg)]
+        ]
+    ],
+    "1B51A831-FE9C-4752-B526-0ED7823EA591": [
+        [
+            [v(337, .kcal), v(35.1, .g), v(22, .g), v(8.6, .g), v(0.7, .g), v(1.2, .g), v(121, .mg), v(3.3, .g), v(3.3, .g), v(0, .g), v(2.1, .g), v(0.07, .g), v(30, .mg)],
+            [v(67, .kcal), v(7, .g), v(4.4, .g), v(1.7, .g), v(0.1, .g), v(0.2, .g), v(24, .mg), v(0.7, .g), v(0.7, .g), v(0, .g), v(0.4, .g), v(0.01, .g), v(6, .mg)]
+        ]
+    ],
+    
 //    "99D1A080-19CF-4A08-B8B7-1BD5E4D9CB40": nil,
 //    "3C53CC91-34D1-46EE-92BE-328ABDC20342": nil,
 //    "15C9C2C9-5012-43A3-835A-3FB0A2DD1E2D": nil,
@@ -63,12 +88,6 @@ let valueExpectations: [String: [[[Value?]]]?] = [
 //    "BD53EFF6-2AF9-4FCA-8865-67CCB4BA9B69": nil,
 //    "D8809685-A90E-4756-BCA1-79B2D8C0D090": nil,
 //
-//    "75C66881-51E5-4A42-92E6-F3B3953BC8E6": [
-//        [
-//            [v(337, .kcal), v(35.1, .g), v(22, .g), v(8.6, .g), v(0.7, .g), v(1.2, .g), v(121, .mg), v(3.3, .g), v(3.3, .g), v(0, .g), v(2.1, .g), v(0.07, .g), v(30, .mg)],
-//            [v(67, .kcal), v(7, .g), v(4.4, .g), v(1.7, .g), v(0.1, .g), v(0.2, .g), v(24, .mg), v(0.7, .g), v(0.7, .g), v(0, .g), v(0.4, .g), v(0.01, .g), v(6, .mg)]
-//        ]
-//    ],
 //    "9C26D1D5-50B2-4933-B906-29824617FD96": [
 //        [
 //            [v(337, .kcal), v(35.1, .g), v(22, .g), v(8.6, .g), v(0.7, .g), v(1.2, .g), v(121, .mg), v(3.3, .g), v(3.3, .g), v(0, .g), v(2.1, .g), v(0.07, .g), v(30, .mg)],
@@ -94,12 +113,21 @@ let valueExpectations: [String: [[[Value?]]]?] = [
 /// Salami
 //let SingledOutTestCase: UUID? = UUID(uuidString: "DE476A74-8174-4E9C-81DA-450F578F039D")!
 
-/// Oreo
-let SingledOutTestCase: UUID? = UUID(uuidString: "B1E5C59E-7B94-4570-B226-DD9D17BC743E")!
+let SingledOutTestCase: UUID? = UUID(uuidString: "C19F126E-6D6E-464A-B7C4-718AA4384CC2")!
+//let SingledOutTestCase: UUID? = UUID(uuidString: "75C66881-51E5-4A42-92E6-F3B3953BC8E6")!
 
 // 🥳 Looks like it's passing for these
 //let SingledOutTestCase: UUID? = UUID(uuidString: "B2C50752-AE52-493A-AD79-69DA4EA74504")!
-//let SingledOutTestCase: UUID? = UUID(uuidString: "75C66881-51E5-4A42-92E6-F3B3953BC8E6")!
 //let SingledOutTestCase: UUID? = UUID(uuidString: "9C26D1D5-50B2-4933-B906-29824617FD96")!
 //let SingledOutTestCase: UUID? = UUID(uuidString: "DE476A74-8174-4E9C-81DA-450F578F039D")!
 //let SingledOutTestCase: UUID? = UUID(uuidString: "CDD8E0DD-7D2B-4802-9C1D-54EFFBB71E58")!
+
+let TestPassingTestCases = true
+
+//let PassingTestCasesTableValues = [
+//    "B1E5C59E-7B94-4570-B226-DD9D17BC743E",
+//    "C19F126E-6D6E-464A-B7C4-718AA4384CC2",
+//    "75C66881-51E5-4A42-92E6-F3B3953BC8E6",
+//    "9C26D1D5-50B2-4933-B906-29824617FD96",
+//    "1B51A831-FE9C-4752-B526-0ED7823EA591",
+//]

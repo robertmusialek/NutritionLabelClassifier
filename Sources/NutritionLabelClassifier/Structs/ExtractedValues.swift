@@ -26,7 +26,9 @@ struct ExtractedValues {
                     print("1️⃣   ❌ Did not get a ValuesTextColumn")
                     continue
                 }
+                
                 print("1️⃣   Got a ValuesTextColumn with: \(column.valuesTexts.count) valuesTexts")
+                print("1️⃣   \(column.desc)")
                 columns.append(column)
             }
         }
@@ -48,7 +50,8 @@ struct ExtractedValues {
         var columns = valuesTextColumns
 
         columns.removeTextsAboveEnergy()
-        columns.removeTextsBelowLastAttribute(using: extractedAttributes)
+        columns.removeTextsBelowLastAttribute(of: extractedAttributes)
+//        columns.removeTextsAboveFirstAttribute(of: extractedAttributes)
         columns.removeDuplicateColumns()
         columns.pickTopColumns()
         columns.removeEmptyColumns()
@@ -57,6 +60,8 @@ struct ExtractedValues {
         columns.sort()
         
         var groupedColumns = groupByAttributes(columns)
+        groupedColumns.removeColumnsInSameColumnAsAttributes(in: extractedAttributes)
+        groupedColumns.removeExtraneousColumns()
         insertNilForMissedValues(&groupedColumns)
 
         print("⏱ processing columns took: \(CFAbsoluteTimeGetCurrent()-start)s")
@@ -137,9 +142,31 @@ struct ExtractedValues {
     }
 }
 
+extension Array where Element == [ValuesTextColumn] {
+    var desc: [[String]] {
+        map { $0.desc }
+    }
+    
+    mutating func removeExtraneousColumns() {
+        for i in indices {
+            let group = self[i]
+            guard group.count > 2 else { continue }
+            self[i] = group.enumerated().compactMap{ $0.offset < 2 ? $0.element : nil }
+        }
+    }
+    
+    mutating func removeColumnsInSameColumnAsAttributes(in extractedAttributes: ExtractedAttributes) {
+        for i in indices {
+            guard i < extractedAttributes.attributeTextColumns.count else { continue }
+            let attributesRect = extractedAttributes.attributeTextColumns[i].rect
+            self[i] = self[i].filter { $0.rect.maxX > attributesRect.maxX }
+        }
+    }
+}
+
 extension Array where Element == ValuesTextColumn {
+    
     mutating func cleanupEnergyValues(using extractedAttributes: ExtractedAttributes) {
-        
         /// If we've got any two sets of energy values (ie. two kcal and/or two kJ values), pick those that that are closer to the energy attribute
         let energyAttribute = extractedAttributes.energyAttributeText
         for i in indices {
@@ -148,30 +175,59 @@ extension Array where Element == ValuesTextColumn {
             column.pickEnergyIfMultiplePresent()
             self[i] = column
         }
-        
     }
 
     mutating func removeColumnsWithServingAttributes() {
         removeAll { $0.containsServingAttribute }
     }
     
+    var topMostEnergyValueText: ValuesText? {
+        var top: ValuesText? = nil
+        for column in self {
+            guard let index = column.indexOfFirstEnergyValue else { continue }
+            guard let topValuesText = top else {
+                top = column.valuesTexts[index]
+                continue
+            }
+            if column.valuesTexts[index].text.rect.minY < topValuesText.text.rect.minY {
+                top = column.valuesTexts[index]
+            }
+        }
+        return top
+    }
+    
     mutating func removeTextsAboveEnergy() {
+        guard let topMostEnergyValueText = topMostEnergyValueText else {
+            return
+        }
+        
         for i in indices {
             var column = self[i]
-            guard column.hasValuesAboveEnergyValue else { continue }
-            column.removeValuesTextsAboveEnergy()
+            column.removeValueTextsAbove(topMostEnergyValueText.text)
             self[i] = column
         }
     }
     
-    mutating func removeTextsBelowLastAttribute(using extractedAttributes: ExtractedAttributes) {
+    mutating func removeTextsBelowLastAttribute(of extractedAttributes: ExtractedAttributes) {
         guard let bottomAttributeText = extractedAttributes.bottomAttributeText else {
             return
         }
 
         for i in self.indices {
             var column = self[i]
-            column.removeValueTextsBelowAttributeText(bottomAttributeText)
+            column.removeValueTextsBelow(bottomAttributeText)
+            self[i] = column
+        }
+    }
+
+    mutating func removeTextsAboveFirstAttribute(of extractedAttributes: ExtractedAttributes) {
+        guard let topAttributeText = extractedAttributes.topAttributeText else {
+            return
+        }
+
+        for i in self.indices {
+            var column = self[i]
+            column.removeValueTextsAbove(topAttributeText)
             self[i] = column
         }
     }

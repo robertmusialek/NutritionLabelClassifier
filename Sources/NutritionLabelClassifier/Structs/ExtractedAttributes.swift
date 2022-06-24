@@ -124,22 +124,43 @@ struct ExtractedAttributes {
 
 extension ExtractedAttributes {
     
+    var attributes: [[Attribute]] {
+        attributeTextColumns.map { $0.map { $0.attribute } }
+    }
+    
     //TODO: Write tests for these
     var bottomAttributeText: AttributeText? {
         let columns = attributeTextColumns
-        var bottomAttributeText: AttributeText? = nil
+        var bottom: AttributeText? = nil
         for column in columns {
             for attributeText in column {
-                guard let bottom = bottomAttributeText else {
-                    bottomAttributeText = attributeText
+                guard let bottomAttributeText = bottom else {
+                    bottom = attributeText
                     continue
                 }
-                if attributeText.text.rect.maxY > bottom.text.rect.maxY {
-                    bottomAttributeText = attributeText
+                if attributeText.text.rect.maxY > bottomAttributeText.text.rect.maxY {
+                    bottom = attributeText
                 }
             }
         }
-        return bottomAttributeText
+        return bottom
+    }
+    
+    var topAttributeText: AttributeText? {
+        let columns = attributeTextColumns
+        var top: AttributeText? = nil
+        for column in columns {
+            for attributeText in column {
+                guard let topAttributeText = top else {
+                    top = attributeText
+                    continue
+                }
+                if attributeText.text.rect.minY < topAttributeText.text.rect.minY {
+                    top = attributeText
+                }
+            }
+        }
+        return top
     }
     
     var energyAttributeText: AttributeText? {

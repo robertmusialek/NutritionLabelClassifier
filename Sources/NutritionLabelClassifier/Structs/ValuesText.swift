@@ -3,7 +3,7 @@ import CoreGraphics
 
 struct ValuesText {
 
-    let values: [Value]
+    var values: [Value]
     let text: RecognizedText
     
     init?(_ text: RecognizedText) {
@@ -12,7 +12,13 @@ struct ValuesText {
             return nil
         }        
         self.text = text
-        self.values = values
+        
+        /// If only value has a unit, pick that one and discard the rest
+        if values.containingUnit.count == 1 {
+            self.values = values.containingUnit
+        } else {
+            self.values = values
+        }
     }
 
     var containsValueWithEnergyUnit: Bool {
@@ -83,6 +89,12 @@ extension Array where Element == ValuesText {
         //TODO: Consider recognizedText and distance to it when we need to
 //        let sorted = self.sorted(by: { $0.text.rect.yDistanceToTopOf(recognizedText.rect) < $1.text.rect.yDistanceToTopOf(recognizedText.rect) })
 //        return sorted.first
+    }
+    
+    var rect: CGRect {
+        reduce(.zero) {
+            $0.union($1.text.rect)
+        }
     }
 }
 

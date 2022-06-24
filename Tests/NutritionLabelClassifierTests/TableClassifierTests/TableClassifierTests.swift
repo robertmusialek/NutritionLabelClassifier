@@ -8,94 +8,112 @@ import VisionSugar
 final class TableClassifierTests: XCTestCase {
     
     var currentTestCaseId: UUID = defaultUUID
+    var numberOfPassedTests = 0
+    var numberOfFailedTests = 0
     
-    //TODO: Separate into Attribute and Values Classifiers
     func testTableClassifier() throws {
         
-        try prepareTestCaseImages()
+        guard !TestPassingTestCases else { return }
         
-        var numberOfPassedTests = 0
-        var numberOfFailedTests = 0
+        try prepareTestCaseImages()
         
         for id in testCaseIds {
             
             if let singledOutTestCase = SingledOutTestCase {
-                guard id == singledOutTestCase else {
-                    continue
-                }
+                guard id == singledOutTestCase else { continue }
             }
             
-            guard attributeExpectations.keys.contains(id.uuidString) else {
-                continue
-            }
-            
-            guard let image = imageForTestCase(withId: id) else {
-                XCTFail("Couldn't get image for Test Case \(id)")
-                return
-            }
-            
-            currentTestCaseId = id
-            print("🔥 Testing: \(id)")
-            
-            let classifier = NutritionLabelClassifier(image: image, contentSize: image.size)
-            classifier.onCompletion = {
-                
-                let tableClassifier = TableClassifier(visionResult: classifier.visionResult)
-                let _ = tableClassifier.getObservations()
-                
-                let attributes = tableClassifier.extractedAttributes.map {
-                    $0.attributeTextColumns.map { $0.map { $0.attribute } }
-                }
-                guard attributes == attributeExpectations[id.uuidString] else {
-                    print("🤖❌ Attributes for: \(id)")
-                    if let expectation = attributeExpectations[id.uuidString] {
-                        if let expectation = expectation {
-                            print("    🤖❌ Expected: \(expectation)")
-                        }
-                    }
-                    if let attributes = attributes {
-                        print("    🤖❌ Got back: \(attributes)")
-                    }
-                    numberOfFailedTests += 1
-                    
-                    XCTFail(self.m("Attributes didn't match"))
-//                    XCTAssertEqual(attributes, attributeExpectations[id.uuidString], self.m("Attributes"))
-                    return
-                }
-                
-                //TODO: make this a variable on the struct itself
-//                let values = tableClassifier.extractedValues.map {
-//                    $0.valueTextColumnGroups.map { $0.map { $0.map { $0?.value } } }
-//                }
-                let values = tableClassifier.extractedValues?.values
-
-                guard values == valueExpectations[id.uuidString] else {
-                    print("🤖❌ Values for: \(id)")
-                    if let expectation = valueExpectations[id.uuidString] {
-                        if let expectation = expectation {                            
-                            print("    🤖❌ Expected: \(expectation.valuesGroupDescription)")
-                        }
-                    }
-                    if let values = values {
-                        print("    🤖❌ Got back: \(values.valuesGroupDescription)")
-                    }
-                    numberOfFailedTests += 1
-                    
-                    XCTFail(self.m("Values didn't match"))
-//                    XCTAssertEqual(values, valueExpectations[id.uuidString], self.m("Values"))
-                    return
-                }
-                
-                print("🤖✅ \(id)")
+            do {
+                try testCaseWithId(id)
                 numberOfPassedTests += 1
-
+            } catch {
+                numberOfFailedTests += 1
             }
-            
-            classifier.classify()
         }
         
         print("🤖 Failed: \(numberOfFailedTests) tests")
         print("🤖 Passed: \(numberOfPassedTests) tests")
+    }
+    
+    func testTableClassifierValues() throws {
+        guard TestPassingTestCases else { return }
+        try prepareTestCaseImages()
+
+        for idString in valueExpectations.keys {
+            guard let id = UUID(uuidString: idString) else { continue }
+            try testCaseWithId(id)
+        }
+    }
+    
+    //MARK: - Helpers
+    
+    func testCaseWithId(_ id: UUID) throws {
+        guard attributeExpectations.keys.contains(id.uuidString) else {
+            XCTFail("Couldn't get attributeExpectations for Test Case \(id)")
+            return
+        }
+        
+        guard let image = imageForTestCase(withId: id) else {
+            XCTFail("Couldn't get image for Test Case \(id)")
+            return
+        }
+        
+        currentTestCaseId = id
+        print("🔥 Testing: \(id)")
+        
+        let classifier = NutritionLabelClassifier(image: image, contentSize: image.size)
+        classifier.onCompletion = {
+            
+            let tableClassifier = TableClassifier(visionResult: classifier.visionResult)
+            let _ = tableClassifier.getObservations()
+            
+            let attributesPassed = self.testAttributes(tableClassifier.extractedAttributes, forTestCase: id)
+            let valuesPassed = self.testValues(tableClassifier.extractedValues, forTestCase: id)
+            
+            if attributesPassed && valuesPassed {
+                print("🤖✅ \(id)")
+            }
+        }
+        
+        classifier.classify()
+    }
+    
+    func testAttributes(_ extractedAttributes: ExtractedAttributes?, forTestCase id: UUID) -> Bool {
+        let attributes = extractedAttributes?.attributes
+        guard attributes == attributeExpectations[id.uuidString] else {
+            print("🤖❌ Attributes for: \(id)")
+            if let expectation = attributeExpectations[id.uuidString] {
+                if let expectation = expectation {
+                    print("    🤖❌ Expected: \(expectation)")
+                }
+            }
+            if let attributes = attributes {
+                print("    🤖❌ Got back: \(attributes)")
+            }
+            
+            XCTFail(self.m("Attributes didn't match"))
+            return false
+        }
+        return true
+    }
+    
+    func testValues(_ extractedValues: ExtractedValues?, forTestCase id: UUID) -> Bool {
+        let values = extractedValues?.values
+        guard values == valueExpectations[id.uuidString] else {
+            print("🤖❌ Values for: \(id)")
+            if let expectation = valueExpectations[id.uuidString] {
+                if let expectation = expectation {
+                    print("    🤖❌ Expected: \(expectation.valuesGroupDescription)")
+                }
+            }
+            if let values = values {
+                print("    🤖❌ Got back: \(values.valuesGroupDescription)")
+            }
+            
+            XCTFail(self.m("Values didn't match"))
+            return false
+        }
+        return true
     }
     
     func m(_ message: String) -> String {

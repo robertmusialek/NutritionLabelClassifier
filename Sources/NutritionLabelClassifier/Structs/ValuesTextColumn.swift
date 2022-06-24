@@ -15,23 +15,6 @@ struct ValuesTextColumn {
         let below = visionResult.columnOfValueTexts(startingFrom: text, preceding: false)
         self.valuesTexts = above + [valuesText] + below
     }
-    
-    
-}
-
-extension ValuesText: CustomDebugStringConvertible {
-    var debugDescription: String {
-        return "[" + values.map { $0.description }.joined(separator: ", ") + "]"
-    }
-    var description: String {
-        return "[" + values.map { $0.description }.joined(separator: ", ") + "]"
-    }
-}
-
-extension Array where Element == ValuesTextColumn {
-    var descriptions: [String] {
-        return map { $0.desc }
-    }
 }
 
 extension ValuesTextColumn {
@@ -49,6 +32,10 @@ extension ValuesTextColumn: Hashable {
 
 /// Helpers for `ExtractedValues.removeTextsAboveEnergy(_:)`
 extension ValuesTextColumn {
+    
+    var rect: CGRect {
+        valuesTexts.rect
+    }
     
     var containsServingAttribute: Bool {
         valuesTexts.containsServingAttribute
@@ -69,7 +56,7 @@ extension ValuesTextColumn {
         return nil
     }
     
-    func indexOfFirstValueTextBelowAttributeText(_ attributeText: AttributeText) -> Int? {
+    func indexOfLastValueTextInline(with attributeText: AttributeText) -> Int? {
         let thresholdY = attributeText.text.rect.height
         for i in valuesTexts.indices {
             if valuesTexts[i].text.rect.minY > attributeText.text.rect.maxY + thresholdY {
@@ -78,7 +65,17 @@ extension ValuesTextColumn {
         }
         return nil
     }
-    
+
+    func indexOfFirstValueTextInline(with attributeText: AttributeText) -> Int? {
+        let thresholdY = attributeText.text.rect.height
+        for i in valuesTexts.indices {
+            if valuesTexts[i].text.rect.maxY + thresholdY > attributeText.text.rect.minY {
+                return i
+            }
+        }
+        return nil
+    }
+
     mutating func removeValuesTextsAboveEnergy() {
         guard let index = indexOfFirstEnergyValue else { return }
         valuesTexts.removeFirst(index)
@@ -95,7 +92,7 @@ extension ValuesTextColumn {
     var hasBothKcalAndKjValues: Bool {
         !valuesTexts.kjValues.isEmpty && !valuesTexts.kcalValues.isEmpty
     }
-    
+        
     mutating func removeDuplicateEnergy(using energyAttribute: AttributeText?) {
         if hasMultipleKjValues {
             pickEnergyValue(from: valuesTexts.kjValues, for: energyAttribute)
@@ -126,9 +123,18 @@ extension ValuesTextColumn {
         }
     }
     
-    mutating func removeValueTextsBelowAttributeText(_ attributeText: AttributeText) {
-        guard let index = indexOfFirstValueTextBelowAttributeText(attributeText) else { return }
+    mutating func removeValueTextsBelow(_ attributeText: AttributeText) {
+        guard let index = indexOfLastValueTextInline(with: attributeText) else { return }
         valuesTexts.removeLast(valuesTexts.count - index)
+    }
+    
+    mutating func removeValueTextsAbove(_ attributeText: AttributeText) {
+        guard let index = indexOfFirstValueTextInline(with: attributeText) else { return }
+        valuesTexts.removeFirst(index)
+    }
+
+    mutating func removeValueTextsAbove(_ text: RecognizedText) {
+        valuesTexts.removeAll(where: { $0.text.rect.minY < text.rect.minY })
     }
 }
 
@@ -167,11 +173,12 @@ extension ValuesTextColumn {
     
     func belongsTo(_ group: [ValuesTextColumn]) -> Bool {
         
-        group.contains {
+        let belongsTo = group.contains {
             let rect = $0.columnRect
             let yNormalizedRect = columnRect.rectWithYValues(of: rect)
             return !rect.intersection(yNormalizedRect).isNull
         }
+        return belongsTo
         
 //        guard let midX = valuesTexts.compactMap({ $0.text }).midXOfShortestText,
 //              let shortestText = group.shortestText
@@ -207,5 +214,20 @@ extension Array where Element == ValuesTextColumn {
     var shortestText: RecognizedText? {
         let shortestTexts = compactMap { $0.shortestText }
         return shortestTexts.sorted(by: { $0.rect.width < $1.rect.width }).first
+    }
+}
+
+extension ValuesText: CustomDebugStringConvertible {
+    var debugDescription: String {
+        return "[" + values.map { $0.description }.joined(separator: ", ") + "]"
+    }
+    var description: String {
+        return "[" + values.map { $0.description }.joined(separator: ", ") + "]"
+    }
+}
+
+extension Array where Element == ValuesTextColumn {
+    var desc: [String] {
+        return map { $0.desc }
     }
 }
