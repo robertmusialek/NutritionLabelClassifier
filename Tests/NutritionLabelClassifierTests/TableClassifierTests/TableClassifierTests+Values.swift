@@ -6,41 +6,44 @@ let valueExpectations: [String: [[[Value?]]]?] = [
     
     "C19F126E-6D6E-464A-B7C4-718AA4384CC2": [
         [
-            /**
-             - 0 : "[[110.0 kcal], [460.0 kJ], [50.0 kcal], [209.0 kJ], [6.0 g], [2.5 g], [0.0 g], [0.0 g], [13.0 g], [3.0 g], [1.0 g], [130.0 mg]]"
-             - 1 : "[[530.0 kcal], [2218.0 kJ], [250.0 kcal], [1046.0], [28.0 g], [13.0 g], [0.0 g], [2.0 g], [66.0 g], [15.0 g], [5.0 g], [650.0 mg]]"
-             */
-            [v(110, .kcal), v(6, .g), v(2.5, .g), v(0, .g),  v(0, .g), v(13, .g), v(3, .g), v(1, .g), v(130, .mg)],
-            [v(530, .kcal), v(28, .g), v(13, .g), v(0, .g), v(2, .g), v(66, .g), v(15, .g), v(5, .g), v(650, .mg)]
+            [v(460, .kj), v(6, .g), v(2.5, .g), v(0, .g),  v(0, .g), v(13, .g), v(3, .g), v(1, .g), v(130, .mg)],
+            [v(2218, .kj), v(28, .g), v(13, .g), v(0, .g), v(2, .g), v(66, .g), v(15, .g), v(5, .g), v(650, .mg)]
         ]
     ],
     
     "B1E5C59E-7B94-4570-B226-DD9D17BC743E" : [
         [
-            [v(295, .kcal), v(11, .g), v(7.7, .g), v(43, .g), v(25, .g), v(2.2, .g), v(4.9, .g), v(0.81, .g)],
-            [v(236, .kcal), v(9, .g), v(6.2, .g), v(34, .g), v(20, .g), v(1.8, .g), v(3.9, .g), v(0.65, .g)]
+            [v(1239, .kj), v(11, .g), v(7.7, .g), v(43, .g), v(25, .g), v(2.2, .g), v(4.9, .g), v(0.81, .g)],
+            [v(992, .kj), v(9, .g), v(6.2, .g), v(34, .g), v(20, .g), v(1.8, .g), v(3.9, .g), v(0.65, .g)]
         ]
     ],
 
     "75C66881-51E5-4A42-92E6-F3B3953BC8E6": [
         [
-            [v(337, .kcal), v(35.1, .g), v(22, .g), v(8.6, .g), v(0.7, .g), v(1.2, .g), v(121, .mg), v(3.3, .g), v(3.3, .g), v(0, .g), v(2.1, .g), v(0.07, .g), v(30, .mg)],
-            [v(67, .kcal), v(7, .g), v(4.4, .g), v(1.7, .g), v(0.1, .g), v(0.2, .g), v(24, .mg), v(0.7, .g), v(0.7, .g), v(0, .g), v(0.4, .g), v(0.01, .g), v(6, .mg)]
+            [v(1387, .kj), v(35.1, .g), v(22, .g), v(8.6, .g), v(0.7, .g), v(1.2, .g), v(121, .mg), v(3.3, .g), v(3.3, .g), v(0, .g), v(2.1, .g), v(0.07, .g), v(30, .mg)],
+            [v(277, .kj), v(7, .g), v(4.4, .g), v(1.7, .g), v(0.1, .g), v(0.2, .g), v(24, .mg), v(0.7, .g), v(0.7, .g), v(0, .g), v(0.4, .g), v(0.01, .g), v(6, .mg)]
         ]
     ],
     "9C26D1D5-50B2-4933-B906-29824617FD96": [
         [
-            [v(337, .kcal), v(35.1, .g), v(22, .g), v(8.6, .g), v(0.7, .g), v(1.2, .g), v(121, .mg), v(3.3, .g), v(3.3, .g), v(0, .g), v(2.1, .g), v(0.07, .g), v(30, .mg)],
-            [v(67, .kcal), v(7, .g), v(4.4, .g), v(1.7, .g), v(0.1, .g), v(0.2, .g), v(24, .mg), v(0.7, .g), v(0.7, .g), v(0, .g), v(0.4, .g), v(0.01, .g), v(6, .mg)]
+            [v(1387, .kj), v(35.1, .g), v(22, .g), v(8.6, .g), v(0.7, .g), v(1.2, .g), v(121, .mg), v(3.3, .g), v(3.3, .g), v(0, .g), v(2.1, .g), v(0.07, .g), v(30, .mg)],
+            [v(277, .kj), v(7, .g), v(4.4, .g), v(1.7, .g), v(0.1, .g), v(0.2, .g), v(24, .mg), v(0.7, .g), v(0.7, .g), v(0, .g), v(0.4, .g), v(0.01, .g), v(6, .mg)]
         ]
     ],
     "1B51A831-FE9C-4752-B526-0ED7823EA591": [
         [
-            [v(337, .kcal), v(35.1, .g), v(22, .g), v(8.6, .g), v(0.7, .g), v(1.2, .g), v(121, .mg), v(3.3, .g), v(3.3, .g), v(0, .g), v(2.1, .g), v(0.07, .g), v(30, .mg)],
-            [v(67, .kcal), v(7, .g), v(4.4, .g), v(1.7, .g), v(0.1, .g), v(0.2, .g), v(24, .mg), v(0.7, .g), v(0.7, .g), v(0, .g), v(0.4, .g), v(0.01, .g), v(6, .mg)]
+            [v(1387, .kj), v(35.1, .g), v(22, .g), v(8.6, .g), v(0.7, .g), v(1.2, .g), v(121, .mg), v(3.3, .g), v(3.3, .g), v(0, .g), v(2.1, .g), v(0.07, .g), v(30, .mg)],
+            [v(277, .kj), v(7, .g), v(4.4, .g), v(1.7, .g), v(0.1, .g), v(0.2, .g), v(24, .mg), v(0.7, .g), v(0.7, .g), v(0, .g), v(0.4, .g), v(0.01, .g), v(6, .mg)]
         ]
     ],
-    
+    "DE476A74-8174-4E9C-81DA-450F578F039D": [
+        [
+            [v(735, .kj), v(13, .g), v(3.2, .g), v(0.9, .g), v(0, .g), v(14, .g)],
+            [v(412, .kj), v(7.3, .g), v(1.8, .g), v(0, .g), v(0, .g), v(7.8, .g)],
+//            [v(412, .kj), v(73, .g), v(1.3, .g), v(0, .g), v(7.8, .g)],
+        ]
+    ],
+
 //    "99D1A080-19CF-4A08-B8B7-1BD5E4D9CB40": nil,
 //    "3C53CC91-34D1-46EE-92BE-328ABDC20342": nil,
 //    "15C9C2C9-5012-43A3-835A-3FB0A2DD1E2D": nil,
@@ -87,34 +90,9 @@ let valueExpectations: [String: [[[Value?]]]?] = [
 //    "713A721E-A470-4DA8-B44E-E939FEF9777A": nil,
 //    "BD53EFF6-2AF9-4FCA-8865-67CCB4BA9B69": nil,
 //    "D8809685-A90E-4756-BCA1-79B2D8C0D090": nil,
-//
-//    "9C26D1D5-50B2-4933-B906-29824617FD96": [
-//        [
-//            [v(337, .kcal), v(35.1, .g), v(22, .g), v(8.6, .g), v(0.7, .g), v(1.2, .g), v(121, .mg), v(3.3, .g), v(3.3, .g), v(0, .g), v(2.1, .g), v(0.07, .g), v(30, .mg)],
-//            [v(67, .kcal), v(7, .g), v(4.4, .g), v(1.7, .g), v(0.1, .g), v(0.2, .g), v(24, .mg), v(0.7, .g), v(0.7, .g), v(0, .g), v(0.4, .g), v(0.01, .g), v(6, .mg)]
-//        ]
-//    ],
-//    "1B51A831-FE9C-4752-B526-0ED7823EA591": [
-//        [
-//            [v(337, .kcal), v(35.1, .g), v(22, .g), v(8.6, .g), v(0.7, .g), v(1.2, .g), v(121, .mg), v(3.3, .g), v(3.3, .g), v(0, .g), v(2.1, .g), v(0.07, .g), v(30, .mg)],
-//            [v(67, .kcal), v(7, .g), v(4.4, .g), v(1.7, .g), v(0.1, .g), v(0.2, .g), v(24, .mg), v(0.7, .g), v(0.7, .g), v(0, .g), v(0.4, .g), v(0.01, .g), v(6, .mg)]
-//        ]
-//    ],
-//    "DE476A74-8174-4E9C-81DA-450F578F039D": [
-//        [
-//            [v(735, .kj), v(13, .g), v(3.2, .g), v(0.9, .g), v(0, .g), v(14, .g)],
-//            [v(412, .kj), v(7.3, .g), v(1.8, .g), v(0, .g), v(0, .g), v(7.8, .g)],
-//        ]
-//    ],
 ]
 
 //let SingledOutTestCase: UUID? = nil
-
-/// Salami
-//let SingledOutTestCase: UUID? = UUID(uuidString: "DE476A74-8174-4E9C-81DA-450F578F039D")!
-
-let SingledOutTestCase: UUID? = UUID(uuidString: "C19F126E-6D6E-464A-B7C4-718AA4384CC2")!
-//let SingledOutTestCase: UUID? = UUID(uuidString: "75C66881-51E5-4A42-92E6-F3B3953BC8E6")!
 
 // 🥳 Looks like it's passing for these
 //let SingledOutTestCase: UUID? = UUID(uuidString: "B2C50752-AE52-493A-AD79-69DA4EA74504")!
@@ -122,12 +100,6 @@ let SingledOutTestCase: UUID? = UUID(uuidString: "C19F126E-6D6E-464A-B7C4-718AA4
 //let SingledOutTestCase: UUID? = UUID(uuidString: "DE476A74-8174-4E9C-81DA-450F578F039D")!
 //let SingledOutTestCase: UUID? = UUID(uuidString: "CDD8E0DD-7D2B-4802-9C1D-54EFFBB71E58")!
 
-let TestPassingTestCases = true
+let SingledOutTestCase: UUID? = UUID(uuidString: "DE476A74-8174-4E9C-81DA-450F578F039D")!
 
-//let PassingTestCasesTableValues = [
-//    "B1E5C59E-7B94-4570-B226-DD9D17BC743E",
-//    "C19F126E-6D6E-464A-B7C4-718AA4384CC2",
-//    "75C66881-51E5-4A42-92E6-F3B3953BC8E6",
-//    "9C26D1D5-50B2-4933-B906-29824617FD96",
-//    "1B51A831-FE9C-4752-B526-0ED7823EA591",
-//]
+let TestPassingTestCases = false

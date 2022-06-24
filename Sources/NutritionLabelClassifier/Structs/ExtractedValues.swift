@@ -51,7 +51,6 @@ struct ExtractedValues {
 
         columns.removeTextsAboveEnergy()
         columns.removeTextsBelowLastAttribute(of: extractedAttributes)
-//        columns.removeTextsAboveFirstAttribute(of: extractedAttributes)
         columns.removeDuplicateColumns()
         columns.pickTopColumns()
         columns.removeEmptyColumns()
@@ -162,15 +161,84 @@ extension Array where Element == [ValuesTextColumn] {
             self[i] = self[i].filter { $0.rect.maxX > attributesRect.maxX }
         }
     }
+    
 }
 
-extension Array where Element == ValuesTextColumn {
+extension ValuesTextColumn {
+    mutating func pickEnergyValueIfMultiplesWithinText(forColumn index: Int) {
+        for i in valuesTexts.indices {
+            guard valuesTexts[i].containsMultipleEnergyValues else {
+                continue
+            }
+            valuesTexts[i].pickEnergyValue(forColumn: index)
+            break
+        }
+    }
+}
+
+typealias EnergyPair = (kj: Value?, kcal: Value?)
+
+extension Array where Element == Value {
+
+    var energyPairs: [EnergyPair] {
+        var pairs: [EnergyPair] = []
+        var currentPair = EnergyPair(kj: nil, kcal: nil)
+        for value in self {
+            if value.unit == .kj {
+                guard currentPair.kj == nil else {
+                    pairs.append(currentPair)
+                    currentPair = EnergyPair(kj: value, kcal: nil)
+                    continue
+                }
+                currentPair.kj = value
+            }
+            else if value.unit == .kcal {
+                guard currentPair.kcal == nil else {
+                    pairs.append(currentPair)
+                    currentPair = EnergyPair(kj: nil, kcal: value)
+                    continue
+                }
+                currentPair.kcal = value
+            }
+        }
+        pairs.append(currentPair)
+        return pairs
+    }
+}
+
+extension ValuesText {
     
+    mutating func pickEnergyValue(forColumn index: Int) {
+        let energyPairs = values.energyPairs
+        guard index < energyPairs.count else {
+            return
+        }
+        let energyPair = energyPairs[index]
+        
+        //TODO: Make this configurable
+        /// We're selecting kj here preferentially
+        guard let kj = energyPair.kj else {
+            guard let kcal = energyPair.kcal else {
+                return
+            }
+            values = [kcal]
+            return
+        }
+        values = [kj]
+    }
+    
+    var containsMultipleEnergyValues: Bool {
+        values.filter({ $0.hasEnergyUnit }).count > 1
+    }
+}
+extension Array where Element == ValuesTextColumn {
+
     mutating func cleanupEnergyValues(using extractedAttributes: ExtractedAttributes) {
         /// If we've got any two sets of energy values (ie. two kcal and/or two kJ values), pick those that that are closer to the energy attribute
         let energyAttribute = extractedAttributes.energyAttributeText
         for i in indices {
             var column = self[i]
+            column.pickEnergyValueIfMultiplesWithinText(forColumn: i)
             column.removeDuplicateEnergy(using: energyAttribute)
             column.pickEnergyIfMultiplePresent()
             self[i] = column

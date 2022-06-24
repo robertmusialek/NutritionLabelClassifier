@@ -108,7 +108,7 @@ extension ValuesTextColumn {
         }
         
         //TODO: Have this a preference where we choose kcal over kj so that it is configurable when using the classifier
-        valuesTexts.removeAll(where: { $0.containsValueWithKjUnit })
+        valuesTexts.removeAll(where: { $0.containsValueWithKcalUnit })
     }
         
     mutating func pickEnergyValue(from multipleValues: [ValuesText], for energyAttribute: AttributeText?) {
