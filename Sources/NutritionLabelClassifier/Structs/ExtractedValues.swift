@@ -46,7 +46,7 @@ struct ExtractedValues {
     static func process(valuesTextColumns: [ValuesTextColumn], extractedAttributes: ExtractedAttributes) -> [[ValuesTextColumn]] {
 
         let start = CFAbsoluteTimeGetCurrent()
-¡
+
         var columns = valuesTextColumns
 
         columns.removeTextsAboveEnergy()
@@ -56,6 +56,8 @@ struct ExtractedValues {
         columns.removeEmptyColumns()
         columns.removeColumnsWithServingAttributes()
         columns.cleanupEnergyValues(using: extractedAttributes)
+        //TODO: This should do the calculation for the macros and if it's off by a threshold, recalculate whichever one is incorrect by using the ratio of values. ALTHOUGH do this after associating the groups to the extractedAttributes and getting our observations? We might already have this!
+//        columns.correctIncorrectlyReadMacros()
         columns.sort()
         
         var groupedColumns = groupByAttributes(columns)
@@ -63,14 +65,25 @@ struct ExtractedValues {
         groupedColumns.removeExtraneousColumns()
         insertNilForMissedValues(&groupedColumns)
 
+        //TODO: This should detect incorrectly read values by determining the ratio between them (if two values are present) and disqualifying values that are past a certain threshold
+//        insertNilForIncorrectlyReadValues(&groupedColumns)
+        
+        //TODO: This should go through the nil values and replace them with correctly scaled values using the ratios. Possibly to be done with observations and not here.
+//        replaceNilsWithScaledValues(&groupedColumns)
+
         print("⏱ processing columns took: \(CFAbsoluteTimeGetCurrent()-start)s")
         return groupedColumns
     }
 
     /// - Insert `nil`s wherever values failed to be recognized
     ///     Do this if we have a mismatch of element counts between columns
-    static func insertNilForMissedValues(_ groupedColumns: inout [[ValuesTextColumn]]) {
-        
+    static func insertNilForMissedValues(_ groups: inout [[ValuesTextColumn]]) {
+        for i in groups.indices {
+            guard groups[i].hasMismatchingColumnSizes else {
+                continue
+            }
+            groups[i].insertNilForMissingValues()
+        }
     }
 
     /// - Group columns if `attributeTextColumns.count > 1`
@@ -233,6 +246,30 @@ extension ValuesText {
 }
 extension Array where Element == ValuesTextColumn {
 
+    mutating func insertNilForMissingValues() {
+        /// Get the column with the largest size as the `referenceColumn`
+        /// Now get all the columns excluding the `referenceColumn`, calling it `partialColumns`
+        /// For each `partialColumn`
+        ///     Get the deltas of the `midY` between each column
+        ///     Go through these, comparing them to the deltas of the `midY` of the reference column
+        ///     As soon as we determine an anomaly (ie. a value with a statistically significant different),
+        ///         Use that to determine the an index missing a value and add it to the array
+        ///     After going through all the deltas and determining the empty columns
+        ///         Fill them up with `nil` so that they can be determined later via scaling
+    }
+    
+    var hasMismatchingColumnSizes: Bool {
+        guard let firstColumnSize = first?.valuesTexts.count else {
+            return false
+        }
+        for column in self.dropFirst() {
+            if column.valuesTexts.count != firstColumnSize {
+                return true
+            }
+        }
+        return false
+    }
+    
     mutating func cleanupEnergyValues(using extractedAttributes: ExtractedAttributes) {
         /// If we've got any two sets of energy values (ie. two kcal and/or two kJ values), pick those that that are closer to the energy attribute
         let energyAttribute = extractedAttributes.energyAttributeText
