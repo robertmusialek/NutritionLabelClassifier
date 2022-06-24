@@ -44,6 +44,8 @@ let valueExpectations: [String: [[[Value?]]]?] = [
         ]
     ],
 
+    //TODO: Do Haribo Next, Goldbears first then Fizzy Cola
+    
 //    "99D1A080-19CF-4A08-B8B7-1BD5E4D9CB40": nil,
 //    "3C53CC91-34D1-46EE-92BE-328ABDC20342": nil,
 //    "15C9C2C9-5012-43A3-835A-3FB0A2DD1E2D": nil,

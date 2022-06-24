@@ -46,7 +46,7 @@ struct ExtractedValues {
     static func process(valuesTextColumns: [ValuesTextColumn], extractedAttributes: ExtractedAttributes) -> [[ValuesTextColumn]] {
 
         let start = CFAbsoluteTimeGetCurrent()
-
+¡
         var columns = valuesTextColumns
 
         columns.removeTextsAboveEnergy()
