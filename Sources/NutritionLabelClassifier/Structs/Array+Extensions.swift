@@ -20,6 +20,12 @@ extension Array where Element == Value {
     var containsValueWithEnergyUnit: Bool {
         contains(where: { $0.hasEnergyUnit } )
     }
+    var containsValueWithKjUnit: Bool {
+        contains(where: { $0.unit == .kj } )
+    }
+    var containsValueWithKcalUnit: Bool {
+        contains(where: { $0.unit == .kcal } )
+    }
 }
 
 //MARK: [[[Value?]]]

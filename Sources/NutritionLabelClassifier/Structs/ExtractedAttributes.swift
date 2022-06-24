@@ -141,4 +141,15 @@ extension ExtractedAttributes {
         }
         return bottomAttributeText
     }
+    
+    var energyAttributeText: AttributeText? {
+        for column in attributeTextColumns {
+            for attributeText in column {
+                if attributeText.attribute == .energy {
+                    return attributeText
+                }
+            }
+        }
+        return nil
+    }
 }

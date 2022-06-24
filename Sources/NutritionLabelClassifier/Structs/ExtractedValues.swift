@@ -4,7 +4,7 @@ import VisionSugar
 struct ExtractedValues {
     
     /// Groups of `ValueText` columns, 1 for each `AttributeText` column
-    let valueTextColumnGroups: [[[ValueText?]]]
+    let groupedColumns: [[ValuesTextColumn]]
     
     init(visionResult: VisionResult, extractedAttributes: ExtractedAttributes) {
         
@@ -32,43 +32,125 @@ struct ExtractedValues {
         }
         
         print("⏱ extracting columns took: \(CFAbsoluteTimeGetCurrent()-start)s")
-        self.valueTextColumnGroups = Self.process(valuesTextColumns: columns, extractedAttributes: extractedAttributes)
+        let groupedColumns = Self.process(valuesTextColumns: columns,
+                                           extractedAttributes: extractedAttributes)
+        self.groupedColumns = groupedColumns
     }
     
-    static func process(valuesTextColumns: [ValuesTextColumn], extractedAttributes: ExtractedAttributes) -> [[[ValueText?]]] {
+    var values: [[[Value?]]] {
+        groupedColumns.map { $0.map { $0.valuesTexts.map { $0.values.first } } }
+    }
+    
+    static func process(valuesTextColumns: [ValuesTextColumn], extractedAttributes: ExtractedAttributes) -> [[ValuesTextColumn]] {
 
         let start = CFAbsoluteTimeGetCurrent()
 
         var columns = valuesTextColumns
 
         columns.removeTextsAboveEnergy()
-        columns.removeTextsBelowLastAttribute(extractedAttributes: extractedAttributes)
+        columns.removeTextsBelowLastAttribute(using: extractedAttributes)
         columns.removeDuplicateColumns()
         columns.pickTopColumns()
         columns.removeEmptyColumns()
         columns.removeColumnsWithServingAttributes()
+        columns.cleanupEnergyValues(using: extractedAttributes)
         columns.sort()
         
-        //TODO-NEXT 0: Get the missing 5g by considering other recognized texts
-        
-        //TODO-NEXT 1:
-//        let groupedColumnsOfTexts = group(columns)
-//        let groupedColumnsOfDetectedValueTexts = groupedColumnsOfDetectedValueTexts(from: groupedColumnsOfTexts)
-//
-//        var groupedColumnsOfValueTexts = pickValueTexts(from: groupedColumnsOfDetectedValueTexts)
-//        insertNilForMissedValues(&groupedColumnsOfValueTexts)
-//
-//        return groupedColumnsOfValueTexts
+        var groupedColumns = groupByAttributes(columns)
+        insertNilForMissedValues(&groupedColumns)
 
         print("⏱ processing columns took: \(CFAbsoluteTimeGetCurrent()-start)s")
-
-        return []
+        return groupedColumns
     }
-    
-    /// - Remove anything values above energy for each column
+
+    /// - Insert `nil`s wherever values failed to be recognized
+    ///     Do this if we have a mismatch of element counts between columns
+    static func insertNilForMissedValues(_ groupedColumns: inout [[ValuesTextColumn]]) {
+        
+    }
+
+    /// - Group columns if `attributeTextColumns.count > 1`
+    static func groupByAttributes(_ initialColumnsOfTexts: [ValuesTextColumn]) -> [[ValuesTextColumn]] {
+        return [initialColumnsOfTexts]
+//        guard let attributeTextColumns = attributeTextColumns else { return [] }
+//
+//        var columnsOfTexts = initialColumnsOfTexts
+//        var groups: [[[RecognizedText]]] = []
+//
+//        /// For each Attribute Column
+//        for i in attributeTextColumns.indices {
+//            let attributeTextColumn = attributeTextColumns[i]
+//
+//            /// Get the minX of the shortest attribute
+//            guard let attributeColumnMinX = attributeTextColumn.shortestText?.rect.minX else { continue }
+//
+//            var group: [[RecognizedText]] = []
+//            while group.count < 2 && !columnsOfTexts.isEmpty {
+//                let column = columnsOfTexts.removeFirst()
+//
+//                /// Skip columns that are clearly to the left of this `attributeTextColumn`
+//                guard let columnMaxX = column.shortestText?.rect.maxX,
+//                      columnMaxX > attributeColumnMinX else {
+//                    continue
+//                }
+//
+//                /// If we have another attribute column
+//                if i < attributeTextColumns.count - 1 {
+//                    /// If we have reached columns that is to the right of it
+//                    guard let nextAttributeColumnMinX = attributeTextColumns[i+1].shortestText?.rect.minX,
+//                          columnMaxX < nextAttributeColumnMinX else
+//                    {
+//                        /// Make sure we re-insert the column so that it's extracted by that column
+//                        columnsOfTexts.insert(column, at: 0)
+//
+//                        /// Stop the loop so that the next attribute column is focused on
+//                        break
+//                    }
+//                }
+//
+//                /// Skip columns that contain all nutrient attributes
+//                guard !column.allElementsContainNutrientAttributes else {
+//                    continue
+//                }
+//
+//                /// Skip columns that contain all percentage values
+//                guard !column.allElementsArePercentageValues else {
+//                    continue
+//                }
+//
+//                //TODO: Write this
+//                /// If this column has more elements than the existing (first) column and contains any texts belonging to it, replace it
+//                if let existing = group.first,
+//                    column.count > existing.count,
+//                    column.containsTextsFrom(existing)
+//                {
+//                    group[0] = column
+//                } else {
+//                    group.append(column)
+//                }
+//            }
+//
+//            groups.append(group)
+//        }
+//
+//        return groups
+    }
 }
 
 extension Array where Element == ValuesTextColumn {
+    mutating func cleanupEnergyValues(using extractedAttributes: ExtractedAttributes) {
+        
+        /// If we've got any two sets of energy values (ie. two kcal and/or two kJ values), pick those that that are closer to the energy attribute
+        let energyAttribute = extractedAttributes.energyAttributeText
+        for i in indices {
+            var column = self[i]
+            column.removeDuplicateEnergy(using: energyAttribute)
+            column.pickEnergyIfMultiplePresent()
+            self[i] = column
+        }
+        
+    }
+
     mutating func removeColumnsWithServingAttributes() {
         removeAll { $0.containsServingAttribute }
     }
@@ -82,7 +164,7 @@ extension Array where Element == ValuesTextColumn {
         }
     }
     
-    mutating func removeTextsBelowLastAttribute(extractedAttributes: ExtractedAttributes) {
+    mutating func removeTextsBelowLastAttribute(using extractedAttributes: ExtractedAttributes) {
         guard let bottomAttributeText = extractedAttributes.bottomAttributeText else {
             return
         }
@@ -147,72 +229,5 @@ extension Array where Element == ValuesTextColumn {
             }
             return midX0 < midX1
         })
-    }
-    
-    /// - Group columns if `attributeTextColumns.count > 1`
-    static func group(_ initialColumnsOfTexts: [[[ValueText]]]) -> [[[[ValueText]]]] {
-//        guard let attributeTextColumns = attributeTextColumns else { return [] }
-//
-//        var columnsOfTexts = initialColumnsOfTexts
-//        var groups: [[[RecognizedText]]] = []
-//
-//        /// For each Attribute Column
-//        for i in attributeTextColumns.indices {
-//            let attributeTextColumn = attributeTextColumns[i]
-//
-//            /// Get the minX of the shortest attribute
-//            guard let attributeColumnMinX = attributeTextColumn.shortestText?.rect.minX else { continue }
-//
-//            var group: [[RecognizedText]] = []
-//            while group.count < 2 && !columnsOfTexts.isEmpty {
-//                let column = columnsOfTexts.removeFirst()
-//
-//                /// Skip columns that are clearly to the left of this `attributeTextColumn`
-//                guard let columnMaxX = column.shortestText?.rect.maxX,
-//                      columnMaxX > attributeColumnMinX else {
-//                    continue
-//                }
-//
-//                /// If we have another attribute column
-//                if i < attributeTextColumns.count - 1 {
-//                    /// If we have reached columns that is to the right of it
-//                    guard let nextAttributeColumnMinX = attributeTextColumns[i+1].shortestText?.rect.minX,
-//                          columnMaxX < nextAttributeColumnMinX else
-//                    {
-//                        /// Make sure we re-insert the column so that it's extracted by that column
-//                        columnsOfTexts.insert(column, at: 0)
-//
-//                        /// Stop the loop so that the next attribute column is focused on
-//                        break
-//                    }
-//                }
-//
-//                /// Skip columns that contain all nutrient attributes
-//                guard !column.allElementsContainNutrientAttributes else {
-//                    continue
-//                }
-//
-//                /// Skip columns that contain all percentage values
-//                guard !column.allElementsArePercentageValues else {
-//                    continue
-//                }
-//
-//                //TODO: Write this
-//                /// If this column has more elements than the existing (first) column and contains any texts belonging to it, replace it
-//                if let existing = group.first,
-//                    column.count > existing.count,
-//                    column.containsTextsFrom(existing)
-//                {
-//                    group[0] = column
-//                } else {
-//                    group.append(column)
-//                }
-//            }
-//
-//            groups.append(group)
-//        }
-//
-//        return groups
-        return []
     }
 }

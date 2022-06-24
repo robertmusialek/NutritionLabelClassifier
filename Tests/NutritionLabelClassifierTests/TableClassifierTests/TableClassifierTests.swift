@@ -9,6 +9,7 @@ final class TableClassifierTests: XCTestCase {
     
     var currentTestCaseId: UUID = defaultUUID
     
+    //TODO: Separate into Attribute and Values Classifiers
     func testTableClassifier() throws {
         
         try prepareTestCaseImages()
@@ -63,9 +64,10 @@ final class TableClassifierTests: XCTestCase {
                 }
                 
                 //TODO: make this a variable on the struct itself
-                let values = tableClassifier.extractedValues.map {
-                    $0.valueTextColumnGroups.map { $0.map { $0.map { $0?.value } } }
-                }
+//                let values = tableClassifier.extractedValues.map {
+//                    $0.valueTextColumnGroups.map { $0.map { $0.map { $0?.value } } }
+//                }
+                let values = tableClassifier.extractedValues?.values
 
                 guard values == valueExpectations[id.uuidString] else {
                     print("🤖❌ Values for: \(id)")

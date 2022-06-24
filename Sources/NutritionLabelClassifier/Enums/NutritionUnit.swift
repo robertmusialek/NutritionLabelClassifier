@@ -44,7 +44,7 @@ public enum NutritionUnit: Int, CaseIterable {
         case .mg:
             return "^(mg|mq)$"
         case .kj:
-            return "^kj$"
+            return "^(kj|kl)$"
         case .mcg:
             return "^(ug|mcg)$"
         case .kcal:
@@ -69,7 +69,7 @@ public enum NutritionUnit: Int, CaseIterable {
         case .mg:
             return ["mg", "mq"]
         case .kj:
-            return ["kj", "kJ", "kilojules"]
+            return ["kj", "kl", "kJ", "kilojules"]
         case .mcg:
             return ["mcg", "ug"]
         case .kcal:

@@ -15,6 +15,8 @@ struct ValuesTextColumn {
         let below = visionResult.columnOfValueTexts(startingFrom: text, preceding: false)
         self.valuesTexts = above + [valuesText] + below
     }
+    
+    
 }
 
 extension ValuesText: CustomDebugStringConvertible {
@@ -68,7 +70,7 @@ extension ValuesTextColumn {
     }
     
     func indexOfFirstValueTextBelowAttributeText(_ attributeText: AttributeText) -> Int? {
-        let thresholdY = 0.0
+        let thresholdY = attributeText.text.rect.height
         for i in valuesTexts.indices {
             if valuesTexts[i].text.rect.minY > attributeText.text.rect.maxY + thresholdY {
                 return i
@@ -80,6 +82,48 @@ extension ValuesTextColumn {
     mutating func removeValuesTextsAboveEnergy() {
         guard let index = indexOfFirstEnergyValue else { return }
         valuesTexts.removeFirst(index)
+    }
+    
+    var hasMultipleKcalValues: Bool {
+        valuesTexts.kcalValues.count > 1
+    }
+    
+    var hasMultipleKjValues: Bool {
+        valuesTexts.kjValues.count > 1
+    }
+    
+    var hasBothKcalAndKjValues: Bool {
+        !valuesTexts.kjValues.isEmpty && !valuesTexts.kcalValues.isEmpty
+    }
+    
+    mutating func removeDuplicateEnergy(using energyAttribute: AttributeText?) {
+        if hasMultipleKjValues {
+            pickEnergyValue(from: valuesTexts.kjValues, for: energyAttribute)
+        }
+        if hasMultipleKcalValues {
+            pickEnergyValue(from: valuesTexts.kcalValues, for: energyAttribute)
+        }
+    }
+    
+    mutating func pickEnergyIfMultiplePresent() {
+        guard hasBothKcalAndKjValues else {
+            return
+        }
+        
+        //TODO: Have this a preference where we choose kcal over kj so that it is configurable when using the classifier
+        valuesTexts.removeAll(where: { $0.containsValueWithKjUnit })
+    }
+        
+    mutating func pickEnergyValue(from multipleValues: [ValuesText], for energyAttribute: AttributeText?) {
+        var array = multipleValues
+        /// If we have an energy attribute, determine the closest value to it
+        if let closest = array.closestValueText(to: energyAttribute?.text) {
+            /// Remove it from array of kj values
+            array.removeAll(where: { $0 == closest })
+
+            /// Now remove the remaining kj values from the `valueText`s array
+            valuesTexts.removeAll(where: { array.contains($0) })
+        }
     }
     
     mutating func removeValueTextsBelowAttributeText(_ attributeText: AttributeText) {

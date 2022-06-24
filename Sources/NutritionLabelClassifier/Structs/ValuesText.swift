@@ -1,4 +1,5 @@
 import VisionSugar
+import CoreGraphics
 
 struct ValuesText {
 
@@ -18,6 +19,14 @@ struct ValuesText {
         values.containsValueWithEnergyUnit
     }
     
+    var containsValueWithKjUnit: Bool {
+        values.containsValueWithKjUnit
+    }
+
+    var containsValueWithKcalUnit: Bool {
+        values.containsValueWithKcalUnit
+    }
+
     var isSingularPercentValue: Bool {
         if values.count == 1, let first = values.first, first.unit == .p {
             return true
@@ -59,4 +68,36 @@ extension Array where Element == ValuesText {
     var containsServingAttribute: Bool {
         contains(where: { $0.text.containsServingAttribute })
     }
+    
+    var kjValues: [ValuesText] {
+        filter({ $0.containsValueWithKjUnit })
+    }
+    
+    var kcalValues: [ValuesText] {
+        filter({ $0.containsValueWithKcalUnit })
+    }
+    
+    func closestValueText(to recognizedText: RecognizedText?) -> ValuesText? {
+        /// Simply returning first value for now
+        first
+        //TODO: Consider recognizedText and distance to it when we need to
+//        let sorted = self.sorted(by: { $0.text.rect.yDistanceToTopOf(recognizedText.rect) < $1.text.rect.yDistanceToTopOf(recognizedText.rect) })
+//        return sorted.first
+    }
 }
+
+extension CGRect {
+    func yDistanceToTopOf(_ rect: CGRect) -> CGFloat {
+        abs(midY - rect.minY)
+    }
+}
+
+//extension CGPoint {
+//    func distanceSquared(to: CGPoint) -> CGFloat {
+//        (self.x - to.x) * (self.x - to.x) + (self.y - to.y) * (self.y - to.y)
+//    }
+//
+//    func distance(to: CGPoint) -> CGFloat {
+//        sqrt(CGPointDistanceSquared(from: from, to: to))
+//    }
+//}
