@@ -3,8 +3,7 @@ import VisionSugar
 
 struct ExtractedValues {
     
-    /// Groups of `ValueText` columns, 1 for each `AttributeText` column
-    let groupedColumns: [[ValuesTextColumn]]
+    let grid: ExtractedGrid
     
     init(visionResult: VisionResult, extractedAttributes: ExtractedAttributes) {
         
@@ -34,56 +33,37 @@ struct ExtractedValues {
         }
         
         print("⏱ extracting columns took: \(CFAbsoluteTimeGetCurrent()-start)s")
-        let groupedColumns = Self.process(valuesTextColumns: columns,
-                                           extractedAttributes: extractedAttributes)
-        self.groupedColumns = groupedColumns
+        let grid = Self.process(valuesTextColumns: columns, extractedAttributes: extractedAttributes)
+        self.grid = grid
     }
     
     var values: [[[Value?]]] {
-        groupedColumns.map { $0.map { $0.valuesTexts.map { $0.values.first } } }
+        grid.values
     }
     
-    static func process(valuesTextColumns: [ValuesTextColumn], extractedAttributes: ExtractedAttributes) -> [[ValuesTextColumn]] {
+    static func process(valuesTextColumns: [ValuesTextColumn], extractedAttributes: ExtractedAttributes) -> ExtractedGrid {
 
         let start = CFAbsoluteTimeGetCurrent()
 
         var columns = valuesTextColumns
 
-        columns.removeTextsAboveEnergy()
+        columns.removeTextsAboveEnergy(for: extractedAttributes)
         columns.removeTextsBelowLastAttribute(of: extractedAttributes)
         columns.removeDuplicateColumns()
         columns.pickTopColumns()
         columns.removeEmptyColumns()
         columns.removeColumnsWithServingAttributes()
         columns.cleanupEnergyValues(using: extractedAttributes)
-        //TODO: This should do the calculation for the macros and if it's off by a threshold, recalculate whichever one is incorrect by using the ratio of values. ALTHOUGH do this after associating the groups to the extractedAttributes and getting our observations? We might already have this!
-//        columns.correctIncorrectlyReadMacros()
         columns.sort()
         
         var groupedColumns = groupByAttributes(columns)
         groupedColumns.removeColumnsInSameColumnAsAttributes(in: extractedAttributes)
         groupedColumns.removeExtraneousColumns()
-        insertNilForMissedValues(&groupedColumns)
-
-        //TODO: This should detect incorrectly read values by determining the ratio between them (if two values are present) and disqualifying values that are past a certain threshold
-//        insertNilForIncorrectlyReadValues(&groupedColumns)
         
-        //TODO: This should go through the nil values and replace them with correctly scaled values using the ratios. Possibly to be done with observations and not here.
-//        replaceNilsWithScaledValues(&groupedColumns)
-
+        let grid = ExtractedGrid(extractedAttributes: extractedAttributes,
+                                 groupedColumnsOfValues: groupedColumns)
         print("⏱ processing columns took: \(CFAbsoluteTimeGetCurrent()-start)s")
-        return groupedColumns
-    }
-
-    /// - Insert `nil`s wherever values failed to be recognized
-    ///     Do this if we have a mismatch of element counts between columns
-    static func insertNilForMissedValues(_ groups: inout [[ValuesTextColumn]]) {
-        for i in groups.indices {
-            guard groups[i].hasMismatchingColumnSizes else {
-                continue
-            }
-            groups[i].insertNilForMissingValues()
-        }
+        return grid
     }
 
     /// - Group columns if `attributeTextColumns.count > 1`
@@ -286,7 +266,7 @@ extension Array where Element == ValuesTextColumn {
         removeAll { $0.containsServingAttribute }
     }
     
-    var topMostEnergyValueText: ValuesText? {
+    var topMostEnergyValueTextUsingValueUnits: ValuesText? {
         var top: ValuesText? = nil
         for column in self {
             guard let index = column.indexOfFirstEnergyValue else { continue }
@@ -301,8 +281,43 @@ extension Array where Element == ValuesTextColumn {
         return top
     }
     
-    mutating func removeTextsAboveEnergy() {
-        guard let topMostEnergyValueText = topMostEnergyValueText else {
+    func topMostEnergyValueTextUsingEnergyAttribute(from attributes: ExtractedAttributes) -> ValuesText? {
+        guard let energyAttribute = attributes.attributeText(for: .energy) else {
+            return nil
+        }
+        return topMostInlineValuesText(to: energyAttribute.text)
+    }
+    
+    func topMostInlineValuesText(to text: RecognizedText) -> ValuesText? {
+        var top: ValuesText? = nil
+        for column in self {
+            guard let topMostInlineValuesText = column.topMostInlineValuesText(to: text) else {
+                continue
+            }
+            guard let topValuesText = top else {
+                top = topMostInlineValuesText
+                continue
+            }
+            if topMostInlineValuesText.text.rect.minY < topValuesText.text.rect.minY {
+                top = topMostInlineValuesText
+            }
+        }
+        return top
+    }
+    
+    func topMostEnergyValueText(for attributes: ExtractedAttributes) -> ValuesText? {
+        if let top = topMostEnergyValueTextUsingValueUnits {
+            return top
+        }
+        /// If we still haven't got the top-most energy value, use the Energy attribute to find the-most value that is inline with it
+        if let top = topMostEnergyValueTextUsingEnergyAttribute(from: attributes) {
+            return top
+        }
+        return nil
+    }
+    
+    mutating func removeTextsAboveEnergy(for attributes: ExtractedAttributes) {
+        guard let topMostEnergyValueText = topMostEnergyValueText(for: attributes) else {
             return
         }
         

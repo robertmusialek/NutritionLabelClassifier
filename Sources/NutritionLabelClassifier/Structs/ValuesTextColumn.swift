@@ -56,6 +56,16 @@ extension ValuesTextColumn {
         return nil
     }
     
+    func topMostInlineValuesText(to text: RecognizedText) -> ValuesText? {
+        for valuesText in valuesTexts {
+            let xNormalizedRect = valuesText.text.rect.rectWithXValues(of: text.rect)
+            if xNormalizedRect.intersects(text.rect) {
+                return valuesText
+            }
+        }
+        return nil
+    }
+    
     func indexOfLastValueTextInline(with attributeText: AttributeText) -> Int? {
         let thresholdY = attributeText.text.rect.height
         for i in valuesTexts.indices {

@@ -128,6 +128,17 @@ extension ExtractedAttributes {
         attributeTextColumns.map { $0.map { $0.attribute } }
     }
     
+    func attributeText(for attribute: Attribute) -> AttributeText? {
+        for column in attributeTextColumns {
+            for attributeText in column {
+                if attributeText.attribute == .energy {
+                    return attributeText
+                }
+            }
+        }
+        return nil
+    }
+    
     //TODO: Write tests for these
     var bottomAttributeText: AttributeText? {
         let columns = attributeTextColumns
