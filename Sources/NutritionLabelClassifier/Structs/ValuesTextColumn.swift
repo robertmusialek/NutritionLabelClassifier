@@ -124,9 +124,10 @@ extension ValuesTextColumn {
     mutating func pickEnergyValue(from multipleValues: [ValuesText], for energyAttribute: AttributeText?) {
         var array = multipleValues
         /// If we have an energy attribute, determine the closest value to it
-        if let closest = array.closestValueText(to: energyAttribute?.text) {
+        if let first = array.first {
+//        if let closest = array.closestValueText(to: energyAttribute?.text) {
             /// Remove it from array of kj values
-            array.removeAll(where: { $0 == closest })
+            array.removeAll(where: { $0 == first })
 
             /// Now remove the remaining kj values from the `valueText`s array
             valuesTexts.removeAll(where: { array.contains($0) })

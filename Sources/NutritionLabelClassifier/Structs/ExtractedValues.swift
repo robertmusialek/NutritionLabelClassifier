@@ -3,7 +3,7 @@ import VisionSugar
 
 struct ExtractedValues {
     
-    let grid: ExtractedGrid
+    let groupedColumns: [[ValuesTextColumn]]
     
     init(visionResult: VisionResult, extractedAttributes: ExtractedAttributes) {
         
@@ -31,17 +31,19 @@ struct ExtractedValues {
                 columns.append(column)
             }
         }
-        
+
         print("⏱ extracting columns took: \(CFAbsoluteTimeGetCurrent()-start)s")
-        let grid = Self.process(valuesTextColumns: columns, extractedAttributes: extractedAttributes)
-        self.grid = grid
+
+        let groupedColumns = Self.process(valuesTextColumns: columns, extractedAttributes: extractedAttributes)
+        self.groupedColumns = groupedColumns
     }
     
     var values: [[[Value?]]] {
-        grid.values
+        []
+//        grid.values
     }
     
-    static func process(valuesTextColumns: [ValuesTextColumn], extractedAttributes: ExtractedAttributes) -> ExtractedGrid {
+    static func process(valuesTextColumns: [ValuesTextColumn], extractedAttributes: ExtractedAttributes) -> [[ValuesTextColumn]] {
 
         let start = CFAbsoluteTimeGetCurrent()
 
@@ -60,10 +62,8 @@ struct ExtractedValues {
         groupedColumns.removeColumnsInSameColumnAsAttributes(in: extractedAttributes)
         groupedColumns.removeExtraneousColumns()
         
-        let grid = ExtractedGrid(extractedAttributes: extractedAttributes,
-                                 groupedColumnsOfValues: groupedColumns)
         print("⏱ processing columns took: \(CFAbsoluteTimeGetCurrent()-start)s")
-        return grid
+        return groupedColumns
     }
 
     /// - Group columns if `attributeTextColumns.count > 1`

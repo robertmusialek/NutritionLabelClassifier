@@ -83,12 +83,11 @@ extension Array where Element == ValuesText {
         filter({ $0.containsValueWithKcalUnit })
     }
     
-    func closestValueText(to recognizedText: RecognizedText?) -> ValuesText? {
-        /// Simply returning first value for now
-        first
-        //TODO: Consider recognizedText and distance to it when we need to
-//        let sorted = self.sorted(by: { $0.text.rect.yDistanceToTopOf(recognizedText.rect) < $1.text.rect.yDistanceToTopOf(recognizedText.rect) })
-//        return sorted.first
+    func closestValueText(to text: RecognizedText) -> ValuesText? {
+        let sorted = self.sorted(by: {
+            $0.text.rect.yDistanceToTopOf(text.rect) < $1.text.rect.yDistanceToTopOf(text.rect)
+        })
+        return sorted.first
     }
     
     var rect: CGRect {

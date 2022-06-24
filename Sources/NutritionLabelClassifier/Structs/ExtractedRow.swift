@@ -3,5 +3,5 @@ import VisionSugar
 
 struct ExtractedRow {
     let attributeText: AttributeText
-    let valueTexts: [ValueText]
+    var valuesTexts: [ValuesText?]
 }

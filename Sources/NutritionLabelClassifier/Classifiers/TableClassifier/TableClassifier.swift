@@ -29,11 +29,16 @@ class TableClassifier {
     
     var extractedAttributes: ExtractedAttributes? = nil
     var extractedValues: ExtractedValues? = nil
+    var extractedGrid: ExtractedGrid? = nil
     
     func getObservations() -> [Observation] {
 
         extractedAttributes = extractAttributeTextColumns()
         extractedValues = extractValueTextColumnGroups()
+        
+        if let attributes = extractedAttributes, let values = extractedValues {
+            extractedGrid = ExtractedGrid(attributes: attributes, values: values)
+        }
         
         return observations
 //        /// Identify column of labels

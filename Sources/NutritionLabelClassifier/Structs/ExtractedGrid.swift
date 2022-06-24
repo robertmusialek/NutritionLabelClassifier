@@ -9,9 +9,31 @@ struct ExtractedGrid {
 //        groupedColumns.map { $0.map { $0.valuesTexts.map { $0.values.first } } }
     }
     
-    init(extractedAttributes: ExtractedAttributes, groupedColumnsOfValues: [[ValuesTextColumn]]) {
-        self.columns = []
+    init(attributes: ExtractedAttributes, values: ExtractedValues) {
         
+        var columns: [ExtractedColumn] = []
+        
+        for i in attributes.attributeTextColumns.indices {
+            guard i < values.groupedColumns.count else {
+                //TODO: Remove all fatalErrors after testing
+                fatalError("Expected groupedColumnsOfValues to have: \(i) columns")
+            }
+            
+            let attributesColumn = attributes.attributeTextColumns[i]
+            let valueColumns = values.groupedColumns[i]
+            let column = ExtractedColumn(attributesColumn: attributesColumn, valueColumns: valueColumns)
+            columns.append(column)
+        }
+        
+        self.columns = columns
+        
+        applyCorrections()
+    }
+}
+
+extension ExtractedGrid {
+    
+    func applyCorrections() {
         insertNilForMissedValues()
 
         //TODO: This should detect incorrectly read values by determining the ratio between them (if two values are present) and disqualifying values that are past a certain threshold
