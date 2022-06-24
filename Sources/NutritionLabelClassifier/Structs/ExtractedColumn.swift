@@ -1,5 +1,6 @@
 import SwiftUI
 import VisionSugar
+import TabularData
 
 struct ExtractedColumn {
     
@@ -8,11 +9,26 @@ struct ExtractedColumn {
     init(attributesColumn: [AttributeText], valueColumns: [ValuesTextColumn]) {
         self.rows = attributesColumn.extractedRows(using: valueColumns)
         
+        insertNilValues()
+        
+        print("We here")
+    }
+    
+    mutating func insertNilValues() {
         for column in 0..<(self.rows.first?.valuesTexts.count ?? 0) {
             assignNilToReusedValuesTexts(forColumn: column)
         }
-        
-        print("We here")
+    }
+
+    var dataFrame: DataFrame {
+        var dataFrame = DataFrame()
+        let attributeColumn = Column(name: "attribute", contents: rows.map { $0.attributeText.attribute.rawValue })
+        let value1Column = Column(name: "value1", contents: rows.map { $0.valuesTexts[0] })
+        let value2Column = Column(name: "value2", contents: rows.map { $0.valuesTexts[1] })
+        dataFrame.append(column: attributeColumn)
+        dataFrame.append(column: value1Column)
+        dataFrame.append(column: value2Column)
+        return dataFrame
     }
 }
 
@@ -34,8 +50,8 @@ extension ExtractedColumn {
             
             /// We've encountered the same `ValuesText` again
             
-            let previousDistance = valuesText.text.rect.yDistanceToTopOf(previousTuple.attributeText.text.rect)
-            let distance = valuesText.text.rect.yDistanceToTopOf(row.attributeText.text.rect)
+            let previousDistance = previousTuple.attributeText.yDistanceTo(valuesText: valuesText)
+            let distance = row.attributeText.yDistanceTo(valuesText: valuesText)
             
             /// If the distance to its previous `attributeText` is greater than to this one, set that `ExtractedRow` to nil
             if distance < previousDistance {
@@ -56,10 +72,8 @@ extension Array where Element == AttributeText {
             let attributeText = self[i]
             var valuesTexts: [ValuesText?] = []
             
-            
-            
             for column in valueColumns {
-                guard let closest = column.valuesTexts.closestValueText(to: attributeText.text) else {
+                guard let closest = column.valuesTexts.closestValueText(to: attributeText) else {
                     valuesTexts.append(nil)
                     continue
                 }

@@ -46,18 +46,6 @@ extension Output {
 
 //MARK: - Text-based Structs
 
-public struct AttributeText {
-    public let attribute: Attribute
-    public let text: RecognizedText
-}
-
-extension AttributeText: Hashable {
-    public func hash(into hasher: inout Hasher) {
-        hasher.combine(attribute)
-        hasher.combine(text)
-    }
-}
-
 public struct ValueText {
     public var value: Value
     public let text: RecognizedText

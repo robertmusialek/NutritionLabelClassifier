@@ -339,12 +339,17 @@ extension VisionResult {
             let attributes = Attribute.detect(in: text.string)
             for attribute in attributes {
                 /// Make sure each `Attribute` detected in this text hasn't already been added, and is also a nutrient (for edge cases where strings containing both a nutrient and a serving (or other type) of attribute may have been picked up and then the nutrient attribute disregarded
-                guard !attributeTexts.contains(where: { $0.attribute == attribute }),
-                      !attributeTexts.contains(where: { $0.attribute.isSameAttribute(as: attribute) }),
+                guard !attributeTexts.contains(where: { $0.attribute.isSameAttribute(as: attribute) }),
                       attribute.isNutrientAttribute
                 else { continue }
                 
-                attributeTexts.append(AttributeText(attribute: attribute, text: text))
+                if let index = attributeTexts.firstIndex(where: { $0.attribute == attribute }) {
+                    attributeTexts[index].allTexts.append(text)
+                } else {
+                    attributeTexts.append(AttributeText(attribute: attribute,
+                                                        text: text,
+                                                        allTexts: [text]))
+                }
             }
         }
         return attributeTexts.count > 0 ? attributeTexts : nil

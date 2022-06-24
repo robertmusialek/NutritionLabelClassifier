@@ -353,9 +353,12 @@ extension Array where Element == AttributeText {
     }
     
     var rect: CGRect {
-        reduce(.zero) {
-            $0.union($1.text.rect)
+        guard let first = self.first else { return .zero }
+        var unionRect = first.text.rect
+        for attributeText in self.dropFirst() {
+            unionRect = unionRect.union(attributeText.text.rect)
         }
+        return unionRect
     }
 }
 
