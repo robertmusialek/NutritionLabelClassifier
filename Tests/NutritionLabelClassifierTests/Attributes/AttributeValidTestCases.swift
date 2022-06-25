@@ -1555,7 +1555,6 @@ let validAttributeTestCases: [Attribute: [String]] = [
         "[ts￿Fat fyj",
         "a 1 euros Fat",
         "a Total ITotsl Fat 8g",
-        "ant - mattat fett/ M￿tte .",
         "anzliche Fette und Ole",
         "atières GrasseslFett / Vetten / Grassi l Grasas",
         "atières GrasseslFett/ Vetten / Grassi l Grasas",
@@ -1574,7 +1573,6 @@ let validAttributeTestCases: [Attribute: [String]] = [
         "l*I Fat 16g",
         "l*frThn Fat o",
         "len l Grassi l Grasas",
-        "mättat fett / mættet fedt",
         "mfy9b.Mrtp￿wtr ￿1th 5% blueberries, 5% fat JJL SdLI￿/jj.iI",
         "n&iluLknOffln\".Tr144 ( & rans fat) O n. (o)",
         "otal fat/ &)wll",
@@ -1812,6 +1810,8 @@ let validAttributeTestCases: [Attribute: [String]] = [
         "• Saturated Sara:",
         "• saturated",
         "• saturated gesättigte Fettsäuren 3.2 g",
+        "ant - mattat fett/ M￿tte .",
+        "mättat fett / mættet fedt",
     ],
     
     //MARK: - Polyunsaturated Fat
