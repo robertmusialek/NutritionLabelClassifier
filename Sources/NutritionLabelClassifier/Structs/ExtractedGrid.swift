@@ -4,7 +4,7 @@ import SwiftSugar
 
 struct ExtractedGrid {
     
-    let columns: [ExtractedColumn]
+    var columns: [ExtractedColumn]
     let numberOfValues: Int
     
     init(attributes: ExtractedAttributes, values: ExtractedValues) {
@@ -47,13 +47,78 @@ struct ExtractedGrid {
 
 let RatioErrorPercentageThreshold = 2.0
 
+extension Array where Element == Bool? {
+    var onlyOneOfTwoIsTrue: Bool {
+        count == 2
+        && (
+            (self[0] == true && self[1] != true)
+            ||
+            (self[0] != true && self[1] == true)
+        )
+    }
+}
+
+extension Array where Element == ExtractedColumn {
+    mutating func modify(_ row: ExtractedRow, with newValues: (Value, Value)) {
+        for i in indices {
+            var column = self[i]
+            if column.contains(row) {
+                column.modify(row, with: newValues)
+                self[i] = column
+            }
+        }
+    }
+}
+extension ExtractedColumn {
+    mutating func modify(_ row: ExtractedRow, with newValues: (Value, Value)) {
+        rows.modify(row, with: newValues)
+    }
+    
+    func contains(_ row: ExtractedRow) -> Bool {
+        rows.contains(where: { $0.attributeText.attribute == row.attributeText.attribute })
+    }
+}
+
+extension Array where Element == ExtractedRow {
+    mutating func modify(_ rowToModify: ExtractedRow, with newValues: (Value, Value)) {
+        for i in indices {
+            var row = self[i]
+            if row.attributeText.attribute == rowToModify.attributeText.attribute {
+                row.modify(with: newValues)
+                self[i] = row
+            }
+        }
+    }
+}
+
+extension ExtractedRow {
+    mutating func modify(with newValues: (Value, Value)) {
+        if let existing = valuesTexts[0] {
+            var new = existing
+            new.values = [newValues.0]
+            valuesTexts[0] = new
+        } else {
+            valuesTexts[0] = ValuesText(values: [newValues.0])
+        }
+        
+        if let existing = valuesTexts[1] {
+            var new = existing
+            new.values = [newValues.1]
+            valuesTexts[1] = new
+        } else {
+            valuesTexts[1] = ValuesText(values: [newValues.1])
+        }
+    }
+}
+
 extension ExtractedGrid {
 
-    //TODO: Use `ValuesText`s not Values themselves, so that this can be used for ones where its nil as well? Or leave it as it is as we won't have any texts for the filled in values, so instead make the ValuesText possibly have no text, or feed it in with the defaultText to avoid unwrapping throughout our codebase
+    
+    
     mutating func modify(_ row: ExtractedRow, withNewValues newValues: (Value, Value)) {
         print("2️⃣ Correct row: \(row.attributeText.attribute) with: \(newValues.0.description) and \(newValues.1.description)")
-        //TODO: Next
-        /// Find the rows, then manually modify their `valuesText` array to be a single array with the new values
+        columns.modify(row, with: newValues)
+        print("2️⃣ done.")
     }
 
     mutating func fillInRowsWithOneMissingValue() {
@@ -61,10 +126,77 @@ extension ExtractedGrid {
         /// Use the `validRatio` to fill in the missing value
     }
     
-    mutating func fixSingleInvalidMacroOrEnergyRow() {
+    func calculateValue(for attribute: Attribute, in index: Int) -> Double? {
+        print("2️⃣ Calculate \(attribute) in column \(index)")
+        guard allRows.containsAllMacrosAndEnergy else {
+            return nil
+        }
         
+        switch attribute {
+        case .carbohydrate:
+            guard let fat = allRows.valueFor(.fat, valueIndex: index)?.amount,
+                  let protein = allRows.valueFor(.protein, valueIndex: index)?.amount,
+                  let energyValue = allRows.valueFor(.energy, valueIndex: index)
+            else {
+                return nil
+            }
+            
+            //TODO: Modularize this before repeating for other cases
+            let energy: Double
+            if energyValue.unit == .kj {
+                energy = energyValue.amount / KcalsPerKilojule
+            } else {
+                energy = energyValue.amount
+            }
+            //TODO: Fix equation here
+            return (energy - (protein * KcalsPerGramOfProtein) - (fat * KcalsPerGramOfFat)) / KcalsPerGramOfCarb
+            
+//        case .fat:
+//        case .protein:
+//        case .energy:
+        default:
+            return nil
+        }
+    }
+    
+    mutating func fixSingleInvalidMacroOrEnergyRow() {
+        let start = CFAbsoluteTimeGetCurrent()
         /// Check `macrosValidities` to see if we have two values where one is true
         /// Then check the validity of rows to determine if we have only one of the 3 variables that's invalid
+        guard macrosValidities.onlyOneOfTwoIsTrue,
+              allRows.containsAllMacrosAndEnergy,
+              invalidMacroAndEnergyRows.count == 1,
+              let invalidRow = invalidMacroAndEnergyRows.first
+        else {
+            return
+        }
+        
+        let attribute = invalidRow.attributeText.attribute
+        
+        if (macrosValidities[0] == true && macrosValidities[1] != true) {
+            guard let validValue = allRows.valueFor(attribute, valueIndex: 0) else {
+                print("2️⃣ ⚠️ Error getting valid value for: \(attribute) in column 1")
+                return
+            }
+            guard let calculatedValue = calculateValue(for: attribute, in: 1) else {
+                print("2️⃣ ⚠️ Error getting calculated value for: \(attribute) in column 1")
+                return
+            }
+            modify(invalidRow, withNewValues: (validValue, Value(amount: calculatedValue, unit: .g)))
+        }
+        else if (macrosValidities[0] != true && macrosValidities[1] == true) {
+            guard let validValue = allRows.valueFor(attribute, valueIndex: 1) else {
+                print("2️⃣ ⚠️ Error getting valid value for: \(attribute) in column 2")
+                return
+            }
+            guard let calculatedValue = calculateValue(for: attribute, in: 0) else {
+                print("2️⃣ ⚠️ Error getting calculated value for: \(attribute) in column 2")
+                return
+            }
+            modify(invalidRow, withNewValues: (Value(amount: calculatedValue, unit: .g), validValue))
+        }
+        print("took: \(CFAbsoluteTimeGetCurrent()-start)s")
+        print("We here")
         /// If that's the case, then use the equation to determine that value and fill it in
     }
     
@@ -108,6 +240,22 @@ extension ExtractedGrid {
     
     var allRows: [ExtractedRow] {
         columns.map { $0.rows }.reduce([], +)
+    }
+    
+    var invalidRows: [ExtractedRow] {
+        guard let validRatio = validRatio else {
+            return []
+        }
+        return invalidRows(using: validRatio)
+    }
+    
+    var allMacroAndEnergyRows: [ExtractedRow]? {
+        guard allRows.containsAllMacrosAndEnergy else { return nil }
+        return allRows.filter { $0.attributeText.attribute.isEnergyOrMacro }
+    }
+    
+    var invalidMacroAndEnergyRows: [ExtractedRow] {
+        invalidRows.filter { $0.attributeText.attribute.isEnergyOrMacro }
     }
     
     func invalidRows(using validRatio: Double) -> [ExtractedRow] {

@@ -20,6 +20,11 @@ struct ValuesText {
             self.values = values
         }
     }
+    
+    init(values: [Value], text: RecognizedText = defaultText) {
+        self.values = values
+        self.text = text
+    }
 
     var containsValueWithEnergyUnit: Bool {
         values.containsValueWithEnergyUnit
