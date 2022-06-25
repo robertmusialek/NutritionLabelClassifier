@@ -31,9 +31,9 @@ struct ExtractedGrid {
         
         //TODO: Possibly do this conditionally only if there's two column values
         fixInvalidRows()
-//        fillInRowsWithOneMissingValue()
-//        fixRowsUsingEnergyEquation()
-//        removeEmptyValues()
+        fillInRowsWithOneMissingValue()
+        fixRowsUsingEnergyEquation()
+        removeEmptyValues()
     }
     
     var values: [[[Value?]]] {
@@ -46,10 +46,24 @@ struct ExtractedGrid {
 let RatioErrorPercentageThreshold = 2.0
 
 extension ExtractedGrid {
-    
+
+    //TODO: Use `ValuesText`s not Values themselves, so that this can be used for ones where its nil as well? Or leave it as it is as we won't have any texts for the filled in values, so instead make the ValuesText possibly have no text, or feed it in with the defaultText to avoid unwrapping throughout our codebase
     mutating func modify(_ row: ExtractedRow, withNewValues newValues: (Value, Value)) {
         print("2️⃣ Correct row: \(row.attributeText.attribute) with: \(newValues.0.description) and \(newValues.1.description)")
         //TODO: Next
+        /// Find the rows, then manually modify their `valuesText` array to be a single array with the new values
+    }
+
+    mutating func fillInRowsWithOneMissingValue() {
+        
+    }
+    
+    mutating func fixRowsUsingEnergyEquation() {
+        
+    }
+    
+    mutating func removeEmptyValues() {
+        
     }
     
     mutating func fixInvalidRows() {
