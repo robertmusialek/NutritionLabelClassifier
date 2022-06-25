@@ -4,11 +4,6 @@ import VisionSugar
 struct ExtractedGrid {
     let columns: [ExtractedColumn]
     
-    var values: [[[Value?]]] {
-        []
-//        groupedColumns.map { $0.map { $0.valuesTexts.map { $0.values.first } } }
-    }
-    
     init(attributes: ExtractedAttributes, values: ExtractedValues) {
         
         var columns: [ExtractedColumn] = []
@@ -30,6 +25,12 @@ struct ExtractedGrid {
         self.columns = columns
         
         applyCorrections()
+    }
+    
+    var values: [[[Value?]]] {
+        columns.map {
+            $0.rows.map { $0.valuesTexts.map { $0?.values.first } }
+        }
     }
 }
 

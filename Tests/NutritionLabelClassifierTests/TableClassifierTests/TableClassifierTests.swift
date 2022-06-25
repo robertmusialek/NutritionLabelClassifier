@@ -35,7 +35,7 @@ final class TableClassifierTests: XCTestCase {
         print("🤖 Passed: \(numberOfPassedTests) tests")
     }
     
-    func _testTableClassifierValues() throws {
+    func testTableClassifierValues() throws {
         guard TestPassingTestCases else { return }
         try prepareTestCaseImages()
 
@@ -68,9 +68,9 @@ final class TableClassifierTests: XCTestCase {
             let _ = tableClassifier.getObservations()
             
             let attributesPassed = self.testAttributes(tableClassifier.extractedAttributes, forTestCase: id)
-            let valuesPassed = true
-//            let valuesPassed = self.testValues(tableClassifier.extractedValues, forTestCase: id)
-            
+            let valuesPassed = self.testValues(tableClassifier.extractedGrid?.values, forTestCase: id)
+            //            let valuesPassed = true
+
             if attributesPassed && valuesPassed {
                 print("🤖✅ \(id)")
             }
@@ -98,8 +98,7 @@ final class TableClassifierTests: XCTestCase {
         return true
     }
     
-    func testValues(_ extractedValues: ExtractedValues?, forTestCase id: UUID) -> Bool {
-        let values = extractedValues?.values
+    func testValues(_ values: [[[Value?]]]?, forTestCase id: UUID) -> Bool {
         guard values == valueExpectations[id.uuidString] else {
             print("🤖❌ Values for: \(id)")
             if let expectation = valueExpectations[id.uuidString] {
