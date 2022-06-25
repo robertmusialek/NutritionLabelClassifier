@@ -59,7 +59,8 @@ extension ExtractedGrid {
     }
     
     mutating func fixRowsUsingEnergyEquation() {
-        
+        //TODO: Do this before fixing invalid rows so that we have as many valid rows as possible to grab the ratio from
+        //TODO: Also include header values if available to increase the chances off determining the valid ratio
     }
     
     mutating func removeEmptyValues() {
