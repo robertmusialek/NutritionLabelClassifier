@@ -22,7 +22,7 @@ struct ExtractedValues {
                 }
                 
                 guard let column = ValuesTextColumn(startingFrom: text, in: visionResult) else {
-                    print("1️⃣   ❌ Did not get a ValuesTextColumn")
+                    print("1️⃣   Did not get a ValuesTextColumn")
                     continue
                 }
                 
@@ -38,11 +38,6 @@ struct ExtractedValues {
         self.groupedColumns = groupedColumns
     }
     
-    var values: [[[Value?]]] {
-        []
-//        grid.values
-    }
-    
     static func process(valuesTextColumns: [ValuesTextColumn], extractedAttributes: ExtractedAttributes) -> [[ValuesTextColumn]] {
 
         let start = CFAbsoluteTimeGetCurrent()
@@ -56,6 +51,7 @@ struct ExtractedValues {
         columns.removeEmptyColumns()
         columns.removeColumnsWithServingAttributes()
         columns.cleanupEnergyValues(using: extractedAttributes)
+        columns.removeInvalidColumns()
         columns.sort()
         
         var groupedColumns = groupByAttributes(columns)
@@ -325,6 +321,18 @@ extension Array where Element == ValuesTextColumn {
             var column = self[i]
             column.removeValueTextsAbove(topMostEnergyValueText.text)
             self[i] = column
+        }
+    }
+    
+    mutating func removeInvalidColumns() {
+        guard let highestNumberOfRows = sorted(by: {
+            $0.valuesTexts.count > $1.valuesTexts.count
+        }).first?.valuesTexts.count else {
+            return
+        }
+        
+        self = filter {
+            Double($0.valuesTexts.count) > 0.1 * Double(highestNumberOfRows)
         }
     }
     

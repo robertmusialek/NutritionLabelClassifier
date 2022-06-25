@@ -2,6 +2,9 @@ import SwiftUI
 import VisionSugar
 import SwiftSugar
 
+let RatioErrorPercentageThreshold = 17.0
+let MacroOrEnergyErrorPercentageThreshold = 20.0
+
 struct ExtractedGrid {
     
     var columns: [ExtractedColumn]
@@ -43,8 +46,6 @@ struct ExtractedGrid {
         }
     }
 }
-
-let RatioErrorPercentageThreshold = 2.0
 
 extension Array where Element == Bool? {
     var onlyOneOfTwoIsTrue: Bool {
@@ -325,14 +326,20 @@ extension ExtractedGrid {
     }
     
     var invalidMacroAndEnergyRows: [ExtractedRow] {
-        invalidRows.filter { $0.attributeText.attribute.isEnergyOrMacro }
+        invalidRows(threshold: MacroOrEnergyErrorPercentageThreshold)
+            .filter { $0.attributeText.attribute.isEnergyOrMacro }
+            .filter { $0.ratioColumn1To2 != 0 }
     }
     
     var emptyRows: [ExtractedRow] {
         allRows.filter { $0.hasNilValues }
     }
     
-    func invalidRows(using validRatio: Double) -> [ExtractedRow] {
+    func invalidRows(using validRatio: Double? = nil, threshold: Double = RatioErrorPercentageThreshold) -> [ExtractedRow] {
+        guard let validRatio = validRatio ?? self.validRatio else {
+            return []
+        }
+        
         return allRows.filter {
             /// Do not consider rows with completely nil or zero values as invalid
             guard !$0.hasNilValues, !$0.hasZeroValues else {
@@ -344,7 +351,8 @@ extension ExtractedGrid {
                 return true
             }
             /// Consider a row invalid if its ratio has a difference from the validRatio greater than the error threshold
-            return ratio.errorPercentage(with: validRatio) > RatioErrorPercentageThreshold
+            let errorPercentage = ratio.errorPercentage(with: validRatio)
+            return errorPercentage > threshold
         }
     }
     
@@ -429,7 +437,7 @@ extension Attribute {
 extension Double {
     func errorPercentage(with double: Double) -> Double {
         let difference = abs(self - double)
-        return (difference/double) * 100.0
+        return (difference/self) * 100.0
     }
 }
 

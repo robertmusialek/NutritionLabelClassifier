@@ -29,31 +29,98 @@ let valueExpectations: [String: [[[Value?]]]?] = [
         ]
     ],
 
-//    "B1E5C59E-7B94-4570-B226-DD9D17BC743E" : [
-//        [
-//            [v(1239, .kj), v(11, .g), v(7.7, .g), v(43, .g), v(25, .g), v(2.2, .g), v(4.9, .g), v(0.81, .g)],
-//            [v(992, .kj), v(9, .g), v(6.2, .g), v(34, .g), v(20, .g), v(1.8, .g), v(3.9, .g), v(0.65, .g)]
-//        ]
-//    ],
-//
-//    "75C66881-51E5-4A42-92E6-F3B3953BC8E6": [
-//        [
-//            [v(1387, .kj), v(35.1, .g), v(22, .g), v(8.6, .g), v(0.7, .g), v(1.2, .g), v(121, .mg), v(3.3, .g), v(3.3, .g), v(0, .g), v(2.1, .g), v(0.07, .g), v(30, .mg)],
-//            [v(277, .kj), v(7, .g), v(4.4, .g), v(1.7, .g), v(0.1, .g), v(0.2, .g), v(24, .mg), v(0.7, .g), v(0.7, .g), v(0, .g), v(0.4, .g), v(0.01, .g), v(6, .mg)]
-//        ]
-//    ],
-//    "9C26D1D5-50B2-4933-B906-29824617FD96": [
-//        [
-//            [v(1387, .kj), v(35.1, .g), v(22, .g), v(8.6, .g), v(0.7, .g), v(1.2, .g), v(121, .mg), v(3.3, .g), v(3.3, .g), v(0, .g), v(2.1, .g), v(0.07, .g), v(30, .mg)],
-//            [v(277, .kj), v(7, .g), v(4.4, .g), v(1.7, .g), v(0.1, .g), v(0.2, .g), v(24, .mg), v(0.7, .g), v(0.7, .g), v(0, .g), v(0.4, .g), v(0.01, .g), v(6, .mg)]
-//        ]
-//    ],
-//    "1B51A831-FE9C-4752-B526-0ED7823EA591": [
-//        [
-//            [v(1387, .kj), v(35.1, .g), v(22, .g), v(8.6, .g), v(0.7, .g), v(1.2, .g), v(121, .mg), v(3.3, .g), v(3.3, .g), v(0, .g), v(2.1, .g), v(0.07, .g), v(30, .mg)],
-//            [v(277, .kj), v(7, .g), v(4.4, .g), v(1.7, .g), v(0.1, .g), v(0.2, .g), v(24, .mg), v(0.7, .g), v(0.7, .g), v(0, .g), v(0.4, .g), v(0.01, .g), v(6, .mg)]
-//        ]
-//    ],
+    "B1E5C59E-7B94-4570-B226-DD9D17BC743E" : [
+        [
+            [v(1239, .kj), v(992, .kj)],
+            [v(11, .g), v(9, .g)],
+            [v(7.7, .g), v(6.2, .g)],
+            [v(43, .g), v(34, .g)],
+            [v(25, .g), v(20, .g)],
+            [v(2.2, .g), v(1.8, .g)],
+            [v(4.9, .g), v(3.9, .g)],
+            [v(0.81, .g), v(0.65, .g)]
+        ]
+    ],
+
+    "75C66881-51E5-4A42-92E6-F3B3953BC8E6": [
+        [
+            [v(1387, .kj), v(277, .kj)],
+            [v(35.1, .g), v(7, .g)],
+            [v(22, .g), v(4.4, .g)],
+            [v(8.6, .g), v(1.7, .g)],
+            [v(0.7, .g), v(0.1, .g)],
+            [v(1.2, .g), v(0.2, .g)],
+            [v(121, .mg), v(24, .mg)],
+            [v(3.3, .g), v(0.7, .g)],
+            [v(3.3, .g), v(0.7, .g)],
+            [v(0, .g), v(0, .g)],
+            [v(2.1, .g), v(0.4, .g)],
+            [v(0.07, .g), v(0.01, .g)],
+            [v(30, .mg), v(6, .mg)]
+        ]
+    ],
+    "9C26D1D5-50B2-4933-B906-29824617FD96": [
+        [
+            [v(1387, .kj), v(277, .kj)],
+            [v(35.1, .g), v(7, .g)],
+            [v(22, .g), v(4.4, .g)],
+            [v(8.6, .g), v(1.7, .g)],
+            [v(0.7, .g), v(0.1, .g)],
+            [v(1.2, .g), v(0.2, .g)],
+            [v(121, .mg), v(24, .mg)],
+            [v(3.3, .g), v(0.7, .g)],
+            [v(3.3, .g), v(0.7, .g)],
+            [v(0, .g), v(0, .g)],
+            [v(2.1, .g), v(0.4, .g)],
+            [v(0.07, .g), v(0.01, .g)],
+            [v(30, .mg), v(6, .mg)]
+        ]
+    ],
+    "1B51A831-FE9C-4752-B526-0ED7823EA591": [
+        [
+            [v(1387, .kj), v(277, .kj)],
+            [v(35.1, .g), v(7, .g)],
+            [v(22, .g), v(4.4, .g)],
+            [v(8.6, .g), v(1.7, .g)],
+            [v(0.7, .g), v(0.1, .g)],
+            [v(1.2, .g), v(0.2, .g)],
+            [v(121, .mg), v(24, .mg)],
+            [v(3.3, .g), v(0.7, .g)],
+            [v(3.3, .g), v(0.7, .g)],
+            [v(0, .g), v(0, .g)],
+            [v(2.1, .g), v(0.4, .g)],
+            [v(0.07, .g), v(0.01, .g)],
+            [v(30, .mg), v(6, .mg)]
+        ]
+    ],
+    "B2C50752-AE52-493A-AD79-69DA4EA74504": [
+        [
+            [v(581, .kj), v(2150, .kj)],
+            [v(2.1, .g), v(7.6, .g)],
+            [v(7.0, .g), v(25.8, .g)],
+            [v(3.4, .g), v(12.5, .g)],
+            [v(16.5, .g), v(61, .g)],
+            [v(0.9, .g), v(3.5, .g)],
+            [v(1, .g), v(3.6, .g)],
+            [v(103, .mg), v(382, .mg)],
+            [v(128, .mg), v(473, .mg)]
+        ]
+    ],
+    "CDD8E0DD-7D2B-4802-9C1D-54EFFBB71E58": [
+        [
+            [v(105, .kcal)],
+            [v(1, .g)],
+            [v(0.6, .g)],
+            [v(0.05, .g)],
+            [v(8, .mg)],
+            [v(66, .mg)],
+            [v(20, .g)],
+            [v(0, .g)],
+            [v(15, .g)],
+            [v(4, .g)],
+            [v(113, .mg)]
+        ]
+    ]
 
     //TODO: Do Haribo Next, Goldbears first then Fizzy Cola
     
@@ -108,12 +175,6 @@ let valueExpectations: [String: [[[Value?]]]?] = [
 //let SingledOutTestCase: UUID? = nil
 
 // 🥳 Looks like it's passing for these
-//let SingledOutTestCase: UUID? = UUID(uuidString: "B2C50752-AE52-493A-AD79-69DA4EA74504")!
-//let SingledOutTestCase: UUID? = UUID(uuidString: "9C26D1D5-50B2-4933-B906-29824617FD96")!
-//let SingledOutTestCase: UUID? = UUID(uuidString: "DE476A74-8174-4E9C-81DA-450F578F039D")!
-//let SingledOutTestCase: UUID? = UUID(uuidString: "CDD8E0DD-7D2B-4802-9C1D-54EFFBB71E58")!
+let SingledOutTestCase: UUID? = UUID(uuidString: "CDD8E0DD-7D2B-4802-9C1D-54EFFBB71E58")!
 
-let SingledOutTestCase: UUID? = UUID(uuidString: "DE476A74-8174-4E9C-81DA-450F578F039D")!
-//let SingledOutTestCase: UUID? = UUID(uuidString: "C19F126E-6D6E-464A-B7C4-718AA4384CC2")!
-
-let TestPassingTestCases = false
+let TestPassingTestCases = true
