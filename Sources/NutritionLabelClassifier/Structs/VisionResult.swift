@@ -334,6 +334,7 @@ extension VisionResult {
     }
     
     func getUniqueAttributeTextsFrom(_ texts: [RecognizedText]) -> [AttributeText]? {
+        var lastAddedAttribute: Attribute? = nil
         var attributeTexts: [AttributeText] = []
         for text in texts {
             let attributes = Attribute.detect(in: text.string)
@@ -343,12 +344,17 @@ extension VisionResult {
                       attribute.isNutrientAttribute
                 else { continue }
                 
+                /// If this is part of the last added attribute, simply append the text to its `allTexts`
                 if let index = attributeTexts.firstIndex(where: { $0.attribute == attribute }) {
+                    guard let lastAddedAttribute = lastAddedAttribute, lastAddedAttribute == attribute else {
+                        continue
+                    }
                     attributeTexts[index].allTexts.append(text)
                 } else {
                     attributeTexts.append(AttributeText(attribute: attribute,
                                                         text: text,
                                                         allTexts: [text]))
+                    lastAddedAttribute = attribute
                 }
             }
         }

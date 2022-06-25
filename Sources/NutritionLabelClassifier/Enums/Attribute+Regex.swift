@@ -171,6 +171,7 @@ extension Attribute {
             "satuwed", "satu[^ ]+ed", "saturat[^ ]+d", /// Vision typos
             "saturates",
             "davon gesattigte",
+            "mattat fett",
             "of which saturates", "saturi", "saturados", "gras satures", "sat. fat", "kwasy nasycone", "grasi saturati", "sociosios"
         ]
 
