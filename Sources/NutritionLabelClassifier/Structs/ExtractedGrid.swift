@@ -33,7 +33,6 @@ struct ExtractedGrid {
         //TODO: Also include header values if available to increase the chances off determining the valid ratio
         fixInvalidRows()
         fillInRowsWithOneMissingValue()
-        //TODO: Do this before fixing invalid rows so that we have as many valid rows as possible to grab the ratio from
         fixSingleInvalidMacroOrEnergyRow()
         removeEmptyValues()
     }
@@ -68,10 +67,23 @@ extension Array where Element == ExtractedColumn {
             }
         }
     }
+    
+    mutating func remove(_ row: ExtractedRow) {
+        for i in indices {
+            var column = self[i]
+            if column.contains(row) {
+                column.remove(row)
+                self[i] = column
+            }
+        }
+    }
 }
 extension ExtractedColumn {
     mutating func modify(_ row: ExtractedRow, with newValues: (Value, Value)) {
         rows.modify(row, with: newValues)
+    }
+    mutating func remove(_ row: ExtractedRow) {
+        rows.removeAll(where: { $0.attributeText.attribute == row.attributeText.attribute })
     }
     
     func contains(_ row: ExtractedRow) -> Bool {
@@ -113,7 +125,9 @@ extension ExtractedRow {
 
 extension ExtractedGrid {
 
-    
+    mutating func remove(_ row: ExtractedRow) {
+        columns.remove(row)
+    }
     
     mutating func modify(_ row: ExtractedRow, withNewValues newValues: (Value, Value)) {
         print("2️⃣ Correct row: \(row.attributeText.attribute) with: \(newValues.0.description) and \(newValues.1.description)")
@@ -122,8 +136,46 @@ extension ExtractedGrid {
     }
 
     mutating func fillInRowsWithOneMissingValue() {
+        guard let validRatio = validRatio else {
+            return
+        }
+        
         /// For each row with one missing value
         /// Use the `validRatio` to fill in the missing value
+        for row in rowsWithOneMissingValue {
+            guard let missingIndex = row.singleMissingValueIndex else {
+                continue
+            }
+            if missingIndex == 1 {
+                guard let value = row.valuesTexts[0]?.values.first else {
+                    continue
+                }
+                let amount = (value.amount / validRatio).rounded(toPlaces: 1)
+                modify(row, withNewValues: (value, Value(amount: amount, unit: value.unit)))
+            }
+            else if missingIndex == 0 {
+                guard let value = row.valuesTexts[1]?.values.first else {
+                    continue
+                }
+                let amount = (value.amount / validRatio).rounded(toPlaces: 1)
+                modify(row, withNewValues: (Value(amount: amount, unit: value.unit), value))
+            }
+        }
+    }
+    
+    func amountFor(_ attribute: Attribute, at index: Int) -> Double? {
+        allRows.valueFor(attribute, valueIndex: index)?.amount
+    }
+    
+    func energyInKj(at index: Int) -> Double? {
+        guard let energyValue = allRows.valueFor(.energy, valueIndex: index) else {
+            return nil
+        }
+        if energyValue.unit == .kj {
+            return energyValue.amount / KcalsPerKilojule
+        } else {
+            return energyValue.amount
+        }
     }
     
     func calculateValue(for attribute: Attribute, in index: Int) -> Double? {
@@ -134,26 +186,37 @@ extension ExtractedGrid {
         
         switch attribute {
         case .carbohydrate:
-            guard let fat = allRows.valueFor(.fat, valueIndex: index)?.amount,
-                  let protein = allRows.valueFor(.protein, valueIndex: index)?.amount,
-                  let energyValue = allRows.valueFor(.energy, valueIndex: index)
-            else {
+            guard let fat = amountFor(.fat, at: index),
+                  let protein = amountFor(.protein, at: index),
+                  let energy = energyInKj(at: index) else {
                 return nil
             }
-            
-            //TODO: Modularize this before repeating for other cases
-            let energy: Double
-            if energyValue.unit == .kj {
-                energy = energyValue.amount / KcalsPerKilojule
-            } else {
-                energy = energyValue.amount
-            }
-            //TODO: Fix equation here
             return (energy - (protein * KcalsPerGramOfProtein) - (fat * KcalsPerGramOfFat)) / KcalsPerGramOfCarb
             
-//        case .fat:
-//        case .protein:
-//        case .energy:
+        case .fat:
+            guard let carb = amountFor(.carbohydrate, at: index),
+                  let protein = amountFor(.protein, at: index),
+                  let energy = energyInKj(at: index) else {
+                return nil
+            }
+            return (energy - (protein * KcalsPerGramOfProtein) - (carb * KcalsPerGramOfCarb)) / KcalsPerGramOfFat
+            
+        case .protein:
+            guard let fat = amountFor(.fat, at: index),
+                  let carb = amountFor(.carbohydrate, at: index),
+                  let energy = energyInKj(at: index) else {
+                return nil
+            }
+            return (energy - (carb * KcalsPerGramOfCarb) - (fat * KcalsPerGramOfFat)) / KcalsPerGramOfProtein
+
+        case .energy:
+            guard let fat = amountFor(.fat, at: index),
+                  let carb = amountFor(.carbohydrate, at: index),
+                  let protein = amountFor(.protein, at: index) else {
+                return nil
+            }
+            return (carb * KcalsPerGramOfCarb) + (fat * KcalsPerGramOfFat) + (protein * KcalsPerGramOfProtein)
+
         default:
             return nil
         }
@@ -202,6 +265,9 @@ extension ExtractedGrid {
     
     /// Remove all rows that are empty (containing all nil values)
     mutating func removeEmptyValues() {
+        for row in emptyRows {
+            remove(row)
+        }
     }
     
     mutating func fixInvalidRows() {
@@ -249,6 +315,10 @@ extension ExtractedGrid {
         return invalidRows(using: validRatio)
     }
     
+    var rowsWithOneMissingValue: [ExtractedRow] {
+        allRows.filter { $0.hasOneMissingValue }
+    }
+    
     var allMacroAndEnergyRows: [ExtractedRow]? {
         guard allRows.containsAllMacrosAndEnergy else { return nil }
         return allRows.filter { $0.attributeText.attribute.isEnergyOrMacro }
@@ -256,6 +326,10 @@ extension ExtractedGrid {
     
     var invalidMacroAndEnergyRows: [ExtractedRow] {
         invalidRows.filter { $0.attributeText.attribute.isEnergyOrMacro }
+    }
+    
+    var emptyRows: [ExtractedRow] {
+        allRows.filter { $0.hasNilValues }
     }
     
     func invalidRows(using validRatio: Double) -> [ExtractedRow] {

@@ -20,6 +20,21 @@ struct ExtractedRow {
         valuesTexts.allSatisfy({ $0 == nil })
     }
     
+    var hasOneMissingValue: Bool {
+        singleMissingValueIndex != nil
+    }
+    
+    var singleMissingValueIndex: Int? {
+        guard valuesTexts.count == 2 else { return nil }
+        if valuesTexts[0] != nil && valuesTexts[1] == nil {
+            return 1
+        }
+        if valuesTexts[1] != nil && valuesTexts[0] == nil {
+            return 0
+        }
+        return nil
+    }
+    
     var hasZeroValues: Bool {
         valuesTexts.allSatisfy({ $0?.values.first?.amount == 0 })
     }
