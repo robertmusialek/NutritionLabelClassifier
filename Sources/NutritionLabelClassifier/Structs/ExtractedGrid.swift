@@ -16,7 +16,9 @@ struct ExtractedGrid {
         for i in attributes.attributeTextColumns.indices {
             guard i < values.groupedColumns.count else {
                 //TODO: Remove all fatalErrors after testing
-                fatalError("Expected groupedColumnsOfValues to have: \(i) columns")
+                self.columns = []
+                return
+//                fatalError("Expected groupedColumnsOfValues to have: \(i) columns")
             }
             
             let attributesColumn = attributes.attributeTextColumns[i]
