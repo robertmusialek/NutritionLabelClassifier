@@ -30,9 +30,11 @@ struct ExtractedGrid {
         self.numberOfValues = columns.first?.rows.first?.valuesTexts.count ?? 0
         
         //TODO: Possibly do this conditionally only if there's two column values
+        //TODO: Also include header values if available to increase the chances off determining the valid ratio
         fixInvalidRows()
         fillInRowsWithOneMissingValue()
-        fixRowsUsingEnergyEquation()
+        //TODO: Do this before fixing invalid rows so that we have as many valid rows as possible to grab the ratio from
+        fixSingleInvalidMacroOrEnergyRow()
         removeEmptyValues()
     }
     
@@ -55,16 +57,19 @@ extension ExtractedGrid {
     }
 
     mutating func fillInRowsWithOneMissingValue() {
+        /// For each row with one missing value
+        /// Use the `validRatio` to fill in the missing value
+    }
+    
+    mutating func fixSingleInvalidMacroOrEnergyRow() {
         
+        /// Check `macrosValidities` to see if we have two values where one is true
+        /// Then check the validity of rows to determine if we have only one of the 3 variables that's invalid
+        /// If that's the case, then use the equation to determine that value and fill it in
     }
     
-    mutating func fixRowsUsingEnergyEquation() {
-        //TODO: Do this before fixing invalid rows so that we have as many valid rows as possible to grab the ratio from
-        //TODO: Also include header values if available to increase the chances off determining the valid ratio
-    }
-    
+    /// Remove all rows that are empty (containing all nil values)
     mutating func removeEmptyValues() {
-        
     }
     
     mutating func fixInvalidRows() {
