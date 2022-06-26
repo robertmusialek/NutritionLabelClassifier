@@ -228,7 +228,7 @@ extension String {
 //TODO: Rename, document and move to SwiftSugar
 func matches(for regex: String, in text: String) -> [(string: String, position: Int)]? {
     do {
-        let regex = try NSRegularExpression(pattern: regex)
+        let regex = try NSRegularExpression(pattern: regex, options: [.caseInsensitive])
         let results = regex.matches(in: text,
                                     range: NSRange(text.startIndex..., in: text))
         let matches = results.map {

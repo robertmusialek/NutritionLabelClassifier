@@ -1,19 +1,38 @@
 import SwiftUI
 import VisionSugar
 
+extension ValuesText {
+    var containsLessThanPrefix: Bool {
+        text.string.lowercased().contains("less than")
+    }
+}
 struct ExtractedRow {
     let attributeText: AttributeText
     var valuesTexts: [ValuesText?]
     
     var ratioColumn1To2: Double? {
         guard valuesTexts.count == 2,
-              let amount1 = valuesTexts[0]?.values.first?.amount,
-              let amount2 = valuesTexts[1]?.values.first?.amount,
+              let valuesText1 = valuesTexts[0],
+              let valuesText2 = valuesTexts[1],
+              !valuesText1.containsLessThanPrefix,
+              !valuesText2.containsLessThanPrefix,
+              let amount1 = valuesText1.values.first?.amount,
+              let amount2 = valuesText2.values.first?.amount,
               amount2 != 0
         else {
             return nil
         }
         return amount1/amount2
+    }
+    
+    var valuesTextsContainLessThanPrefix: Bool {
+        guard valuesTexts.count == 2,
+              let valuesText1 = valuesTexts[0],
+              let valuesText2 = valuesTexts[1]
+        else {
+            return false
+        }
+        return valuesText1.containsLessThanPrefix || valuesText2.containsLessThanPrefix
     }
     
     var hasNilValues: Bool {

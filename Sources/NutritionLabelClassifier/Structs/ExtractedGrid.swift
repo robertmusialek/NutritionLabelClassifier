@@ -40,6 +40,7 @@ struct ExtractedGrid {
 
         fillInRowsWithOneMissingValue()
         fixInvalidRows()
+        fixInvalidRowsContainingLessThanPrefix()
 
         fixSingleInvalidMacroOrEnergyRow()
         removeEmptyValues()
@@ -343,6 +344,9 @@ extension ExtractedRow {
             valuesTexts[0] = ValuesText(values: [newValues.0])
         }
         
+        guard valuesTexts.count > 1 else {
+            return
+        }
         if let existing = valuesTexts[1] {
             var new = existing
             new.values = [newValues.1]
@@ -662,6 +666,50 @@ extension ExtractedGrid {
         }
     }
     
+    var greaterValueIndex: Int? {
+        guard let row = validRows.first,
+              row.valuesTexts.count == 2,
+              let value1 = row.valuesTexts[0]?.values.first,
+              let value2 = row.valuesTexts[1]?.values.first
+        else {
+            return nil
+        }
+        return value1.amount > value2.amount ? 0 : 1
+    }
+    
+    var validRows: [ExtractedRow] {
+        allRows.filter { row in
+            !invalidRows.contains(where: { invalidRow in
+                invalidRow.attributeText.attribute == row.attributeText.attribute
+            })
+        }
+    }
+
+    mutating func fixInvalidRowsContainingLessThanPrefix() {
+        guard let validRatio = validRatio, let greaterValueIndex = greaterValueIndex else {
+            return
+        }
+        let invalidRowsWithLessThanPrefix = invalidRows(using: validRatio, containingLessThanPrefix: true)
+        for row in invalidRowsWithLessThanPrefix {
+            correctRowContainingLessThanPrefix(row, for: validRatio, usingGreaterValueIndex: greaterValueIndex)
+        }
+    }
+
+    mutating func correctRowContainingLessThanPrefix(_ row: ExtractedRow, for validRatio: Double, usingGreaterValueIndex greaterValueIndex: Int) {
+        guard let value1 = row.valuesTexts[0]?.values.first, let value2 = row.valuesTexts[1]?.values.first else {
+            return
+        }
+
+        if greaterValueIndex == 0 {
+            let amount = (value1.amount / validRatio).roundedNutrientAmount
+            modify(row, withNewValues: (value1, Value(amount: amount, unit: value1.unit)))
+        }
+        else if greaterValueIndex == 1 {
+            let amount = (value1.amount * validRatio).roundedNutrientAmount
+            modify(row, withNewValues: (Value(amount: amount, unit: value2.unit), value2))
+        }
+    }
+    
     mutating func correct(_ row: ExtractedRow, for validRatio: Double) {
         print("3️⃣ Correcting: \(row.desc)")
         guard !correctionMadeUsingAlternativeValues(row, for: validRatio) else {
@@ -740,7 +788,7 @@ extension ExtractedGrid {
         allRows.filter { $0.hasNilValues }
     }
     
-    func invalidRows(using validRatio: Double? = nil, threshold: Double = RatioErrorPercentageThreshold) -> [ExtractedRow] {
+    func invalidRows(using validRatio: Double? = nil, threshold: Double = RatioErrorPercentageThreshold, containingLessThanPrefix: Bool = false) -> [ExtractedRow] {
         guard let validRatio = validRatio ?? self.validRatio else {
             return []
         }
@@ -750,11 +798,18 @@ extension ExtractedGrid {
             guard !$0.hasNilValues, !$0.hasZeroValues else {
                 return false
             }
+            
+            if containingLessThanPrefix {
+                guard $0.valuesTextsContainLessThanPrefix else {
+                    return false
+                }
+            }
                     
             /// Consider anything else without a ratio as invalid (implying that one side is `nil`)
             guard let ratio = $0.ratioColumn1To2 else {
                 return true
             }
+            
             /// Consider a row invalid if its ratio has a difference from the validRatio greater than the error threshold
             let errorPercentage = ratio.errorPercentage(with: validRatio)
             return errorPercentage > threshold

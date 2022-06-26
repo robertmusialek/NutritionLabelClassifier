@@ -8,13 +8,13 @@ public struct Value {
         
         /// Special cases
         let str = string.trimmingWhitespaces.lowercased()
-        if str == "nil" {
+        if str == "nil" || str == "not detected" {
             self.amount = 0
-            self.unit = .g
+//            self.unit = .g
             return
         } else if str == "trace" {
             self.amount = 0.05
-            self.unit = .g
+//            self.unit = .g
             return
         }
         
@@ -96,8 +96,15 @@ extension Value {
     static func detect(in string: String, withPositions: Bool) -> [(Value, Int)] {
         
         /// Add regex to check if we have "Not detected" or "nil" and replace with 0 (no unit)
-        /// Or if we have "trace" replace it with 0.05 (no unit)
-        
+//        if string.matchesRegex("(not detected|nil)") {
+//            return [(Value(amount: 0), 0), (Value(amount: 0), 1)]
+//        }
+//
+//        /// Or if we have "trace" replace it with 0.05 (no unit)
+//        if string.matchesRegex("(trace)") {
+//            return [(Value(amount: 0.05), 0)]
+//        }
+
         for disqualifyingText in Value.DisqualifyingTexts {
             guard !(string.contains(disqualifyingText)) else {
                 return []
@@ -107,7 +114,8 @@ extension Value {
         var array: [(value: Value, positionOfMatch: Int)] = []
         print("🔢      👁 detecting values in: \(string)")
 
-        let regex = #"([0-9.,]+[ ]*(?:\#(Value.Regex.units)|)([^A-z0-9]|$))"#
+        let specialValues = #"((?<!not detected )(?:not detected)|(?:not detected)(?! not detected ))"#
+        let regex = #"(?:([0-9.,]+[ ]*(?:\#(Value.Regex.units)|)(?:[^A-z0-9]|$))|\#(specialValues))"#
 //        let regex = #"([0-9.,]+[ ]*(?:\#(Value.Regex.units)|))"#
         if let matches = matches(for: regex, in: string), !matches.isEmpty {
             
