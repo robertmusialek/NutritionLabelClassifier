@@ -445,6 +445,7 @@ extension ExtractedGrid {
     }
 
     mutating func correctionMadeUsingParentNutrientHeuristics(_ row: ExtractedRow, for validRatio: Double) -> Bool {
+        //TODO: Bring this in when needed—but keep in mind that this will make previous cases fail  where we have values taken directly from nutrition labels that don't actually have correctly scaled values
         return false
     }
 
