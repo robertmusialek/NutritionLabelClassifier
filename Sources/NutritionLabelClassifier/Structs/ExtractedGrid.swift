@@ -35,8 +35,6 @@ struct ExtractedGrid {
         removeValuesOutsideColumnRects()
         removeExtraneousRows()
 
-        let dataFrame = columns[0].dataFrame
-        print(dataFrame)
         //TODO: Possibly do this conditionally only if there's two column values
         //TODO: Also include header values if available to increase the chances off determining the valid ratio
         
@@ -194,15 +192,15 @@ extension ExtractedRow {
     func containsValueOutside(_ columnRects: (CGRect?, CGRect?)) -> Bool {
         if let columnRect = columnRects.0, let textRect = valuesTexts.first??.text.rect {
             if !textRect.isInSameColumnAs(columnRect) {
-                return false
+                return true
             }
         }
         if let columnRect = columnRects.1, valuesTexts.count == 2, let textRect = valuesTexts[1]?.text.rect {
             if !textRect.isInSameColumnAs(columnRect) {
-                return false
+                return true
             }
         }
-        return true
+        return false
     }
     
     func withoutValuesOutsideColumnRects(_ columnRects: (CGRect?, CGRect?)) -> ExtractedRow {
