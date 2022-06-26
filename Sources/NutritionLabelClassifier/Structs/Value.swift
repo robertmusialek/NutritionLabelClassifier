@@ -83,9 +83,13 @@ extension Value {
             return values.first
         }
     }
+
+    static func detect(in string: String) -> [Value] {
+        detect(in: string, withPositions: false).map { $0.0 }
+    }
     
     /// Detects `Value`s in a provided `string` in the order that they appear
-    static func detect(in string: String) -> [Value] {
+    static func detect(in string: String, withPositions: Bool) -> [(Value, Int)] {
         var array: [(value: Value, positionOfMatch: Int)] = []
         print("🔢      👁 detecting values in: \(string)")
 
@@ -103,7 +107,7 @@ extension Value {
         }
         
         array.sort(by: { $0.positionOfMatch < $1.positionOfMatch })
-        return array.map { $0.value }
+        return array
     }
     
     static func haveValues(in string: String) -> Bool {

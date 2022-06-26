@@ -7,7 +7,7 @@ struct ValuesText {
     let text: RecognizedText
     
     init?(_ text: RecognizedText) {
-        var values = Value.detect(in: text.string)
+        let values = Value.detect(in: text.string)
         guard values.count > 0 else {
             return nil
         }        
