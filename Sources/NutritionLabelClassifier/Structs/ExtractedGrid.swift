@@ -430,10 +430,30 @@ extension ExtractedGrid {
     }
     
     mutating func correct(_ row: ExtractedRow, for validRatio: Double) {
-        /// Try and use the alternative text candidates to see if one satisfies the ratio requirement (of being within an error margin of it)
-        guard let valuesText1 = row.valuesTexts[0], let valuesText2 = row.valuesTexts[1] else {
+        print("3️⃣ Correcting: \(row.desc)")
+        guard !correctionMadeUsingAlternativeValues(row, for: validRatio) else {
+            print("3️⃣ Correction was made using alternative values for: \(row.desc)")
             return
         }
+        
+        guard !correctionMadeUsingParentNutrientHeuristics(row, for: validRatio) else {
+            print("3️⃣ Correction was made using parent nutrient heuristics for: \(row.desc)")
+            return
+        }
+        
+        print("3️⃣ We weren't able to correct: \(row.desc)")
+    }
+
+    mutating func correctionMadeUsingParentNutrientHeuristics(_ row: ExtractedRow, for validRatio: Double) -> Bool {
+        return false
+    }
+
+    mutating func correctionMadeUsingAlternativeValues(_ row: ExtractedRow, for validRatio: Double) -> Bool {
+        /// Try and use the alternative text candidates to see if one satisfies the ratio requirement (of being within an error margin of it)
+        guard let valuesText1 = row.valuesTexts[0], let valuesText2 = row.valuesTexts[1] else {
+            return false
+        }
+        
         for c1 in valuesText1.text.candidates {
             for c2 in valuesText2.text.candidates {
                 
@@ -447,11 +467,13 @@ extension ExtractedGrid {
                 
                 if ratio.errorPercentage(with: validRatio) <= RatioErrorPercentageThreshold {
                     modify(row, withNewValues: (altValue1, altValue2))
-                    return
+                    return true
                 }
             }
         }
+        return false
     }
+
     
     var allRows: [ExtractedRow] {
         columns.map { $0.rows }.reduce([], +)
