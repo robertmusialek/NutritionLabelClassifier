@@ -38,11 +38,13 @@ struct ExtractedGrid {
         print(dataFrame)
         //TODO: Possibly do this conditionally only if there's two column values
         //TODO: Also include header values if available to increase the chances off determining the valid ratio
-        fixInvalidRows()
+        
         fillInRowsWithOneMissingValue()
-//        fixSingleInvalidMacroOrEnergyRow()
-//        removeEmptyValues()
-//        fillInMissingUnits()
+        fixInvalidRows()
+        
+        fixSingleInvalidMacroOrEnergyRow()
+        removeEmptyValues()
+        fillInMissingUnits()
     }
     
     var values: [[[Value?]]] {

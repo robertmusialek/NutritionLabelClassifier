@@ -124,13 +124,13 @@ let valueExpectations: [String: [[[Value?]]]?] = [
     "C86F6FD2-ADA2-45C1-818F-AD4A85DC0611": [
         [
             [v(1373, .kj), v(351, .kj)],
-            [v(6.8, .g), v(1.7, .g)],
+            [v(6.8, .g), v(1.71, .g)],
             [v(75, .g), v(19, .g)],
             [v(47.3, .g), v(11.8, .g)],
-            [v(0.1, .g), v(0, .g)],
-            [v(0.1, .g), v(0, .g)],
+            [v(0.1, .g), v(0.03, .g)],
+            [v(0.1, .g), v(0.03, .g)],
             [v(0, .g), v(0, .g)],
-            [v(20, .mg), v(5, .mg)],
+            [v(20, .mg), v(5.03, .mg)],
         ]
     ],
 
@@ -188,4 +188,4 @@ let valueExpectations: [String: [[[Value?]]]?] = [
 
 let SingledOutTestCase: UUID? = UUID(uuidString: "31D0CA8B-5069-4AB3-B865-47CD1D15D879")!
 
-let TestPassingTestCases = false
+let TestPassingTestCases = true

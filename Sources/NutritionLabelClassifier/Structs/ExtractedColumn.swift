@@ -23,13 +23,16 @@ struct ExtractedColumn {
     var dataFrame: DataFrame {
         var dataFrame = DataFrame()
         let attributeColumn = Column(name: "attribute", contents: rows.map { $0.attributeText.attribute.rawValue })
-        let value1Column = Column(name: "value1", contents: rows.map { $0.valuesTexts[0] })
-        let value2Column = Column(name: "value2", contents: rows.map { $0.valuesTexts[1] })
-        let ratioColumn = Column(name: "ratio", contents: rows.map { $0.ratioColumn1To2 })
         dataFrame.append(column: attributeColumn)
+        let value1Column = Column(name: "value1", contents: rows.map { $0.valuesTexts[0] })
         dataFrame.append(column: value1Column)
-        dataFrame.append(column: value2Column)
-        dataFrame.append(column: ratioColumn)
+        
+        if rows.first?.valuesTexts.count == 2 {
+            let value2Column = Column(name: "value2", contents: rows.map { $0.valuesTexts[1] })
+            dataFrame.append(column: value2Column)
+            let ratioColumn = Column(name: "ratio", contents: rows.map { $0.ratioColumn1To2 })
+            dataFrame.append(column: ratioColumn)
+        }
         return dataFrame
     }
 }
