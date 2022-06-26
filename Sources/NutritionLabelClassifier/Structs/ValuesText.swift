@@ -7,18 +7,28 @@ struct ValuesText {
     let text: RecognizedText
     
     init?(_ text: RecognizedText) {
-        let values = Value.detect(in: text.string)
+        var values = Value.detect(in: text.string)
         guard values.count > 0 else {
             return nil
         }        
         self.text = text
         
-        /// If only value has a unit, pick that one and discard the rest
+        /// Previously—if only value has a unit, pick that one and discard the rest
         if values.containingUnit.count == 1 {
             self.values = values.containingUnit
         } else {
             self.values = values
         }
+        
+        /// Remove all values with a percent
+//        values.removeAll(where: { $0.unit == .p })
+        
+        /// If there are values with units—remove all that don't have any
+//        if values.contains(where: { $0.unit != nil }) {
+//            values.removeAll(where: { $0.unit == nil })
+//        }
+        
+//        self.values = values
     }
     
     init(values: [Value], text: RecognizedText = defaultText) {

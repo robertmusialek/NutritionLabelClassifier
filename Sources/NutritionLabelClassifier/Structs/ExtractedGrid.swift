@@ -31,14 +31,18 @@ struct ExtractedGrid {
         
         self.columns = columns
         self.numberOfValues = columns.first?.rows.first?.valuesTexts.count ?? 0
-        
+
+        removeExtraneousRows()
+
+        let dataFrame = columns[0].dataFrame
+        print(dataFrame)
         //TODO: Possibly do this conditionally only if there's two column values
         //TODO: Also include header values if available to increase the chances off determining the valid ratio
         fixInvalidRows()
         fillInRowsWithOneMissingValue()
-        fixSingleInvalidMacroOrEnergyRow()
-        removeEmptyValues()
-        fillInMissingUnits()
+//        fixSingleInvalidMacroOrEnergyRow()
+//        removeEmptyValues()
+//        fillInMissingUnits()
     }
     
     var values: [[[Value?]]] {
@@ -69,7 +73,17 @@ extension Array where Element == ExtractedColumn {
             }
         }
     }
-    
+
+    mutating func modify(_ row: ExtractedRow, with newRow: ExtractedRow) {
+        for i in indices {
+            var column = self[i]
+            if column.contains(row) {
+                column.modify(row, with: newRow)
+                self[i] = column
+            }
+        }
+    }
+
     mutating func remove(_ row: ExtractedRow) {
         for i in indices {
             var column = self[i]
@@ -91,6 +105,10 @@ extension ExtractedColumn {
     mutating func modify(_ row: ExtractedRow, with newValues: (Value, Value)) {
         rows.modify(row, with: newValues)
     }
+    mutating func modify(_ row: ExtractedRow, with newRow: ExtractedRow) {
+        rows.modify(row, with: newRow)
+    }
+
     mutating func remove(_ row: ExtractedRow) {
         rows.removeAll(where: { $0.attributeText.attribute == row.attributeText.attribute })
     }
@@ -114,7 +132,16 @@ extension Array where Element == ExtractedRow {
             }
         }
     }
-    
+
+    mutating func modify(_ rowToModify: ExtractedRow, with newRow: ExtractedRow) {
+        for i in indices {
+            let row = self[i]
+            if row.attributeText.attribute == rowToModify.attributeText.attribute {
+                self[i] = newRow
+            }
+        }
+    }
+
     mutating func fillInMissingUnits() {
         for i in indices {
             var row = self[i]
@@ -156,6 +183,56 @@ extension ExtractedRow {
             valuesTexts[1] = ValuesText(values: [newValues.1])
         }
     }
+    
+    var containsExtraneousValues: Bool {
+        valuesTexts.contains(where: { $0?.containsExtraneousValues == true })
+    }
+    
+    var withoutExtraneousValues: ExtractedRow {
+        var newRow = self
+        newRow.removeExtraneousValues()
+        return newRow
+    }
+    
+    mutating func removeExtraneousValues() {
+        for i in valuesTexts.indices {
+            guard let valueText = valuesTexts[i], valueText.containsExtraneousValues else {
+                continue
+            }
+            var newValueText = valueText
+            newValueText.removeExtraneousValues()
+            valuesTexts[i] = newValueText
+        }
+    }
+    
+    var desc: String {
+        var string = "\(attributeText.attribute.rawValue)"
+        if let valuesText = valuesTexts.first {
+            string += ": \(valuesText?.description ?? "nil")"
+        }
+        if valuesTexts.count == 2 {
+            string += ", \(valuesTexts[1]?.description ?? "nil")"
+        }
+        return string
+    }
+}
+
+extension ValuesText {
+    mutating func removeExtraneousValues() {
+        values.removeAll(where: { $0.unit == .p })
+        if values.contains(where: { $0.unit != nil }) {
+            values.removeAll(where: { $0.unit == nil })
+        }
+    }
+    var containsExtraneousValues: Bool {
+        values.contains(where: { $0.unit == .p })
+        ||
+        (
+            values.contains(where: { $0.unit != nil })
+            &&
+            values.contains(where: { $0.unit == nil })
+        )
+    }
 }
 
 extension ExtractedGrid {
@@ -170,6 +247,10 @@ extension ExtractedGrid {
         print("2️⃣ done.")
     }
     
+    mutating func modify(_ row: ExtractedRow, with newRow: ExtractedRow) {
+        columns.modify(row, with: newRow)
+    }
+
     mutating func fillInMissingUnits() {
         columns.fillInMissingUnits()
     }
@@ -189,14 +270,14 @@ extension ExtractedGrid {
                 guard let value = row.valuesTexts[0]?.values.first else {
                     continue
                 }
-                let amount = (value.amount / validRatio).rounded(toPlaces: 1)
+                let amount = (value.amount / validRatio).rounded(toPlaces: 2)
                 modify(row, withNewValues: (value, Value(amount: amount, unit: value.unit)))
             }
             else if missingIndex == 0 {
                 guard let value = row.valuesTexts[1]?.values.first else {
                     continue
                 }
-                let amount = (value.amount / validRatio).rounded(toPlaces: 1)
+                let amount = (value.amount * validRatio).rounded(toPlaces: 2)
                 modify(row, withNewValues: (Value(amount: amount, unit: value.unit), value))
             }
         }
@@ -325,6 +406,14 @@ extension ExtractedGrid {
     mutating func removeEmptyValues() {
         for row in emptyRows {
             remove(row)
+        }
+    }
+    
+    mutating func removeExtraneousRows() {
+        for row in allRows {
+            if row.containsExtraneousValues {
+                modify(row, with: row.withoutExtraneousValues)
+            }
         }
     }
     
