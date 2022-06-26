@@ -33,23 +33,31 @@ struct ExtractedGrid {
         self.numberOfValues = columns.first?.rows.first?.valuesTexts.count ?? 0
 
         removeValuesOutsideColumnRects()
-        removeExtraneousRows()
+        removeExtraneousValues()
 
-        //TODO: Possibly do this conditionally only if there's two column values
-        //TODO: Also include header values if available to increase the chances off determining the valid ratio
-        
+        handleReusedValueTexts()
+        handleMultipleValues()
+
         fillInRowsWithOneMissingValue()
         fixInvalidRows()
-        
+
         fixSingleInvalidMacroOrEnergyRow()
         removeEmptyValues()
+        removeRowsWithMultipleValues()
+
         fillInMissingUnits()
+        
+
     }
     
     var values: [[[Value?]]] {
         columns.map {
             $0.rows.map { $0.valuesTexts.map { $0?.values.first } }
         }
+    }
+    
+    func row(for attribute: Attribute) -> ExtractedRow? {
+        allRows.first(where: { $0.attributeText.attribute == attribute })
     }
 }
 
@@ -66,39 +74,63 @@ extension Array where Element == Bool? {
 
 extension Array where Element == ExtractedColumn {
     mutating func modify(_ row: ExtractedRow, with newValues: (Value, Value)) {
-        for i in indices {
-            var column = self[i]
+        for columnIndex in indices {
+            var column = self[columnIndex]
             if column.contains(row) {
                 column.modify(row, with: newValues)
-                self[i] = column
+                self[columnIndex] = column
             }
         }
     }
 
     mutating func modify(_ row: ExtractedRow, with newRow: ExtractedRow) {
-        for i in indices {
-            var column = self[i]
+        for columnIndex in indices {
+            var column = self[columnIndex]
             if column.contains(row) {
                 column.modify(row, with: newRow)
-                self[i] = column
+                self[columnIndex] = column
             }
         }
     }
 
     mutating func remove(_ row: ExtractedRow) {
-        for i in indices {
-            var column = self[i]
+        for columnIndex in indices {
+            var column = self[columnIndex]
             if column.contains(row) {
                 column.remove(row)
-                self[i] = column
+                self[columnIndex] = column
             }
         }
     }
     mutating func fillInMissingUnits() {
-        for i in indices {
-            var column = self[i]
+        for columnIndex in indices {
+            var column = self[columnIndex]
             column.fillInMissingUnits()
-            self[i] = column
+            self[columnIndex] = column
+        }
+    }
+    
+    mutating func handleMultipleValues() {
+        for columnIndex in indices {
+            var column = self[columnIndex]
+            column.handleMultipleValues()
+            self[columnIndex] = column
+        }
+    }
+    
+    mutating func removeRowsWithMultipleValues() {
+        for columnIndex in indices {
+            var column = self[columnIndex]
+            column.removeRowsWithMultipleValues()
+            self[columnIndex] = column
+        }
+    }
+    
+    mutating func handleReusedValueTexts() {
+        for columnIndex in indices {
+            var column = self[columnIndex]
+            column.handleReusedValueTexts()
+            self[columnIndex] = column
         }
     }
 }
@@ -120,6 +152,67 @@ extension ExtractedColumn {
  
     mutating func fillInMissingUnits() {
         rows.fillInMissingUnits()
+    }
+    
+    mutating func removeRowsWithMultipleValues() {
+        rows.removeRowsWithMultipleValues()
+    }
+    
+    mutating func handleMultipleValues() {
+        for row in rowsWithMultipleValues {
+            /// If we have multiple values, and the next attribute shares the same attribute text as the one with multiple values, this implies we have something along the lines of `Sodium/Salt` (see case `31D0CA8B-5069-4AB3-B865-47CD1D15D879`) with inline values within the column.
+            /// We handle this by keeping the first value and assigning the second value to the next row (within the same column), essentially discarding any remaining values.
+            /// We currently support two inline values, but this can be extended by checking rows further down the line if we have more values.
+            guard let index = indexOfRow(row),
+                  index < rows.count,
+                  rows[index+1].attributeText.text == row.attributeText.text
+            else {
+                continue
+            }
+            
+            /// If it's in the first column
+            if let valuesText = row.valuesTexts[0] {
+                let values = valuesText.values
+                guard values.count > 1 else {
+                    continue
+                }
+                
+                var newValuesText = valuesText
+                newValuesText.values = [values[0]]
+                rows[index].valuesTexts[0] = newValuesText
+                
+                var newValuesTextForNextRow = valuesText
+                newValuesTextForNextRow.values = [values[1]]
+                rows[index+1].valuesTexts[0] = newValuesTextForNextRow
+            }
+            /// If it's in the second column
+            else if let valuesText = row.valuesTexts[1] {
+                let values = valuesText.values
+                guard values.count > 1 else {
+                    continue
+                }
+                
+                var newValuesText = valuesText
+                newValuesText.values = [values[0]]
+                rows[index].valuesTexts[1] = newValuesText
+                
+                var newValuesTextForNextRow = valuesText
+                newValuesTextForNextRow.values = [values[1]]
+                rows[index+1].valuesTexts[1] = newValuesTextForNextRow
+            }
+        }
+    }
+    
+    mutating func handleReusedValueTexts() {
+        rows.handleReusedValueTexts(using: columnRects)
+    }
+    
+    var rowsWithMultipleValues: [ExtractedRow] {
+        rows.filter { $0.containsValueTextsWithMultipleValues }
+    }
+    
+    func indexOfRow(_ row: ExtractedRow) -> Int? {
+        rows.firstIndex(where: { $0.attributeText.attribute == row.attributeText.attribute })
     }
 }
 
@@ -150,9 +243,30 @@ extension Array where Element == ExtractedRow {
             self[i] = row
         }
     }
+    
+    mutating func removeRowsWithMultipleValues() {
+        removeAll { $0.containsValueTextsWithMultipleValues }
+    }
+    
+    mutating func handleReusedValueTexts(using columnRects: (CGRect?, CGRect?)) {
+        for rowIndex in indices {
+            var row = self[rowIndex]
+            row.handleReusedValueTexts(using: columnRects)
+            self[rowIndex] = row
+        }
+    }
 }
 
 extension ExtractedRow {
+    
+    var containsValueTextsWithMultipleValues: Bool {
+        valuesTexts.contains(where: { valuesText in
+            guard let valuesText = valuesText else {
+                return false
+            }
+            return valuesText.values.count > 1
+        })
+    }
     mutating func fillInMissingUnits() {
         if valuesTexts.count > 0, let valuesText = valuesTexts[0], valuesText.values.first?.unit == nil {
             var new = valuesText
@@ -164,6 +278,27 @@ extension ExtractedRow {
             var new = valuesText
             new.values[0].unit = attributeText.attribute.defaultUnit
             valuesTexts[1] = new
+        }
+    }
+    
+    mutating func handleReusedValueTexts(using columnRects: (CGRect?, CGRect?)) {
+        guard valuesTexts.count == 2,
+              let valuesText = valuesTexts[0],
+              let valuesText2 = valuesTexts[1],
+              let columnRect1 = columnRects.0,
+              let columnRect2 = columnRects.1,
+              valuesText == valuesText2
+        else {
+            return
+        }
+        
+        let distanceTo1 = abs(valuesText.text.rect.midX - columnRect1.midX)
+        let distanceTo2 = abs(valuesText.text.rect.midX - columnRect2.midX)
+        
+        if distanceTo1 > distanceTo2 {
+            valuesTexts[0] = nil
+        } else {
+            valuesTexts[1] = nil
         }
     }
 
@@ -301,6 +436,18 @@ extension ExtractedGrid {
         columns.fillInMissingUnits()
     }
 
+    mutating func handleMultipleValues() {
+        columns.handleMultipleValues()
+    }
+    
+    mutating func handleReusedValueTexts() {
+        columns.handleReusedValueTexts()
+    }
+    
+    mutating func removeRowsWithMultipleValues() {
+        columns.removeRowsWithMultipleValues()
+    }
+
     mutating func fillInRowsWithOneMissingValue() {
         guard let validRatio = validRatio else {
             return
@@ -316,14 +463,14 @@ extension ExtractedGrid {
                 guard let value = row.valuesTexts[0]?.values.first else {
                     continue
                 }
-                let amount = (value.amount / validRatio).rounded(toPlaces: 2)
+                let amount = (value.amount / validRatio).roundedNutrientAmount
                 modify(row, withNewValues: (value, Value(amount: amount, unit: value.unit)))
             }
             else if missingIndex == 0 {
                 guard let value = row.valuesTexts[1]?.values.first else {
                     continue
                 }
-                let amount = (value.amount * validRatio).rounded(toPlaces: 2)
+                let amount = (value.amount * validRatio).roundedNutrientAmount
                 modify(row, withNewValues: (Value(amount: amount, unit: value.unit), value))
             }
         }
@@ -465,7 +612,7 @@ extension ExtractedGrid {
         }
     }
     
-    mutating func removeExtraneousRows() {
+    mutating func removeExtraneousValues() {
         for row in allRows {
             if row.containsExtraneousValues {
                 modify(row, with: row.withoutExtraneousValues)
@@ -663,6 +810,20 @@ extension Double {
     func errorPercentage(with double: Double) -> Double {
         let difference = abs(self - double)
         return (difference/self) * 100.0
+    }
+    
+    var roundedNutrientAmount: Double {
+        if self < 0.02 {
+            return self.rounded(toPlaces: 3)
+        } else {
+            return self.rounded(toPlaces: 2)
+        }
+    }
+}
+
+extension CGFloat {
+    var roundedNutrientAmount: CGFloat {
+        Double(self).roundedNutrientAmount
     }
 }
 

@@ -133,9 +133,22 @@ let valueExpectations: [String: [[[Value?]]]?] = [
             [v(20, .mg), v(5.03, .mg)],
         ]
     ],
+    "31D0CA8B-5069-4AB3-B865-47CD1D15D879": [
+        [
+            [v(0.03, .g), v(0.1, .g)],
+            [v(0.03, .g), v(0.1, .g)],
+            [v(0.0, .g), v(0.0, .g)],
+            [v(0.24, .mg), v(0.8, .mg)],
+            [v(6.0, .mg), v(20.0, .mg)],
+            [v(0.015, .g), v(0.05, .g)],
+            [v(23.4, .g), v(78.0, .g)],
+            [v(0.0, .g), v(0.0, .g)],
+            [v(15.63, .g), v(52.1, .g)],
+            [v(15.63, .g), v(52.1, .g)],
+            [v(2.04, .g), v(6.8, .g)],
+        ]
+    ],
 
-    //TODO: Do Haribo Next, Goldbears first then Fizzy Cola
-    
 //    "99D1A080-19CF-4A08-B8B7-1BD5E4D9CB40": nil,
 //    "3C53CC91-34D1-46EE-92BE-328ABDC20342": nil,
 //    "15C9C2C9-5012-43A3-835A-3FB0A2DD1E2D": nil,
@@ -188,4 +201,4 @@ let valueExpectations: [String: [[[Value?]]]?] = [
 
 let SingledOutTestCase: UUID? = UUID(uuidString: "31D0CA8B-5069-4AB3-B865-47CD1D15D879")!
 
-let TestPassingTestCases = false
+let TestPassingTestCases = true

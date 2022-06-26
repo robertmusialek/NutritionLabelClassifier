@@ -66,6 +66,10 @@ public struct Value {
         #"^(?:[^0-9.:]*(?: |\()|^\/?)([0-9.:]+)[ ]*(\#(units))+(?: .*|\).*$|\/?$)$"#
     }
     
+    static var DisqualifyingTexts: [String] = [
+        "contributes to a daily diet"
+    ]
+    
     var hasEnergyUnit: Bool {
         guard let unit = unit else { return false }
         return unit.isEnergy
@@ -90,10 +94,18 @@ extension Value {
     
     /// Detects `Value`s in a provided `string` in the order that they appear
     static func detect(in string: String, withPositions: Bool) -> [(Value, Int)] {
+        
+        for disqualifyingText in Value.DisqualifyingTexts {
+            guard !(string.contains(disqualifyingText)) else {
+                return []
+            }
+        }
+        
         var array: [(value: Value, positionOfMatch: Int)] = []
         print("🔢      👁 detecting values in: \(string)")
 
-        let regex = #"([0-9.,]+[ ]*(?:\#(Value.Regex.units)|))"#
+        let regex = #"([0-9.,]+[ ]*(?:\#(Value.Regex.units)|)([^A-z0-9]|$))"#
+//        let regex = #"([0-9.,]+[ ]*(?:\#(Value.Regex.units)|))"#
         if let matches = matches(for: regex, in: string), !matches.isEmpty {
             
             for match in matches {
