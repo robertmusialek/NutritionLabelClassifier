@@ -27,17 +27,17 @@ class TableClassifier {
         .getObservations()
     }
     
-    var extractedAttributes: ExtractedAttributes? = nil
-    var extractedValues: ExtractedValues? = nil
-    var extractedGrid: ExtractedGrid? = nil
+    var attributes: ExtractedAttributes? = nil
+    var values: ExtractedValues? = nil
+    var grid: ExtractedGrid? = nil
     
     func getObservations() -> [Observation] {
 
-        extractedAttributes = extractAttributeTextColumns()
-        extractedValues = extractValueTextColumnGroups()
+        attributes = extractAttributeTextColumns()
+        values = extractValueTextColumnGroups()
         
-        if let attributes = extractedAttributes, let values = extractedValues {
-            extractedGrid = ExtractedGrid(attributes: attributes, values: values)
+        if let attributes = attributes, let values = values {
+            grid = ExtractedGrid(attributes: attributes, values: values)
         }
         
         return observations

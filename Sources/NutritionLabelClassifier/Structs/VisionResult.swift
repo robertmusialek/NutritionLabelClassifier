@@ -344,6 +344,18 @@ extension VisionResult {
                       attribute.isNutrientAttribute
                 else { continue }
                 
+                /// If this is the `nutrientLabelTotal` attribute (where `Total` may come after a nutrient)
+                guard attribute != .nutrientLabelTotal else {
+                    /// Check if the last attribute appended supports total
+                    guard let lastAttributeText = attributeTexts.last, lastAttributeText.attribute.supportsTotalLabel else {
+                        continue
+                    }
+                    
+                    /// If it does, add this text to its list of texts so that its considered when finding values in-line with it
+                    attributeTexts[attributeTexts.count-1].allTexts.append(text)
+                    continue
+                }
+                
                 /// If this is part of the last added attribute, simply append the text to its `allTexts`
                 if let index = attributeTexts.firstIndex(where: { $0.attribute == attribute }) {
                     guard let lastAddedAttribute = lastAddedAttribute, lastAddedAttribute == attribute else {
@@ -359,5 +371,16 @@ extension VisionResult {
             }
         }
         return attributeTexts.count > 0 ? attributeTexts : nil
+    }
+}
+
+extension Attribute {
+    var supportsTotalLabel: Bool {
+        switch self {
+        case .fat, .carbohydrate:
+            return true
+        default:
+            return false
+        }
     }
 }

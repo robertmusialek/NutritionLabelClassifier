@@ -5,6 +5,8 @@ public enum Attribute: String, CaseIterable {
     case tableElementNutritionFacts
     case tableElementSkippable
     
+    case nutrientLabelTotal
+    
     //MARK: - Serving
     case servingAmount                 /// Double
     case servingUnit                  /// NutritionUnit
@@ -209,9 +211,7 @@ public enum Attribute: String, CaseIterable {
     
     public var isTableAttribute: Bool {
         switch self {
-        case .tableElementNutritionFacts:
-            return true
-        case .tableElementSkippable:
+        case .tableElementNutritionFacts, .tableElementSkippable:
             return true
         default:
             return false
@@ -407,6 +407,8 @@ extension Attribute: CustomStringConvertible {
             return "Nutrition Facts"
         case .tableElementSkippable:
             return "Vitamins & Minerals"
+        case .nutrientLabelTotal:
+            return "Total (Nutrient Label)"
         case .servingAmount:
             return "Serving Amount"
         case .servingUnit:

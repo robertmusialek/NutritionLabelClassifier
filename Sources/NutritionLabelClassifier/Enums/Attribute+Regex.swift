@@ -7,6 +7,8 @@ extension Attribute {
             return #"nutrition facts"#
         case .tableElementSkippable:
             return #"^(vitamins (&|and) minerals|of which|alimentaires|g)$"#
+        case .nutrientLabelTotal:
+            return #"^[- ]*total$"#
         case .servingsPerContainerAmount:
             return #"(?:servings |serving5 |)per (container|pack(age|)|tub|pot)"#
         case .servingAmount:

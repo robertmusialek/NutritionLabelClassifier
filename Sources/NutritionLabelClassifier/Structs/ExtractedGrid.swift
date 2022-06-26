@@ -164,7 +164,7 @@ extension ExtractedColumn {
             /// We handle this by keeping the first value and assigning the second value to the next row (within the same column), essentially discarding any remaining values.
             /// We currently support two inline values, but this can be extended by checking rows further down the line if we have more values.
             guard let index = indexOfRow(row),
-                  index < rows.count,
+                  index < rows.count - 1,
                   rows[index+1].attributeText.text == row.attributeText.text
             else {
                 continue

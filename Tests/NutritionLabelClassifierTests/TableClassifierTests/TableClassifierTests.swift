@@ -11,7 +11,7 @@ final class TableClassifierTests: XCTestCase {
     var numberOfPassedTests = 0
     var numberOfFailedTests = 0
     
-    func testTableClassifier() throws {
+    func testTableClassifierAttributes() throws {
         
         guard !TestPassingTestCases else { return }
         
@@ -24,7 +24,7 @@ final class TableClassifierTests: XCTestCase {
             }
             
             do {
-                try testCaseWithId(id)
+                try testCaseWithId(id, attributesOnly: true)
                 numberOfPassedTests += 1
             } catch {
                 numberOfFailedTests += 1
@@ -34,8 +34,8 @@ final class TableClassifierTests: XCTestCase {
         print("🤖 Failed: \(numberOfFailedTests) tests")
         print("🤖 Passed: \(numberOfPassedTests) tests")
     }
-    
-    func testTableClassifierValues() throws {
+
+    func _testTableClassifierValues() throws {
         guard TestPassingTestCases else { return }
         try prepareTestCaseImages()
 
@@ -47,7 +47,7 @@ final class TableClassifierTests: XCTestCase {
     
     //MARK: - Helpers
     
-    func testCaseWithId(_ id: UUID) throws {
+    func testCaseWithId(_ id: UUID, attributesOnly: Bool = false) throws {
         guard attributeExpectations.keys.contains(id.uuidString) else {
             XCTFail("Couldn't get attributeExpectations for Test Case \(id)")
             return
@@ -67,9 +67,14 @@ final class TableClassifierTests: XCTestCase {
             let tableClassifier = TableClassifier(visionResult: classifier.visionResult)
             let _ = tableClassifier.getObservations()
             
-            let attributesPassed = self.testAttributes(tableClassifier.extractedAttributes, forTestCase: id)
-            let valuesPassed = self.testValues(tableClassifier.extractedGrid?.values, forTestCase: id)
-            //            let valuesPassed = true
+            let attributesPassed = self.testAttributes(tableClassifier.attributes, forTestCase: id)
+            
+            let valuesPassed: Bool
+            if attributesOnly {
+                valuesPassed = true
+            } else {
+                valuesPassed = self.testValues(tableClassifier.grid?.values, forTestCase: id)
+            }
 
             if attributesPassed && valuesPassed {
                 print("🤖✅ \(id)")
