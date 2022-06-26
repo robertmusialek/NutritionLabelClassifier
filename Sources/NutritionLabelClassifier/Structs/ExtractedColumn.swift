@@ -45,6 +45,10 @@ struct ExtractedColumn {
         let valuesTexts = rows.compactMap { $0.valuesTexts[1] ?? nil }
         return valuesTexts.rectOfSingleValues
     }
+    
+    var columnRects: (CGRect?, CGRect?) {
+        (values1Rect, values2Rect)
+    }
 }
 
 extension Array where Element == ValuesText {

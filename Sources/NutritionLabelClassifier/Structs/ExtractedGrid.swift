@@ -32,6 +32,7 @@ struct ExtractedGrid {
         self.columns = columns
         self.numberOfValues = columns.first?.rows.first?.valuesTexts.count ?? 0
 
+        removeValuesOutsideColumnRects()
         removeExtraneousRows()
 
         let dataFrame = columns[0].dataFrame
@@ -187,7 +188,27 @@ extension ExtractedRow {
     }
     
     var containsExtraneousValues: Bool {
-        valuesTexts.contains(where: { $0?.containsExtraneousValues == true })
+        valuesTexts.contains { $0?.containsExtraneousValues == true }
+    }
+    
+    func containsValueOutside(_ columnRects: (CGRect?, CGRect?)) -> Bool {
+        if let columnRect = columnRects.0, let textRect = valuesTexts.first??.text.rect {
+            if !textRect.isInSameColumnAs(columnRect) {
+                return false
+            }
+        }
+        if let columnRect = columnRects.1, valuesTexts.count == 2, let textRect = valuesTexts[1]?.text.rect {
+            if !textRect.isInSameColumnAs(columnRect) {
+                return false
+            }
+        }
+        return true
+    }
+    
+    func withoutValuesOutsideColumnRects(_ columnRects: (CGRect?, CGRect?)) -> ExtractedRow {
+        var newRow = self
+        newRow.removeValuesOutsideColumnRects(columnRects)
+        return newRow
     }
     
     var withoutExtraneousValues: ExtractedRow {
@@ -207,6 +228,19 @@ extension ExtractedRow {
         }
     }
     
+    mutating func removeValuesOutsideColumnRects(_ columnRects: (CGRect?, CGRect?)) {
+        if let columnRect = columnRects.0, let textRect = valuesTexts.first??.text.rect {
+            if !textRect.isInSameColumnAs(columnRect) {
+                valuesTexts[0] = nil
+            }
+        }
+        if let columnRect = columnRects.1, valuesTexts.count == 2, let textRect = valuesTexts[1]?.text.rect {
+            if !textRect.isInSameColumnAs(columnRect) {
+                valuesTexts[1] = nil
+            }
+        }
+    }
+    
     var desc: String {
         var string = "\(attributeText.attribute.rawValue)"
         if let valuesText = valuesTexts.first {
@@ -219,6 +253,12 @@ extension ExtractedRow {
     }
 }
 
+extension CGRect {
+    func isInSameColumnAs(_ rect: CGRect) -> Bool {
+        let yNormalized = rectWithYValues(of: rect)
+        return yNormalized.intersects(rect)
+    }
+}
 extension ValuesText {
     mutating func removeExtraneousValues() {
         values.removeAll(where: { $0.unit == .p })
@@ -226,6 +266,12 @@ extension ValuesText {
             values.removeAll(where: { $0.unit == nil })
         }
     }
+    
+    func rectNotInSameColumnAs(_ columnRect: CGRect) -> Bool {
+        //😵‍💫
+        false
+    }
+    
     var containsExtraneousValues: Bool {
         values.contains(where: { $0.unit == .p })
         ||
@@ -408,6 +454,16 @@ extension ExtractedGrid {
     mutating func removeEmptyValues() {
         for row in emptyRows {
             remove(row)
+        }
+    }
+    
+    mutating func removeValuesOutsideColumnRects() {
+        for column in columns {
+            for row in column.rows {
+                if row.containsValueOutside(column.columnRects) {
+                    modify(row, with: row.withoutValuesOutsideColumnRects(column.columnRects))
+                }
+            }
         }
     }
     
