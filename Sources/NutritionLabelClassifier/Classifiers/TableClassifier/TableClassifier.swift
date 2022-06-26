@@ -68,7 +68,7 @@ class TableClassifier {
 //            }
 //
 //            //TODO: Next, we need to clean up columns by:
-//            // 1. Detect that we have inline values with the attribute labels and then insert it accordingly into the column that is closest in terms of the y-valuec
+//            // 1. Detect that we have inline values with the attribute labels and then insert it accordingly into the column that is closest in terms of the y-value
 //                // Also detect that we have merged two column values (such as energy with sliced cheese) in a value and use that to fill in both values accordingly
 //            // 2. After this, use the largest column array (in terms of its count), to then space out and detect the empty or unread values in the smaller column by comparing the deltas between the y-values of elements (perhaps their centers?), and detecting the anomalies
 //                // Test this on the Shredded Cheese Fibre value by making sure that gap is detected
