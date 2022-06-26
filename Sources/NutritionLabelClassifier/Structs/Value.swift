@@ -95,6 +95,9 @@ extension Value {
     /// Detects `Value`s in a provided `string` in the order that they appear
     static func detect(in string: String, withPositions: Bool) -> [(Value, Int)] {
         
+        /// Add regex to check if we have "Not detected" or "nil" and replace with 0 (no unit)
+        /// Or if we have "trace" replace it with 0.05 (no unit)
+        
         for disqualifyingText in Value.DisqualifyingTexts {
             guard !(string.contains(disqualifyingText)) else {
                 return []

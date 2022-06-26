@@ -35,7 +35,7 @@ final class TableClassifierTests: XCTestCase {
         print("🤖 Passed: \(numberOfPassedTests) tests")
     }
 
-    func _testTableClassifierValues() throws {
+    func testTableClassifierValues() throws {
         guard TestPassingTestCases else { return }
         try prepareTestCaseImages()
 

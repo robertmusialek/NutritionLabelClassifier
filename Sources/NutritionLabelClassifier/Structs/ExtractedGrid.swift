@@ -160,47 +160,79 @@ extension ExtractedColumn {
     
     mutating func handleMultipleValues() {
         for row in rowsWithMultipleValues {
-            /// If we have multiple values, and the next attribute shares the same attribute text as the one with multiple values, this implies we have something along the lines of `Sodium/Salt` (see case `31D0CA8B-5069-4AB3-B865-47CD1D15D879`) with inline values within the column.
-            /// We handle this by keeping the first value and assigning the second value to the next row (within the same column), essentially discarding any remaining values.
-            /// We currently support two inline values, but this can be extended by checking rows further down the line if we have more values.
-            guard let index = indexOfRow(row),
-                  index < rows.count - 1,
-                  rows[index+1].attributeText.text == row.attributeText.text
-            else {
+            
+            /// First see if these are multple values for successive attributes on the same line
+            if attemptHandlingMultipleValuesForInlineMultipleAttributes(for: row) {
                 continue
             }
             
-            /// If it's in the first column
-            if let valuesText = row.valuesTexts[0] {
-                let values = valuesText.values
-                guard values.count > 1 else {
-                    continue
-                }
-                
-                var newValuesText = valuesText
-                newValuesText.values = [values[0]]
-                rows[index].valuesTexts[0] = newValuesText
-                
-                var newValuesTextForNextRow = valuesText
-                newValuesTextForNextRow.values = [values[1]]
-                rows[index+1].valuesTexts[0] = newValuesTextForNextRow
+            if attemptHandlingMultipleValuesByDistributingAcrossValues(for: row) {
+                continue
             }
-            /// If it's in the second column
-            else if let valuesText = row.valuesTexts[1] {
-                let values = valuesText.values
-                guard values.count > 1 else {
-                    continue
-                }
-                
-                var newValuesText = valuesText
-                newValuesText.values = [values[0]]
-                rows[index].valuesTexts[1] = newValuesText
-                
-                var newValuesTextForNextRow = valuesText
-                newValuesTextForNextRow.values = [values[1]]
-                rows[index+1].valuesTexts[1] = newValuesTextForNextRow
-            }
+            
         }
+    }
+
+    mutating func attemptHandlingMultipleValuesByDistributingAcrossValues(for row: ExtractedRow) -> Bool {
+        let valuesText: ValuesText?
+        if let vt = row.valuesTexts[0] {
+            valuesText = vt
+        } else if let vt = row.valuesTexts[1] {
+            valuesText = vt
+        } else {
+            valuesText = nil
+        }
+        
+        guard let valuesText = valuesText, valuesText.values.count > 1 else {
+            return false
+        }
+        
+        modify(row, with: (valuesText.values[0], valuesText.values[1]))
+        return true
+    }
+     
+    mutating func attemptHandlingMultipleValuesForInlineMultipleAttributes(for row: ExtractedRow) -> Bool {
+        /// If we have multiple values, and the next attribute shares the same attribute text as the one with multiple values, this implies we have something along the lines of `Sodium/Salt` (see case `31D0CA8B-5069-4AB3-B865-47CD1D15D879`) with inline values within the column.
+        /// We handle this by keeping the first value and assigning the second value to the next row (within the same column), essentially discarding any remaining values.
+        /// We currently support two inline values, but this can be extended by checking rows further down the line if we have more values.
+        guard let index = indexOfRow(row),
+              index < rows.count - 1,
+              rows[index+1].attributeText.text == row.attributeText.text
+        else {
+            return false
+        }
+        
+        /// If it's in the first column
+        if let valuesText = row.valuesTexts[0] {
+            let values = valuesText.values
+            guard values.count > 1 else {
+                return false
+            }
+            
+            var newValuesText = valuesText
+            newValuesText.values = [values[0]]
+            rows[index].valuesTexts[0] = newValuesText
+            
+            var newValuesTextForNextRow = valuesText
+            newValuesTextForNextRow.values = [values[1]]
+            rows[index+1].valuesTexts[0] = newValuesTextForNextRow
+        }
+        /// If it's in the second column
+        else if let valuesText = row.valuesTexts[1] {
+            let values = valuesText.values
+            guard values.count > 1 else {
+                return false
+            }
+            
+            var newValuesText = valuesText
+            newValuesText.values = [values[0]]
+            rows[index].valuesTexts[1] = newValuesText
+            
+            var newValuesTextForNextRow = valuesText
+            newValuesTextForNextRow.values = [values[1]]
+            rows[index+1].valuesTexts[1] = newValuesTextForNextRow
+        }
+        return true
     }
     
     mutating func handleReusedValueTexts() {
