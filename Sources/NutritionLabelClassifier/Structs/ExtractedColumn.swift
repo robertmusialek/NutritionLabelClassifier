@@ -35,8 +35,35 @@ struct ExtractedColumn {
         }
         return dataFrame
     }
+    
+    var values1Rect: CGRect? {
+        let valuesTexts = rows.compactMap { $0.valuesTexts.first ?? nil }
+        return valuesTexts.rectOfSingleValues
+    }
+    var values2Rect: CGRect? {
+        guard rows.first?.valuesTexts.count == 2 else { return nil }
+        let valuesTexts = rows.compactMap { $0.valuesTexts[1] ?? nil }
+        return valuesTexts.rectOfSingleValues
+    }
 }
 
+extension Array where Element == ValuesText {
+    var rectOfSingleValues: CGRect? {
+        var rect: CGRect? = nil
+        for valuesText in self {
+            /// Only use single-valued `ValuesText`s to calculate the rect
+            guard valuesText.values.count == 1 else {
+                continue
+            }
+            guard let unionRect = rect else {
+                rect = valuesText.text.rect
+                continue
+            }
+            rect = unionRect.union(valuesText.text.rect)
+        }
+        return rect
+    }
+}
 extension ExtractedColumn {
     mutating func assignNilToReusedValuesTexts(forColumn column: Int) {
         var dict: [ValuesText: (attributeText: AttributeText, index: Int)] = [:]

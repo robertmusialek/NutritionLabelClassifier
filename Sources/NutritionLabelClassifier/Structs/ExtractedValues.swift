@@ -57,7 +57,7 @@ struct ExtractedValues {
         var groupedColumns = groupByAttributes(columns)
         groupedColumns.removeColumnsInSameColumnAsAttributes(in: extractedAttributes)
         groupedColumns.removeExtraneousColumns()
-        
+//        groupedColumns.removeInvalidValueTexts()
         print("⏱ processing columns took: \(CFAbsoluteTimeGetCurrent()-start)s")
         return groupedColumns
     }
@@ -150,10 +150,10 @@ extension Array where Element == [ValuesTextColumn] {
             self[i] = self[i].filter { $0.rect.maxX > attributesRect.maxX }
         }
     }
-    
 }
 
 extension ValuesTextColumn {
+    
     mutating func pickEnergyValueIfMultiplesWithinText(forColumn index: Int) {
         for i in valuesTexts.indices {
             guard valuesTexts[i].containsMultipleEnergyValues else {
