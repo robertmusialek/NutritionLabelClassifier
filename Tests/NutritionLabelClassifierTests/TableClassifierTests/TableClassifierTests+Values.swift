@@ -120,7 +120,19 @@ let valueExpectations: [String: [[[Value?]]]?] = [
             [v(4, .g)],
             [v(113, .mg)]
         ]
-    ]
+    ],
+    "C86F6FD2-ADA2-45C1-818F-AD4A85DC0611": [
+        [
+            [v(1373, .kj), v(351, .kj)],
+            [v(6.8, .g), v(1.7, .g)],
+            [v(75, .g), v(19, .g)],
+            [v(47.3, .g), v(11.8, .g)],
+            [v(0.1, .g), v(0, .g)],
+            [v(0.1, .g), v(0, .g)],
+            [v(0, .g), v(0, .g)],
+            [v(20, .mg), v(5, .mg)],
+        ]
+    ],
 
     //TODO: Do Haribo Next, Goldbears first then Fizzy Cola
     
@@ -174,7 +186,6 @@ let valueExpectations: [String: [[[Value?]]]?] = [
 
 //let SingledOutTestCase: UUID? = nil
 
-// 🥳 Looks like it's passing for these
-let SingledOutTestCase: UUID? = UUID(uuidString: "CDD8E0DD-7D2B-4802-9C1D-54EFFBB71E58")!
+let SingledOutTestCase: UUID? = UUID(uuidString: "31D0CA8B-5069-4AB3-B865-47CD1D15D879")!
 
-let TestPassingTestCases = true
+let TestPassingTestCases = false

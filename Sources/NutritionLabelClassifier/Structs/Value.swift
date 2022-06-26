@@ -89,7 +89,7 @@ extension Value {
         var array: [(value: Value, positionOfMatch: Int)] = []
         print("🔢      👁 detecting values in: \(string)")
 
-        let regex = #"([0-9.]+[ ]*(?:\#(Value.Regex.units)|))"#
+        let regex = #"([0-9.,]+[ ]*(?:\#(Value.Regex.units)|))"#
         if let matches = matches(for: regex, in: string), !matches.isEmpty {
             
             for match in matches {
