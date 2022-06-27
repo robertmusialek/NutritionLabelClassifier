@@ -192,7 +192,7 @@ extension Array where Element == AttributeText {
         }
         
         /// Special case where we may have only 1 value missing. If either side is short by just 1 value from the attribute count (**possibly increase this and handle greater missing values later**)—then go through the column(s) that's short until we hit the first value that's not inline with an the expected attribute—and insert nil there, and then continue adding the rest.
-        if valueColumns.missingOnlyOneValue(forAttributeCount: self.count) {
+        if valueColumns.hasSingleColumnMissingOnlyOneValue(forAttributeCount: self.count) {
             return extractedRowsAfterInsertingNilInSingleMissingValuesPlace(using: valueColumns)
         }
         
@@ -203,8 +203,9 @@ extension Array where Element == AttributeText {
 
 
 extension Array where Element == ValuesTextColumn {
-    func missingOnlyOneValue(forAttributeCount count: Int) -> Bool {
-        guard count == 2 else {
+    /// This heuristic only works when not more than one column has 1 value missing
+    func hasSingleColumnMissingOnlyOneValue(forAttributeCount count: Int) -> Bool {
+        guard self.count == 2 else {
             return first?.valuesTexts.count == count - 1
         }
         

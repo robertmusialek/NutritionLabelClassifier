@@ -309,6 +309,6 @@ let valueExpectations: [String: [[[Value?]]]?] = [
 
 //let SingledOutTestCase: UUID? = nil
 
-let SingledOutTestCase: UUID? = UUID(uuidString: "2184C983-5761-4F8F-BE7A-E6771E963FFF")!
+let SingledOutTestCase: UUID? = UUID(uuidString: "15D5AD72-033E-4CA4-BA87-D6CB6193EC9B")!
 
-let TestPassingTestCases = false
+let TestPassingTestCases = true
