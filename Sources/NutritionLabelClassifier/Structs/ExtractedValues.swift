@@ -148,11 +148,19 @@ extension Array where Element == [ValuesTextColumn] {
     }
     
     mutating func removeColumnsInSameColumnAsAttributes(in extractedAttributes: ExtractedAttributes) {
+        /// If there's only column, don't consider this heuristic
+        guard totalColumnsCount != 1 else {
+            return
+        }
         for i in indices {
             guard i < extractedAttributes.attributeTextColumns.count else { continue }
             let attributesRect = extractedAttributes.attributeTextColumns[i].rect
             self[i] = self[i].filter { $0.rect.maxX > attributesRect.maxX }
         }
+    }
+    
+    var totalColumnsCount: Int {
+        reduce(0) { $0 + $1.count }
     }
 }
 
