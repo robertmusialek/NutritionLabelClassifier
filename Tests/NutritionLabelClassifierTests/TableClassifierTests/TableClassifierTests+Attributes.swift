@@ -13,7 +13,7 @@ let attributeExpectations: [String: [[Attribute]]?] = [
         [.fat, .saturatedFat, .transFat, .cholesterol, .carbohydrate, .sugar, .dietaryFibre, .protein, .salt, .sodium]
     ],
     "2184C983-5761-4F8F-BE7A-E6771E963FFF": [
-        [.fat, .saturatedFat, .transFat, .cholesterol, .sodium, .salt, .carbohydrate, .dietaryFibre, .sugar, .addedSugar, .protein]
+        [.energy, .fat, .saturatedFat, .transFat, .cholesterol, .sodium, .salt, .carbohydrate, .dietaryFibre, .sugar, .addedSugar, .protein]
     ],
     "364EDBD7-004B-4A97-83AA-F6404DE5EEB4": [
         [.energy, .fat, .saturatedFat, .monounsaturatedFat, .polyunsaturatedFat, .transFat, .cholesterol, .carbohydrate, .sugar, .dietaryFibre, .solubleFibre, .insolubleFibre, .protein, .sodium, .iron, .magnesium, .zinc]
@@ -272,7 +272,7 @@ let attributeExpectations: [String: [[Attribute]]?] = [
     ],
 
     "31D0CA8B-5069-4AB3-B865-47CD1D15D879": [
-        [.fat, .saturatedFat, .transFat, .cholesterol, .sodium, .salt, .carbohydrate, .dietaryFibre, .sugar, .addedSugar, .protein]
+        [.energy, .fat, .saturatedFat, .transFat, .cholesterol, .sodium, .salt, .carbohydrate, .dietaryFibre, .sugar, .addedSugar, .protein]
     ],
 
     "0B9B630F-C388-4DB6-BA7E-221D14F83B26": [

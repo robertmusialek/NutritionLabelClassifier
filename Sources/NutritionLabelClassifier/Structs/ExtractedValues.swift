@@ -166,12 +166,20 @@ extension Array where Element == [ValuesTextColumn] {
 
 extension ValuesTextColumn {
     
-    mutating func pickEnergyValueIfMultiplesWithinText(energyPairIndexToExtract index: inout Int) {
+    mutating func pickEnergyValueIfMultiplesWithinText(energyPairIndexToExtract index: inout Int, lastMultipleEnergyTextId: inout UUID?) {
         
         for i in valuesTexts.indices {
-            guard valuesTexts[i].containsMultipleEnergyValues else {
+            let valuesText = valuesTexts[i]
+            guard valuesText.containsMultipleEnergyValues else {
                 continue
             }
+            
+            /// If we've encountered a different text to the last one, reset the `energyPairIndexToExtract` variable
+            if let textId = lastMultipleEnergyTextId, textId != valuesText.text.id {
+                index = 0
+            }
+            lastMultipleEnergyTextId = valuesTexts[i].text.id
+            
             valuesTexts[i].pickEnergyValue(energyPairIndexToExtract: &index)
             break
         }
@@ -265,9 +273,10 @@ extension Array where Element == ValuesTextColumn {
         /// If we've got any two sets of energy values (ie. two kcal and/or two kJ values), pick those that that are closer to the energy attribute
         let energyAttribute = extractedAttributes.energyAttributeText
         var extractedEnergyPairs = 0
+        var lastMultipleEnergyTextId: UUID? = nil
         for i in indices {
             var column = self[i]
-            column.pickEnergyValueIfMultiplesWithinText(energyPairIndexToExtract: &extractedEnergyPairs)
+            column.pickEnergyValueIfMultiplesWithinText(energyPairIndexToExtract: &extractedEnergyPairs, lastMultipleEnergyTextId: &lastMultipleEnergyTextId)
             column.removeDuplicateEnergy(using: energyAttribute)
             column.pickEnergyIfMultiplePresent()
             self[i] = column
