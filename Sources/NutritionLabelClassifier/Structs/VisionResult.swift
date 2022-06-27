@@ -132,6 +132,11 @@ extension VisionResult {
                 continue
             }
             
+            /// Disqualify texts that are substantially long. This removes incorrectly read values (usually 0's) that span multiple lines and get read as a completely unrelated number.
+            guard !text.rect.isSubstantiallyLong else {
+                continue
+            }
+            
             /// Make sure we don't have a discarded text containing the same string that also overlaps it considerably
             guard !discarded.contains(where: {
                 $0.string == text.string
@@ -235,6 +240,10 @@ extension VisionResult {
 let SubstantialOverlapRatioThreshold = 0.9
 
 extension CGRect {
+    
+    var isSubstantiallyLong: Bool {
+        width/height < 0.5
+    }
     
     func overlapsSubstantially(with rect: CGRect) -> Bool {
         guard let ratio = ratioOfIntersection(with: rect) else {

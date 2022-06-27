@@ -50,7 +50,7 @@ class TableClassifier {
 //            let value1Texts: [ValueText]?
 //            if let valueTexts = valueRecognizedTexts.0 {
 //                value1Texts = valueTexts.compactMap {
-//                    guard let value = Value(fromString: $0.string) else { return nil }
+//                    guard let value = ]Value(fromString: $0.string) else { return nil }
 //                    return ValueText(value: value, text: $0)
 //                }
 //            } else {

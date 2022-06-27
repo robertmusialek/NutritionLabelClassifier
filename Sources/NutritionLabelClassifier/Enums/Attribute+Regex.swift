@@ -132,7 +132,7 @@ extension Attribute {
             ".*energy.*", ".*energi.*", ".*calories.*", ".*energie.*", ".*valoare energetica.*", "y kcal"
         ]
         static let energyOnly = #"^(\#(energyOptions.joined(separator: "|")))$"#
-        static let energyOutOfContext = #".*(calories a day|2000 calories).*"#
+        static let energyOutOfContext = #".*(calories a day|2000 calories|energy from fat).*"#
         static let energy = #"^(?=\#(energyOnly))(?!\#(energyOutOfContext)).*$"#
 //        static let energy = #"^(?=\#(energyOnly)).*$"#
 

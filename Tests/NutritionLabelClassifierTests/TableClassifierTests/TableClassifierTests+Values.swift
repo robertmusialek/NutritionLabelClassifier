@@ -190,22 +190,6 @@ let valueExpectations: [String: [[[Value?]]]?] = [
         ]
     ],
     
-    "31D0CA8B-5069-4AB3-B865-47CD1D15D879": [
-        [
-            [v(423.9, .kj), v(1413, .kj)], /// failed to read in 424 so it's calculated using the ratio
-            [v(0.03, .g), v(0.1, .g)],
-            [v(0.03, .g), v(0.1, .g)],
-            [v(0.0, .g), v(0.0, .g)],
-            [v(0.24, .mg), v(0.8, .mg)], /// failed to read 0.0 so 0.24 is calculated using the ratio
-            [v(6.0, .mg), v(20.0, .mg)],
-            [v(0.015, .g), v(0.05, .g)],
-            [v(23.4, .g), v(78.0, .g)],
-            [v(0.0, .g), v(0.0, .g)],
-            [v(15.63, .g), v(52.1, .g)],
-            [v(15.63, .g), v(52.1, .g)],
-            [v(2.04, .g), v(6.8, .g)],
-        ]
-    ],
     "2184C983-5761-4F8F-BE7A-E6771E963FFF": [
         [
             [v(423.9, .kj), v(1413, .kj)], /// failed to read in 424 so it's calculated using the ratio
@@ -255,8 +239,43 @@ let valueExpectations: [String: [[[Value?]]]?] = [
             [v(3.1, .mg), v(1.1, .mg)],
         ]
     ],
+    "364EDBD7-004B-4A97-83AA-F6404DE5EEB4": [
+        [
+            [v(379.0, .kj), v(133.0, .kj)],
+            [v(9.0, .g), v(3.2, .g)],
+            [v(1.7, .g), v(0.6, .g)],
+            [v(4.3, .g), v(1.5, .g)],
+            [v(3.0, .g), v(1.1, .g)],
+            [v(67.8, .g), v(23.7, .g)],
+            [v(0.0, .g), v(0.0, .g)],
+            [v(10.0, .g), v(3.5, .g)],
+            [v(4.4, .g), v(1.5, .g)],
+            [v(5.6, .g), v(2.0, .g)],
+            [v(11.6, .g), v(4.1, .g)],
+            [v(7.0, .mg), v(2.5, .mg)],
+            [v(2.4, .mg), v(0.8, .mg)],
+            [v(101.3, .mg), v(35.5, .mg)],
+            [v(2.2, .mg), v(0.8, .mg)],
+        ]
+    ],
     
     //MARK: - Failing
+    "31D0CA8B-5069-4AB3-B865-47CD1D15D879": [
+        [
+            [v(423.9, .kj), v(1413, .kj)], /// failed to read in 424 so it's calculated using the ratio
+            [v(0.03, .g), v(0.1, .g)],
+            [v(0.03, .g), v(0.1, .g)],
+            [v(0.0, .g), v(0.0, .g)],
+            [v(0.24, .mg), v(0.8, .mg)], /// failed to read 0.0 so 0.24 is calculated using the ratio
+            [v(6.0, .mg), v(20.0, .mg)],
+            [v(0.015, .g), v(0.05, .g)],
+            [v(23.4, .g), v(78.0, .g)],
+            [v(0.0, .g), v(0.0, .g)],
+            [v(15.63, .g), v(52.1, .g)],
+            [v(15.63, .g), v(52.1, .g)],
+            [v(2.04, .g), v(6.8, .g)],
+        ]
+    ],
 
     
 //    "99D1A080-19CF-4A08-B8B7-1BD5E4D9CB40": nil,
@@ -309,6 +328,6 @@ let valueExpectations: [String: [[[Value?]]]?] = [
 
 //let SingledOutTestCase: UUID? = nil
 
-let SingledOutTestCase: UUID? = UUID(uuidString: "15D5AD72-033E-4CA4-BA87-D6CB6193EC9B")!
+let SingledOutTestCase: UUID? = UUID(uuidString: "F0E29C26-F9F0-4853-AFAB-574D30221F2C")!
 
-let TestPassingTestCases = true
+let TestPassingTestCases = false

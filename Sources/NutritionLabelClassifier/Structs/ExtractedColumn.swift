@@ -90,7 +90,7 @@ extension ExtractedColumn {
             let distance = row.attributeText.yDistanceTo(valuesText: valuesText)
             
             /// If the distance to its previous `attributeText` is greater than to this one, set that `ExtractedRow` to nil
-            if distance < previousDistance {
+            if previousDistance > distance  {
                 rows[previousTuple.index].valuesTexts[column] = nil
                 dict[valuesText] = (row.attributeText, i)
             } else {
@@ -164,14 +164,58 @@ extension Array where Element == AttributeText {
     
     func extractedRowsWithMissingValues(using valueColumns: [ValuesTextColumn]) -> [ExtractedRow] {
         var rows: [ExtractedRow] = []
+        
         for i in indices {
             let attributeText = self[i]
             var valuesTexts: [ValuesText?] = []
             
+            //TODO: Check why some test cases fail when added again?
+            
             for column in valueColumns {
-                guard let closest = column.valuesTexts.closestValueText(to: attributeText) else {
+                guard let closest = column.valuesTexts.closestValueText(to: attributeText)
+                else {
                     valuesTexts.append(nil)
                     continue
+                }
+                
+                //TODO-NEXT: If this is column 0 and the closest value is at the row
+                if let columnIndex = valueColumns.firstIndex(of: column), columnIndex == 0,
+                   let closestValueIndex = column.valuesTexts.firstIndex(of: closest),
+                   column.valuesTexts.count - closestValueIndex == self.count - rows.count,
+                   valueColumns.count > 1,
+                   let closestValue2 = valueColumns[1].valuesTexts.closestValueText(to: attributeText),
+                   let closestValue2Index = valueColumns[1].valuesTexts.firstIndex(of: closestValue2),
+                   valueColumns[1].valuesTexts.count - closestValue2Index == self.count - rows.count
+                {
+                    let remainingValues = column.valuesTexts.suffix(self.count - rows.count)
+                    var valuesArray: [ValuesText] = []
+                    valuesArray.append(contentsOf: remainingValues)
+
+                    let remainingValues2: [ValuesText]?
+                    var values2Array: [ValuesText]? = []
+
+                    if valueColumns.count > 1 {
+                        remainingValues2 = valueColumns[1].valuesTexts.suffix(self.count - rows.count)
+                        values2Array?.append(contentsOf: remainingValues2!)
+                    } else {
+                        remainingValues2 = nil
+                        values2Array = nil
+                    }
+
+                    let remainingAttributes = self.suffix(self.count - rows.count)
+                    var attributesArray: [AttributeText] = []
+                    attributesArray.append(contentsOf: remainingAttributes)
+
+                    for i in attributesArray.indices {
+                        let attributeText = attributesArray[i]
+                        let value1 = valuesArray[i]
+                        let value2 = values2Array?[i]
+                        let row = ExtractedRow(attributeText: attributeText, valuesTexts: [value1, value2])
+                        rows.append(row)
+                    }
+                    return rows
+                    
+                    print("Gotcha")
                 }
                 valuesTexts.append(closest)
             }
