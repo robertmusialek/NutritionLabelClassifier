@@ -222,7 +222,18 @@ let valueExpectations: [String: [[[Value?]]]?] = [
             [v(2.04, .g), v(6.8, .g)],
         ]
     ],
-    
+    "E84F7C80-50C4-4237-BAAD-BD5C1B958B84": [
+        [
+            [v(264.0, .kj), v(1265.0, .kj)],
+            [v(3.4, .g), v(16.3, .g)],
+            [v(5.3, .g), v(25.4, .g)],
+            [v(3.5, .g), v(17.0, .g)],
+            [v(0.6, .g), v(2.8, .g)],
+            [v(0.6, .g), v(2.8, .g)],
+            [v(275.0, .mg), v(1320.0, .mg)],
+            [v(104.0, .mg), v(500.0, .mg)],
+        ]
+    ]
     
     //MARK: - Failing
 
@@ -277,6 +288,6 @@ let valueExpectations: [String: [[[Value?]]]?] = [
 
 //let SingledOutTestCase: UUID? = nil
 
-let SingledOutTestCase: UUID? = UUID(uuidString: "E84F7C80-50C4-4237-BAAD-BD5C1B958B84")!
+let SingledOutTestCase: UUID? = UUID(uuidString: "15D5AD72-033E-4CA4-BA87-D6CB6193EC9B")!
 
-let TestPassingTestCases = true
+let TestPassingTestCases = false

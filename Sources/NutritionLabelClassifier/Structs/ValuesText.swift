@@ -112,12 +112,21 @@ extension Array where Element == ValuesText {
         filter({ $0.containsValueWithKcalUnit })
     }
     
-    func closestValueText(to attributeText: AttributeText) -> ValuesText? {
+    func closestValueText(to attributeText: AttributeText, requiringOverlap: Bool = false) -> ValuesText? {
         let sorted = self.sorted(by: {
             attributeText.yDistanceTo(valuesText: $0) < attributeText.yDistanceTo(valuesText: $1)
 //            $0.text.rect.yDistanceToTopOf(text.rect) < $1.text.rect.yDistanceToTopOf(text.rect)
         })
-        return sorted.first
+        
+        guard requiringOverlap else {
+            return sorted.first
+        }
+        
+        if let _ = sorted.first?.text.rect.rectWithXValues(of: attributeText.text.rect).ratioOfIntersection(with: attributeText.text.rect) {
+            return sorted.first
+        } else {
+            return nil
+        }
     }
     
     var rect: CGRect {

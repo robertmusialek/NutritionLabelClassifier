@@ -265,17 +265,23 @@ public enum Attribute: String, CaseIterable {
     
     var supportedUnits: [NutritionUnit] {
         switch self {
+            
         case .energy:
             return [ .kj, .kcal]
+            
         case .protein, .carbohydrate, .fat, .salt:
             return [.g]
-        case .dietaryFibre, .saturatedFat, .polyunsaturatedFat, .monounsaturatedFat, .transFat, .cholesterol, .sugar, .addedSugar, .gluten, .starch:
+            
+        case .dietaryFibre, .solubleFibre, .insolubleFibre, .saturatedFat, .polyunsaturatedFat, .monounsaturatedFat, .transFat, .cholesterol, .sugar, .addedSugar, .gluten, .starch, .polyols:
             return [.g, .mg, .mcg]
-        case .sodium, .calcium, .iron, .potassium, .magnesium, .cobalamin, .vitaminA, .vitaminC, .vitaminD, .vitaminB6:
+            
+        case .sodium, .calcium, .iron, .potassium, .cobalamin, .vitaminA, .vitaminC, .vitaminD, .vitaminB6, .zinc, .iodine, .selenium, .magnesium, .manganese, .chromium, .thiamin, .folate, .folicAcid, .biotin, .pantothenicAcid, .riboflavin, .niacin, .vitaminB1, .vitaminB3, .vitaminB12, .vitaminE, .vitaminK, .vitaminK2:
             return [.mg, .mcg, .p, .g]
+            
         case .servingAmount:
             return [.cup, .g, .mcg, .mg]
-        default:
+            
+        case .tableElementNutritionFacts, .tableElementSkippable, .nutrientLabelTotal, .servingUnit, .servingUnitSize, .servingEquivalentAmount, .servingEquivalentUnit, .servingEquivalentUnitSize, .servingsPerContainerAmount, .servingsPerContainerName, .headerType1, .headerType2, .headerServingAmount, .headerServingUnit, .headerServingUnitSize, .headerServingEquivalentAmount, .headerServingEquivalentUnit, .headerServingEquivalentUnitSize:
             return []
         }
     }
