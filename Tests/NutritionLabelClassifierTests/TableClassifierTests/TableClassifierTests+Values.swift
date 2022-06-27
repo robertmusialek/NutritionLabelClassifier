@@ -233,7 +233,28 @@ let valueExpectations: [String: [[[Value?]]]?] = [
             [v(275.0, .mg), v(1320.0, .mg)],
             [v(104.0, .mg), v(500.0, .mg)],
         ]
-    ]
+    ],
+    "15D5AD72-033E-4CA4-BA87-D6CB6193EC9B": [
+        [
+            [v(1520.0, .kj), v(532.0, .kj)],
+            [v(12.0, .g), v(4.2, .g)],
+            [v(57.0, .g), v(20.0, .g)],
+            [v(0.7, .g), v(0.25, .g)],
+            [v(9.0, .g), v(3.2, .g)],
+            [v(1.7, .g), v(0.6, .g)],
+            [v(3.4, .g), v(1.2, .g)],
+            [v(3.9, .g), v(1.4, .g)],
+            [v(0.0, .g), v(0.0, .g)],
+            [v(0.0, .mg), v(0.0, .mg)],
+            [v(10.0, .g), v(3.5, .g)],
+            [v(3.0, .g), v(1.1, .g)],
+            [v(7.0, .g), v(2.5, .g)],
+            [v(4.0, .mg), v(1.4, .mg)],
+            [v(148.0, .mg), v(51.8, .mg)],
+            [v(4.2, .mg), v(1.5, .mg)],
+            [v(3.1, .mg), v(1.1, .mg)],
+        ]
+    ],
     
     //MARK: - Failing
 
@@ -288,6 +309,6 @@ let valueExpectations: [String: [[[Value?]]]?] = [
 
 //let SingledOutTestCase: UUID? = nil
 
-let SingledOutTestCase: UUID? = UUID(uuidString: "15D5AD72-033E-4CA4-BA87-D6CB6193EC9B")!
+let SingledOutTestCase: UUID? = UUID(uuidString: "2184C983-5761-4F8F-BE7A-E6771E963FFF")!
 
 let TestPassingTestCases = false

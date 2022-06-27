@@ -204,10 +204,21 @@ extension Array where Element == AttributeText {
 
 extension Array where Element == ValuesTextColumn {
     func missingOnlyOneValue(forAttributeCount count: Int) -> Bool {
-        allSatisfy({ column in
-            column.valuesTexts.count == count
-            || column.valuesTexts.count == count - 1
-        })
+        guard count == 2 else {
+            return first?.valuesTexts.count == count - 1
+        }
+        
+        return (
+            (self[0].valuesTexts.count == count
+            &&
+             self[1].valuesTexts.count == count - 1
+            )
+            ||
+            (self[1].valuesTexts.count == count
+            &&
+             self[0].valuesTexts.count == count - 1
+            )
+        )
     }
     
     var commonCount: Int? {

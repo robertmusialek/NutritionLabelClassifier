@@ -272,10 +272,10 @@ public enum Attribute: String, CaseIterable {
         case .protein, .carbohydrate, .fat, .salt:
             return [.g]
             
-        case .dietaryFibre, .solubleFibre, .insolubleFibre, .saturatedFat, .polyunsaturatedFat, .monounsaturatedFat, .transFat, .cholesterol, .sugar, .addedSugar, .gluten, .starch, .polyols:
+        case .dietaryFibre, .solubleFibre, .insolubleFibre, .saturatedFat, .polyunsaturatedFat, .monounsaturatedFat, .transFat, .sugar, .addedSugar, .gluten, .starch, .polyols:
             return [.g, .mg, .mcg]
             
-        case .sodium, .calcium, .iron, .potassium, .cobalamin, .vitaminA, .vitaminC, .vitaminD, .vitaminB6, .zinc, .iodine, .selenium, .magnesium, .manganese, .chromium, .thiamin, .folate, .folicAcid, .biotin, .pantothenicAcid, .riboflavin, .niacin, .vitaminB1, .vitaminB3, .vitaminB12, .vitaminE, .vitaminK, .vitaminK2:
+        case .cholesterol, .sodium, .calcium, .iron, .potassium, .cobalamin, .vitaminA, .vitaminC, .vitaminD, .vitaminB6, .zinc, .iodine, .selenium, .magnesium, .manganese, .chromium, .thiamin, .folate, .folicAcid, .biotin, .pantothenicAcid, .riboflavin, .niacin, .vitaminB1, .vitaminB3, .vitaminB12, .vitaminE, .vitaminK, .vitaminK2:
             return [.mg, .mcg, .p, .g]
             
         case .servingAmount:
