@@ -56,10 +56,16 @@ struct ValuesText {
     }
     
     var isSingularNutritionUnitValue: Bool {
-        if values.count == 1, let first = values.first, let unit = first.unit, unit.isNutrientUnit {
-            return true
-        }
-        return false
+        
+        values.filter {
+            $0.unit?.isNutrientUnit == true
+        }.count == 1
+        
+//        if values.count == 1, let first = values.first, let unit = first.unit, unit.isNutrientUnit {
+//            return true
+//        }
+//
+//        return false
     }
     
     var alternateValues: [Value] {

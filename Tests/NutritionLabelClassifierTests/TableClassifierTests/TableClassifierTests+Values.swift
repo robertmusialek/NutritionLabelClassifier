@@ -190,39 +190,42 @@ let valueExpectations: [String: [[[Value?]]]?] = [
         ]
     ],
     
+    "31D0CA8B-5069-4AB3-B865-47CD1D15D879": [
+        [
+            [v(423.9, .kj), v(1413, .kj)], /// failed to read in 424 so it's calculated using the ratio
+            [v(0.03, .g), v(0.1, .g)],
+            [v(0.03, .g), v(0.1, .g)],
+            [v(0.0, .g), v(0.0, .g)],
+            [v(0.24, .mg), v(0.8, .mg)], /// failed to read 0.0 so 0.24 is calculated using the ratio
+            [v(6.0, .mg), v(20.0, .mg)],
+            [v(0.015, .g), v(0.05, .g)],
+            [v(23.4, .g), v(78.0, .g)],
+            [v(0.0, .g), v(0.0, .g)],
+            [v(15.63, .g), v(52.1, .g)],
+            [v(15.63, .g), v(52.1, .g)],
+            [v(2.04, .g), v(6.8, .g)],
+        ]
+    ],
+    "2184C983-5761-4F8F-BE7A-E6771E963FFF": [
+        [
+            [v(423.9, .kj), v(1413, .kj)], /// failed to read in 424 so it's calculated using the ratio
+            [v(0.03, .g), v(0.1, .g)],
+            [v(0.03, .g), v(0.1, .g)],
+            [v(0.0, .g), v(0.0, .g)],
+            [v(0.0, .mg), v(0.8, .mg)],
+            [v(6.0, .mg), v(20.0, .mg)],
+            [v(0.015, .g), v(0.05, .g)],
+            [v(23.4, .g), v(78.0, .g)],
+            [v(0.0, .g), v(0.0, .g)],
+            [v(15.63, .g), v(52.1, .g)],
+            [v(15.63, .g), v(52.1, .g)],
+            [v(2.04, .g), v(6.8, .g)],
+        ]
+    ],
+    
+    
     //MARK: - Failing
-//    "31D0CA8B-5069-4AB3-B865-47CD1D15D879": [
-//        [
-//            [v(424, .kj), v(1413, .kj)],
-//            [v(0.03, .g), v(0.1, .g)],
-//            [v(0.03, .g), v(0.1, .g)],
-//            [v(0.0, .g), v(0.0, .g)],
-//            [v(0.24, .mg), v(0.8, .mg)],
-//            [v(6.0, .mg), v(20.0, .mg)],
-//            [v(0.015, .g), v(0.05, .g)],
-//            [v(23.4, .g), v(78.0, .g)],
-//            [v(0.0, .g), v(0.0, .g)],
-//            [v(15.63, .g), v(52.1, .g)],
-//            [v(15.63, .g), v(52.1, .g)],
-//            [v(2.04, .g), v(6.8, .g)],
-//        ]
-//    ],
-//    "2184C983-5761-4F8F-BE7A-E6771E963FFF": [
-//        [
-//            [v(424, .kj), v(1413, .kj)],
-//            [v(0.03, .g), v(0.1, .g)],
-//            [v(0.03, .g), v(0.1, .g)],
-//            [v(0.0, .g), v(0.0, .g)],
-//            [v(0.24, .mg), v(0.8, .mg)],
-//            [v(6.0, .mg), v(20.0, .mg)],
-//            [v(0.015, .g), v(0.05, .g)],
-//            [v(23.4, .g), v(78.0, .g)],
-//            [v(0.0, .g), v(0.0, .g)],
-//            [v(15.63, .g), v(52.1, .g)],
-//            [v(15.63, .g), v(52.1, .g)],
-//            [v(2.04, .g), v(6.8, .g)],
-//        ]
-//    ],
+
     
 //    "99D1A080-19CF-4A08-B8B7-1BD5E4D9CB40": nil,
 //    "3C53CC91-34D1-46EE-92BE-328ABDC20342": nil,
@@ -272,10 +275,8 @@ let valueExpectations: [String: [[[Value?]]]?] = [
 //    "D8809685-A90E-4756-BCA1-79B2D8C0D090": nil,
 ]
 
-//let SingledOutTestCase: UUID? = nil
+let SingledOutTestCase: UUID? = nil
 
-//let SingledOutTestCase: UUID? = UUID(uuidString: "2184C983-5761-4F8F-BE7A-E6771E963FFF")!
-//let SingledOutTestCase: UUID? = UUID(uuidString: "31D0CA8B-5069-4AB3-B865-47CD1D15D879")!
-let SingledOutTestCase: UUID? = UUID(uuidString: "E84F7C80-50C4-4237-BAAD-BD5C1B958B84")!
+//let SingledOutTestCase: UUID? = UUID(uuidString: "E84F7C80-50C4-4237-BAAD-BD5C1B958B84")!
 
 let TestPassingTestCases = false

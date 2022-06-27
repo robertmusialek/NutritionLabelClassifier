@@ -117,8 +117,43 @@ struct ExtractedAttributes {
 //        if columnsOfAttributes.count > 1 {
 //            return columnsOfAttributes.filter { $0.count >= 3 }
 //        } else {
+        if !unfiltered.contains(.energy),
+           let firstEnergyText = visionResult.texts(for: .energy).first
+        {
+            let attributeText = AttributeText(attribute: .energy, text: firstEnergyText)
+            unfiltered[0].insert(attributeText, at: 0)
+        }
+        
         self.attributeTextColumns = unfiltered
 //        }
+    }
+}
+
+extension VisionResult {
+    func texts(for attribute: Attribute) -> [RecognizedText] {
+        var texts: [RecognizedText] = []
+        for array in arrayOfTexts {
+            for text in array {
+                let attributes = Attribute.detect(in: text.string)
+                guard attributes.contains(.energy),
+                      !texts.contains(where: { $0.string == text.string } )
+                else {
+                    continue
+                }
+                texts.append(text)
+            }
+        }
+        return texts
+    }
+}
+
+extension Array where Element == [AttributeText] {
+    func contains(_ attribute: Attribute) -> Bool {
+        contains { array in
+            array.contains {
+                $0.attribute == attribute
+            }
+        }
     }
 }
 

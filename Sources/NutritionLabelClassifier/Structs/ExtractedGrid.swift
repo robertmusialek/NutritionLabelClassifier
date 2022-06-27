@@ -47,7 +47,8 @@ struct ExtractedGrid {
         removeRowsWithMultipleValues()
 
         fillInMissingUnits()
-        
+
+        addMissingEnergyValuesIfNeededAndAvailable()
 
     }
     
@@ -113,6 +114,7 @@ extension Array where Element == ExtractedColumn {
             }
         }
     }
+    
     mutating func fillInMissingUnits() {
         for columnIndex in indices {
             var column = self[columnIndex]
@@ -233,8 +235,8 @@ extension ExtractedColumn {
             newValuesTextForNextRow.values = [values[1]]
             rows[index+1].valuesTexts[0] = newValuesTextForNextRow
         }
-        /// If it's in the second column
-        else if let valuesText = row.valuesTexts[1] {
+        /// If it's also in the second column
+        if let valuesText = row.valuesTexts[1] {
             let values = valuesText.values
             guard values.count > 1 else {
                 return false
@@ -507,6 +509,13 @@ extension ExtractedGrid {
         columns.modify(row, with: newRow)
     }
 
+    mutating func addMissingEnergyValuesIfNeededAndAvailable() {
+        guard row(for: .energy) == nil else {
+            return
+        }
+        //TODO: Do this when a test case requires us to
+    }
+    
     mutating func fillInMissingUnits() {
         columns.fillInMissingUnits()
     }
