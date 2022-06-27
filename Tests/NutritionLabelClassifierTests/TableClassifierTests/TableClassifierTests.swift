@@ -59,7 +59,7 @@ final class TableClassifierTests: XCTestCase {
         }
         
         currentTestCaseId = id
-        print("🔥 Testing: \(id)")
+        print("🔥4️⃣ Testing: \(id)")
         
         let classifier = NutritionLabelClassifier(image: image, contentSize: image.size)
         classifier.onCompletion = {

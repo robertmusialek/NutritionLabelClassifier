@@ -160,7 +160,17 @@ let valueExpectations: [String: [[[Value?]]]?] = [
             [v(0.75, .mg), v(5.0, .mg)],
         ]
     ],
-
+    "8CE7C875-BF15-42A1-A49D-A216D3329C9A": [
+        [
+            [v(1725.0, .kj)],
+            [v(35.0, .g)],
+            [v(22.0, .g)],
+            [v(0.5, .g)],
+            [v(0.5, .g)],
+            [v(25.0, .g)],
+            [v(1.8, .g)],
+        ]
+    ],
 //    "99D1A080-19CF-4A08-B8B7-1BD5E4D9CB40": nil,
 //    "3C53CC91-34D1-46EE-92BE-328ABDC20342": nil,
 //    "15C9C2C9-5012-43A3-835A-3FB0A2DD1E2D": nil,
@@ -209,8 +219,9 @@ let valueExpectations: [String: [[[Value?]]]?] = [
 //    "D8809685-A90E-4756-BCA1-79B2D8C0D090": nil,
 ]
 
-let SingledOutTestCase: UUID? = nil
+//let SingledOutTestCase: UUID? = nil
 
-//let SingledOutTestCase: UUID? = UUID(uuidString: "81942184-145C-4858-884A-8A76B9BD6498")!
+//let SingledOutTestCase: UUID? = UUID(uuidString: "8CE7C875-BF15-42A1-A49D-A216D3329C9A")!
+let SingledOutTestCase: UUID? = UUID(uuidString: "DE476A74-8174-4E9C-81DA-450F578F039D")!
 
-let TestPassingTestCases = false
+let TestPassingTestCases = true

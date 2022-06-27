@@ -84,6 +84,16 @@ extension Array where Element == ExtractedColumn {
         }
     }
 
+    mutating func modify(_ row: ExtractedRow, with newValue: Value) {
+        for columnIndex in indices {
+            var column = self[columnIndex]
+            if column.contains(row) {
+                column.modify(row, with: newValue)
+                self[columnIndex] = column
+            }
+        }
+    }
+
     mutating func modify(_ row: ExtractedRow, with newRow: ExtractedRow) {
         for columnIndex in indices {
             var column = self[columnIndex]
@@ -139,6 +149,11 @@ extension ExtractedColumn {
     mutating func modify(_ row: ExtractedRow, with newValues: (Value, Value)) {
         rows.modify(row, with: newValues)
     }
+
+    mutating func modify(_ row: ExtractedRow, with newValue: Value) {
+        rows.modify(row, with: newValue)
+    }
+
     mutating func modify(_ row: ExtractedRow, with newRow: ExtractedRow) {
         rows.modify(row, with: newRow)
     }
@@ -260,6 +275,16 @@ extension Array where Element == ExtractedRow {
         }
     }
 
+    mutating func modify(_ rowToModify: ExtractedRow, with newValue: Value) {
+        for i in indices {
+            var row = self[i]
+            if row.attributeText.attribute == rowToModify.attributeText.attribute {
+                row.modify(with: newValue)
+                self[i] = row
+            }
+        }
+    }
+
     mutating func modify(_ rowToModify: ExtractedRow, with newRow: ExtractedRow) {
         for i in indices {
             let row = self[i]
@@ -355,7 +380,17 @@ extension ExtractedRow {
             valuesTexts[1] = ValuesText(values: [newValues.1])
         }
     }
-    
+
+    mutating func modify(with newValue: Value) {
+        if let existing = valuesTexts[0] {
+            var new = existing
+            new.values = [newValue]
+            valuesTexts[0] = new
+        } else {
+            valuesTexts[0] = ValuesText(values: [newValue])
+        }        
+    }
+
     var containsExtraneousValues: Bool {
         valuesTexts.contains { $0?.containsExtraneousValues == true }
     }
@@ -463,7 +498,11 @@ extension ExtractedGrid {
         columns.modify(row, with: newValues)
         print("2️⃣ done.")
     }
-    
+
+    mutating func modify(_ row: ExtractedRow, withNewValue newValue: Value) {
+        columns.modify(row, with: newValue)
+    }
+
     mutating func modify(_ row: ExtractedRow, with newRow: ExtractedRow) {
         columns.modify(row, with: newRow)
     }
@@ -589,8 +628,71 @@ extension ExtractedGrid {
             return nil
         }
     }
-    
+
     mutating func fixSingleInvalidMacroOrEnergyRow() {
+        if macrosValidities.count == 1 {
+            fixSingleInvalidMacroOrEnergyRowForOneValue()
+        } else {
+            fixSingleInvalidMacroOrEnergyRowForTwoValues()
+        }
+    }
+
+    mutating func fixSingleInvalidMacroOrEnergyRowForOneValue() {
+        guard macrosValidities.first == false,
+              allRows.containsAllMacrosAndEnergy,
+              let macroAndEnergyRows = allMacroAndEnergyRows,
+              let energyValue = row(for: .energy)?.firstValue,
+              let carb = row(for: .carbohydrate)?.firstValue?.amount,
+              let fat = row(for: .fat)?.firstValue?.amount,
+              let protein = row(for: .protein)?.firstValue?.amount
+        else {
+            return
+        }
+        
+        var energy = energyValue.amount
+        if energyValue.unit == .kj {
+            energy = energy / KcalsPerKilojule
+        }
+
+        //TODO: We might be able to improve this (albeit expensively) by going through all combinations of alternate values for each of the macro and energy rows to find one that works—in which case we would need to modify all the rows that require picking an alternate
+        /// For each macro and energy row
+        for row in macroAndEnergyRows {
+            guard let valuesText = row.valuesTexts.first, let valuesText = valuesText else {
+                continue
+            }
+            
+            let attribute = row.attributeText.attribute
+            
+            for value in valuesText.alternateValues {
+                
+                var amount = value.amount
+                if attribute == .energy, value.unit == .kj {
+                    amount = amount / KcalsPerKilojule
+                }
+                
+                let isValid: Bool
+                switch attribute {
+                case .energy:
+                    isValid = macroAndEnergyValuesAreValid(energyInKcal: amount, carb: carb, fat: fat, protein: protein)
+                case .carbohydrate:
+                    isValid = macroAndEnergyValuesAreValid(energyInKcal: energy, carb: amount, fat: fat, protein: protein)
+                case .fat:
+                    isValid = macroAndEnergyValuesAreValid(energyInKcal: energy, carb: carb, fat: amount, protein: protein)
+                case .protein:
+                    isValid = macroAndEnergyValuesAreValid(energyInKcal: energy, carb: carb, fat: fat, protein: amount)
+                default:
+                    isValid = false
+                }
+                if isValid {
+                    modify(row, withNewValue: value)
+                    return
+                }
+            }
+        }
+        
+   }
+
+    mutating func fixSingleInvalidMacroOrEnergyRowForTwoValues() {
         let start = CFAbsoluteTimeGetCurrent()
         /// Check `macrosValidities` to see if we have two values where one is true
         /// Then check the validity of rows to determine if we have only one of the 3 variables that's invalid
@@ -854,14 +956,16 @@ extension ExtractedGrid {
                 validities.append(nil)
                 continue
             }
-            
+
+            //TODO: Use macroAndEnergyValuesAreValid(energyInKcal: Double, carb: Double, fat: Double, protein: Double) instead, after running tests
+            //TODO: Replace coefficients with precise values from constants such as KcalsPerGramOfFat
+            //TODO: Use the constant we have for 4.184 (KcalsPerKilojule) making sure we've named in correctly while we're at it—should'nt it be KjPerKcal
             var calculatedEnergy = (carb.amount * 4) + (protein.amount * 4) + (fat.amount * 9)
             if energy.unit == .kj || energy.unit == nil {
                 calculatedEnergy = calculatedEnergy * 4.184
             }
             let errorPercentage = (abs(energy.amount - calculatedEnergy) / calculatedEnergy) * 100.0
-            let errorThreshold = 5.0
-            if errorPercentage <= errorThreshold {
+            if errorPercentage <= ErrorPercentageThresholdEnergyCalculation {
                 validities.append(true)
             } else {
                 validities.append(false)
@@ -870,8 +974,15 @@ extension ExtractedGrid {
         
         return validities
     }
-    
+
+    func macroAndEnergyValuesAreValid(energyInKcal: Double, carb: Double, fat: Double, protein: Double) -> Bool {
+        let calculatedEnergy = (carb * KcalsPerGramOfCarb) + (protein * KcalsPerGramOfProtein) + (fat * KcalsPerGramOfFat)
+        let errorPercentage = (abs(energyInKcal - calculatedEnergy) / calculatedEnergy) * 100.0
+        return errorPercentage <= ErrorPercentageThresholdEnergyCalculation
+    }
 }
+
+let ErrorPercentageThresholdEnergyCalculation = 5.0
 
 extension Array where Element == ExtractedRow {
     

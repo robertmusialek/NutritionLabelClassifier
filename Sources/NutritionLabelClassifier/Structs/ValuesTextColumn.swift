@@ -242,3 +242,62 @@ extension Array where Element == ValuesTextColumn {
         return map { $0.desc }
     }
 }
+
+//MARK: - Experimental
+
+extension ValuesTextColumn {
+    func numberOfValuesInlineWith(attributes: ExtractedAttributes) -> Int {
+        valuesTexts.filter {
+            $0.isInlineWithAnyAttribute(in: attributes)
+        }.count
+    }
+    
+    var numberOfSingleValuesThatAreInColumnWithOtherSingleValues: Int {
+        singleValuesTexts.filter {
+            $0.isInColumnWithAllValuesTexts(in: singleValuesTexts, except: $0)
+        }.count
+    }
+    
+    var singleValuesTexts: [ValuesText] {
+        valuesTexts.filter { $0.values.count == 1 }
+    }
+    
+    func portionOfValuesInlineWith(attributes: ExtractedAttributes) -> Double {
+        Double(numberOfValuesInlineWith(attributes: attributes)) / Double(valuesTexts.count)
+    }
+    
+    var portionOfSingleValuesThatAreInColumnWithOtherSingleValues: Double {
+        Double(numberOfSingleValuesThatAreInColumnWithOtherSingleValues) / Double(singleValuesTexts.count)
+    }
+}
+
+extension ValuesText {
+
+    func isInColumnWithAllValuesTexts(in valuesTexts: [ValuesText], except: ValuesText) -> Bool {
+        for valuesText in valuesTexts {
+            guard valuesText != except else { continue }
+            if self.text.isInColumn(with: valuesText.text) {
+                return true
+            }
+        }
+        return false
+    }
+
+    func isInlineWithAnyAttribute(in attributes: ExtractedAttributes) -> Bool {
+        for attributeText in attributes.attributeTextColumns.reduce([], +) {
+            if self.text.isInline(with: attributeText.text) {
+                return true
+            }
+        }
+        return false
+    }
+}
+
+extension RecognizedText {
+    func isInColumn(with text: RecognizedText) -> Bool {
+        rect.rectWithYValues(of: text.rect).intersects(text.rect)
+    }
+    func isInline(with text: RecognizedText) -> Bool {
+        rect.rectWithXValues(of: text.rect).intersects(text.rect)
+    }
+}

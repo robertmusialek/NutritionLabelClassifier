@@ -115,7 +115,7 @@ extension Value {
         print("🔢      👁 detecting values in: \(string)")
 
         let specialValues = #"((?<!not detected )(?:not detected)|(?:not detected)(?! not detected ))"#
-        let regex = #"(?:([0-9.,]+[ ]*(?:\#(Value.Regex.units)|)(?:[^A-z0-9]|$))|\#(specialValues))"#
+        let regex = #"(?:([0-9]+[0-9.,]*[ ]*(?:\#(Value.Regex.units)|)(?:[^A-z0-9]|$))|\#(specialValues))"#
 //        let regex = #"([0-9.,]+[ ]*(?:\#(Value.Regex.units)|))"#
         if let matches = matches(for: regex, in: string), !matches.isEmpty {
             

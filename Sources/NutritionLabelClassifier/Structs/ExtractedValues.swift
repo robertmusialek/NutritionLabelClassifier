@@ -44,12 +44,16 @@ struct ExtractedValues {
 
         var columns = valuesTextColumns
 
+
         columns.removeTextsAboveEnergy(for: extractedAttributes)
         columns.removeTextsBelowLastAttribute(of: extractedAttributes)
+
         columns.removeDuplicateColumns()
         columns.pickTopColumns()
         columns.removeEmptyColumns()
         columns.removeColumnsWithServingAttributes()
+
+        columns.removeColumnsWithSingleValuesNotInColumnWithAllOtherSingleValues()
         columns.cleanupEnergyValues(using: extractedAttributes)
         columns.removeInvalidColumns()
         columns.sort()
@@ -58,7 +62,7 @@ struct ExtractedValues {
         groupedColumns.removeColumnsInSameColumnAsAttributes(in: extractedAttributes)
         groupedColumns.removeExtraneousColumns()
 //        groupedColumns.removeInvalidValueTexts()
-        print("⏱ processing columns took: \(CFAbsoluteTimeGetCurrent()-start)s")
+         print("⏱ processing columns took: \(CFAbsoluteTimeGetCurrent()-start)s")
         return groupedColumns
     }
 
@@ -154,12 +158,13 @@ extension Array where Element == [ValuesTextColumn] {
 
 extension ValuesTextColumn {
     
-    mutating func pickEnergyValueIfMultiplesWithinText(forColumn index: Int) {
+    mutating func pickEnergyValueIfMultiplesWithinText(energyPairIndexToExtract index: inout Int) {
+        
         for i in valuesTexts.indices {
             guard valuesTexts[i].containsMultipleEnergyValues else {
                 continue
             }
-            valuesTexts[i].pickEnergyValue(forColumn: index)
+            valuesTexts[i].pickEnergyValue(energyPairIndexToExtract: &index)
             break
         }
     }
@@ -197,12 +202,14 @@ extension Array where Element == Value {
 
 extension ValuesText {
     
-    mutating func pickEnergyValue(forColumn index: Int) {
+    mutating func pickEnergyValue(energyPairIndexToExtract: inout Int) {
         let energyPairs = values.energyPairs
-        guard index < energyPairs.count else {
+
+        guard energyPairIndexToExtract < energyPairs.count else {
             return
         }
-        let energyPair = energyPairs[index]
+        let energyPair = energyPairs[energyPairIndexToExtract]
+        energyPairIndexToExtract += 1
         
         //TODO: Make this configurable
         /// We're selecting kj here preferentially
@@ -249,9 +256,10 @@ extension Array where Element == ValuesTextColumn {
     mutating func cleanupEnergyValues(using extractedAttributes: ExtractedAttributes) {
         /// If we've got any two sets of energy values (ie. two kcal and/or two kJ values), pick those that that are closer to the energy attribute
         let energyAttribute = extractedAttributes.energyAttributeText
+        var extractedEnergyPairs = 0
         for i in indices {
             var column = self[i]
-            column.pickEnergyValueIfMultiplesWithinText(forColumn: i)
+            column.pickEnergyValueIfMultiplesWithinText(energyPairIndexToExtract: &extractedEnergyPairs)
             column.removeDuplicateEnergy(using: energyAttribute)
             column.pickEnergyIfMultiplePresent()
             self[i] = column
@@ -260,6 +268,20 @@ extension Array where Element == ValuesTextColumn {
 
     mutating func removeColumnsWithServingAttributes() {
         removeAll { $0.containsServingAttribute }
+    }
+    
+    mutating func removeColumnsWithSingleValuesNotInColumnWithAllOtherSingleValues() {
+        for i in indices {
+            var column = self[i]
+            let number = column.numberOfSingleValuesThatAreInColumnWithOtherSingleValues
+            let portion = column.portionOfSingleValuesThatAreInColumnWithOtherSingleValues
+            print("4️⃣ \(portion) (\(number)/\(column.singleValuesTexts.count)): \(column.desc)")
+        }
+
+        removeAll {
+            $0.portionOfSingleValuesThatAreInColumnWithOtherSingleValues != 1.0
+        }
+        
     }
     
     var topMostEnergyValueTextUsingValueUnits: ValuesText? {

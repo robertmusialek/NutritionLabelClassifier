@@ -61,6 +61,14 @@ struct ValuesText {
         }
         return false
     }
+    
+    var alternateValues: [Value] {
+        var values: [Value] = []
+        for string in text.candidates {
+            values.append(contentsOf: Value.detect(in: string))
+        }
+        return values
+    }
 }
 
 extension NutritionUnit {

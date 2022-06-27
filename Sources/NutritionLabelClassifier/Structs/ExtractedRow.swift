@@ -10,6 +10,10 @@ struct ExtractedRow {
     let attributeText: AttributeText
     var valuesTexts: [ValuesText?]
     
+    var firstValue: Value? {
+        valuesTexts.first??.values.first
+    }
+    
     var ratioColumn1To2: Double? {
         guard valuesTexts.count == 2,
               let valuesText1 = valuesTexts[0],
