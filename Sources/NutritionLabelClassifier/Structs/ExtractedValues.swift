@@ -53,11 +53,16 @@ struct ExtractedValues {
         columns.removeEmptyColumns()
         columns.removeColumnsWithServingAttributes()
 
+//        columns.removeColumnsWithSingleValuesNotInColumnWithAllOtherSingleValues()
+//        columns.cleanupEnergyValues(using: extractedAttributes)
+//        columns.removeInvalidColumns()
+//        columns.sort()
+
         columns.removeColumnsWithSingleValuesNotInColumnWithAllOtherSingleValues()
+        columns.sort()
         columns.cleanupEnergyValues(using: extractedAttributes)
         columns.removeInvalidColumns()
-        columns.sort()
-        
+
         var groupedColumns = groupByAttributes(columns)
         groupedColumns.removeColumnsInSameColumnAsAttributes(in: extractedAttributes)
         groupedColumns.removeExtraneousColumns()

@@ -131,6 +131,15 @@ extension VisionResult {
             guard !discarded.contains(text) else {
                 continue
             }
+            
+            /// Make sure we don't have a discarded text containing the same string that also overlaps it considerably
+            guard !discarded.contains(where: {
+                $0.string == text.string
+                &&
+                $0.rect.overlapsSubstantially(with: text.rect)
+            }) else {
+                continue
+            }
 
             //TODO: Shouldn't we check all arrays here so that we grab the FastRecognized results that may not have been grabbed as a fallback?
             /// Get texts on same row arranged by their `minX` values
@@ -150,7 +159,12 @@ extension VisionResult {
             guard let valuesText = valuesText(for: pickedText) else {
                 continue
             }
-                        
+            
+            /// If we picked an alternate overlapping valuesText, make sure that's added to discarded
+            if !discarded.contains(where: { $0.id == valuesText.text.id }) {
+                discarded.append(valuesText.text)
+            }
+            
             /// Stop if a second energy value is encountered after a non-energy value has been added—as this usually indicates the bottom of the table where strings containing the representative diet (stating something like `2000 kcal diet`) are found.
             if column.containsValueWithEnergyUnit, valuesText.containsValueWithEnergyUnit,
                let last = column.last, !last.containsValueWithEnergyUnit {
@@ -198,6 +212,7 @@ extension VisionResult {
                     continue
                 }
                 
+                //TODO: Use CGRect.overlapsSubstantially(with:) instead
                 /// Get the intersection and skip any texts that don't overlap what we're looking for
                 let intersection = arrayText.rect.intersection(text.rect)
                 guard !intersection.isNull else {
@@ -217,7 +232,27 @@ extension VisionResult {
     }
 }
 
+let SubstantialOverlapRatioThreshold = 0.9
+
 extension CGRect {
+    
+    func overlapsSubstantially(with rect: CGRect) -> Bool {
+        guard let ratio = ratioOfIntersection(with: rect) else {
+            return false
+        }
+        return ratio > SubstantialOverlapRatioThreshold
+    }
+    
+    func ratioOfIntersection(with rect: CGRect) -> Double? {
+        let intersection = rect.intersection(self)
+        guard !intersection.isNull else {
+            return nil
+        }
+        
+        /// Get the ratio of the intersection to whichever the smaller of the two rects are, and only add it if it covers at least 90%
+        let smallerRect = CGRect.smaller(of: rect, and: self)
+        return intersection.area / smallerRect.area
+    }
     
     static func smaller(of rect1: CGRect, and rect2: CGRect) -> CGRect {
         if rect1.area < rect2.area {

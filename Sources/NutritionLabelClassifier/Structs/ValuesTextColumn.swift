@@ -14,6 +14,7 @@ struct ValuesTextColumn {
         let above = visionResult.columnOfValueTexts(startingFrom: text, preceding: true).reversed()
         let below = visionResult.columnOfValueTexts(startingFrom: text, preceding: false)
         self.valuesTexts = above + [valuesText] + below
+        print("W ehere")
     }
 }
 

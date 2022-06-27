@@ -1,6 +1,7 @@
 import SwiftUI
 import VisionSugar
 import SwiftSugar
+import TabularData
 
 let RatioErrorPercentageThreshold = 17.0
 let MacroOrEnergyErrorPercentageThreshold = 20.0
@@ -60,6 +61,11 @@ struct ExtractedGrid {
     
     func row(for attribute: Attribute) -> ExtractedRow? {
         allRows.first(where: { $0.attributeText.attribute == attribute })
+    }
+    
+    /// Used for debugging
+    var desc: DataFrame {
+        columns[0].dataFrame
     }
 }
 
