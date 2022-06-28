@@ -34,7 +34,7 @@ struct ExtractedGrid {
         self.numberOfValues = columns.first?.rows.first?.valuesTexts.count ?? 0
 
         removeValuesOutsideColumnRects()
-         removeExtraneousValues()
+        removeExtraneousValues()
 
         handleReusedValueTexts()
         handleMultipleValues()

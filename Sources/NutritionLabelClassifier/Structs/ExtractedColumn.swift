@@ -142,6 +142,7 @@ extension Array where Element == AttributeText {
                 if !nilAdded {
                     /// Checking that each successive item is the closest (overlapping) text
                     guard let closest = column.valuesTexts.closestValueText(to: attributeText, requiringOverlap: true),
+                          rowIndex < column.valuesTexts.count,
                           closest.text.id == column.valuesTexts[rowIndex].text.id
                     else {
                         /// As soon as we reach one that fails this requirement, insert nil in its place

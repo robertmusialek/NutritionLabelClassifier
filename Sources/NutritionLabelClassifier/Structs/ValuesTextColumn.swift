@@ -161,6 +161,30 @@ extension ValuesTextColumn {
      Improve this by ignoring inline values that may be wider than the other single-value ValueText's. Do this by either ignoring those that also have an Attribute that can be extracted from the text or—better yet—write a function on ValueText that returns a boolean of whether the text contains any extraneous strings to the actual value strings and use this.
      */
     var columnRect: CGRect {
+        columnRect(of: singleValuesTexts)
+    }
+
+    func columnRectOfSingleValuesNotWithinOrVerticallyOutsideOf(_ attributes: ExtractedAttributes) -> CGRect {
+        columnRect(of: singleValuesNotWithinOrVerticallyOutsideOf(attributes))
+    }
+    
+    func singleValuesNotWithinOrVerticallyOutsideOf(_ attributes: ExtractedAttributes) -> [ValuesText] {
+        singleValuesTexts.filter {
+            /// Do not include value texts that are substantailly contained by any of the attribute columns
+            guard !attributes.contains(rect: $0.text.rect) else {
+                return false
+            }
+            
+            /// Do not include value texts that are vertically outside of any of the attribute columns
+            guard attributes.overlapsVertically(with: $0.text.rect) else {
+                return false
+            }
+            
+            return true
+        }
+    }
+
+    func columnRect(of valuesTexts: [ValuesText]) -> CGRect {
         var unionRect: CGRect? = nil
         for valuesText in valuesTexts {
             
@@ -183,11 +207,21 @@ extension ValuesTextColumn {
         return unionRect ?? .zero
     }
     
-    func belongsTo(_ group: [ValuesTextColumn]) -> Bool {
+    func belongsTo(_ group: [ValuesTextColumn], using attributes: ExtractedAttributes) -> Bool {
         
+        guard let topGroupColumn = group.sorted(by: { $0.valuesTexts.count > $1.valuesTexts.count }).first else {
+            return false
+        }
+
+        let rect = topGroupColumn.columnRect
+        let yNormalizedRect = columnRect.rectWithYValues(of: rect)
+        return !rect.intersection(yNormalizedRect).isNull
+
         let belongsTo = group.contains {
             let rect = $0.columnRect
             let yNormalizedRect = columnRect.rectWithYValues(of: rect)
+//            let rect = $0.columnRectOfSingleValuesNotWithinOrVerticallyOutsideOf(attributes)
+//            let yNormalizedRect = columnRectOfSingleValuesNotWithinOrVerticallyOutsideOf(attributes).rectWithYValues(of: rect)
             return !rect.intersection(yNormalizedRect).isNull
         }
         return belongsTo

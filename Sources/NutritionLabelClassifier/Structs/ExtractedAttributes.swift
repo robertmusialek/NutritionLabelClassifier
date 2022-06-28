@@ -127,6 +127,34 @@ struct ExtractedAttributes {
         self.attributeTextColumns = unfiltered
 //        }
     }
+    
+    /// Returns true if any of the columns of Attributes contain the specified rect completely
+    func contains(rect: CGRect) -> Bool {
+        for columnRect in columnRects {
+            if let ratio = rect.ratioOfIntersection(with: columnRect), ratio > 0.9 {
+                return true
+            }
+        }
+        return false
+    }
+    
+    func overlapsVertically(with rect: CGRect) -> Bool {
+        for attributeTextColumn in attributeTextColumns {
+            guard let first = attributeTextColumn.first, let last = attributeTextColumn.last else {
+                continue
+            }
+            if rect.minY < last.text.rect.midY && rect.maxY > first.text.rect.maxY {
+                return true
+            }
+        }
+        return false
+    }
+    
+    var columnRects: [CGRect] {
+        attributeTextColumns.map {
+            $0.rect
+        }
+    }
 }
 
 extension VisionResult {

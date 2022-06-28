@@ -49,8 +49,8 @@ struct ExtractedValues {
         columns.removeTextsBelowLastAttribute(of: extractedAttributes)
 
         columns.removeDuplicateColumns()
-        columns.pickTopColumns()
         columns.removeEmptyColumns()
+        columns.pickTopColumns(using: extractedAttributes)
         columns.removeColumnsWithServingAttributes()
 
 //        columns.removeColumnsWithSingleValuesNotInColumnWithAllOtherSingleValues()
@@ -412,19 +412,19 @@ extension Array where Element == ValuesTextColumn {
         removeAll { $0.valuesTexts.count == 0 }
     }
     
-    mutating func pickTopColumns() {
-        let groups = groupedColumnsOfTexts()
+    mutating func pickTopColumns(using attributes: ExtractedAttributes) {
+        let groups = groupedColumnsOfTexts(for: attributes)
         self = Self.pickTopColumns(from: groups)
     }
 
     /// - Group columns based on their positions
-    mutating func groupedColumnsOfTexts() -> [[ValuesTextColumn]] {
+    mutating func groupedColumnsOfTexts(for attributes: ExtractedAttributes) -> [[ValuesTextColumn]] {
         var groups: [[ValuesTextColumn]] = []
         for column in self {
 
             var didAdd = false
             for i in groups.indices {
-                if column.belongsTo(groups[i]) {
+                if column.belongsTo(groups[i], using: attributes) {
                     groups[i].append(column)
                     didAdd = true
                     break
