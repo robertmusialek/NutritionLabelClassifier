@@ -171,9 +171,9 @@ extension ValuesTextColumn {
     func singleValuesNotWithinOrVerticallyOutsideOf(_ attributes: ExtractedAttributes) -> [ValuesText] {
         singleValuesTexts.filter {
             /// Do not include value texts that are substantailly contained by any of the attribute columns
-            guard !attributes.contains(rect: $0.text.rect) else {
-                return false
-            }
+//            guard !attributes.contains(rect: $0.text.rect) else {
+//                return false
+//            }
             
             /// Do not include value texts that are vertically outside of any of the attribute columns
             guard attributes.overlapsVertically(with: $0.text.rect) else {
@@ -213,8 +213,10 @@ extension ValuesTextColumn {
             return false
         }
 
-        let rect = topGroupColumn.columnRect
-        let yNormalizedRect = columnRect.rectWithYValues(of: rect)
+//        let rect = topGroupColumn.columnRect
+//        let yNormalizedRect = columnRect.rectWithYValues(of: rect)
+        let rect = topGroupColumn.columnRectOfSingleValuesNotWithinOrVerticallyOutsideOf(attributes)
+        let yNormalizedRect = columnRectOfSingleValuesNotWithinOrVerticallyOutsideOf(attributes).rectWithYValues(of: rect)
         return !rect.intersection(yNormalizedRect).isNull
 
         let belongsTo = group.contains {
