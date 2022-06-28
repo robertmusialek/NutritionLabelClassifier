@@ -141,7 +141,7 @@ extension Array where Element == AttributeText {
 
                 if !nilAdded {
                     /// Checking that each successive item is the closest (overlapping) text
-                    guard let closest = column.valuesTexts.closestValueText(to: attributeText, requiringOverlap: true),
+                    guard let closest = column.valuesTexts.closestValueText(to: attributeText, in: self, requiringOverlap: true),
                           rowIndex < column.valuesTexts.count,
                           closest.text.id == column.valuesTexts[rowIndex].text.id
                     else {
@@ -221,8 +221,6 @@ extension Array where Element == AttributeText {
                         rows.append(row)
                     }
                     return rows
-                    
-                    print("Gotcha")
                 }
                 valuesTexts.append(closest)
             }

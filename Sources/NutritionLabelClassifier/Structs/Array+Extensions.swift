@@ -26,6 +26,10 @@ extension Array where Element == Value {
     var containingUnit: [Value] {
         filter { $0.unit != nil }
     }
+    var singleValueAfterRemovingPercentageValues: Value? {
+        let nonPercentageValues = filter { $0.unit != .p }
+        return nonPercentageValues.count == 1 ? nonPercentageValues[0] : nil
+    }
     var containsValueWithKcalUnit: Bool {
         contains(where: { $0.unit == .kcal } )
     }
@@ -352,7 +356,7 @@ extension Array where Element == AttributeText {
         contains(where: { array.map({$0.attribute}).contains($0.attribute) })
     }
     
-    var rect: CGRect {
+    var rect_legacy: CGRect {
         guard let first = self.first else { return .zero }
         var unionRect = first.text.rect
         for attributeText in self.dropFirst() {
@@ -360,6 +364,17 @@ extension Array where Element == AttributeText {
         }
         return unionRect
     }
+
+    var rect: CGRect {
+        let attributesWithoutValues = self.filter { Value.detect(in: $0.text.string).count == 0 }
+        guard let first = attributesWithoutValues.first else { return .zero }
+        var unionRect = first.text.rect
+        for attributeText in attributesWithoutValues.dropFirst() {
+            unionRect = unionRect.union(attributeText.text.rect)
+        }
+        return unionRect
+    }
+
 }
 
 //MARK: [[AttributeText]]

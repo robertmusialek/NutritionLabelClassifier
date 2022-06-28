@@ -37,7 +37,7 @@ struct ExtractedGrid {
         removeExtraneousValues()
 
         handleReusedValueTexts()
-        handleMultipleValues()
+        handleMultipleValues(using: validRatio)
 
         fillInRowsWithOneMissingValue()
         fixInvalidRows()
@@ -50,7 +50,7 @@ struct ExtractedGrid {
         fillInMissingUnits()
 
         addMissingEnergyValuesIfNeededAndAvailable()
-
+        convertMismatchedEnergyUnits()
     }
     
     var values: [[[Value?]]] {
@@ -129,10 +129,10 @@ extension Array where Element == ExtractedColumn {
         }
     }
     
-    mutating func handleMultipleValues() {
+    mutating func handleMultipleValues(using ratio: Double?) {
         for columnIndex in indices {
             var column = self[columnIndex]
-            column.handleMultipleValues()
+            column.handleMultipleValues(using: ratio)
             self[columnIndex] = column
         }
     }
@@ -182,7 +182,7 @@ extension ExtractedColumn {
         rows.removeRowsWithMultipleValues()
     }
     
-    mutating func handleMultipleValues() {
+    mutating func handleMultipleValues(using ratio: Double?) {
         for row in rowsWithMultipleValues {
             
             /// First see if these are multple values for successive attributes on the same line
@@ -194,7 +194,66 @@ extension ExtractedColumn {
                 continue
             }
             
+            if let ratio = ratio, attemptHandlingMultipleValuesUsingRatio(ratio, for: row) {
+                continue
+            }
         }
+    }
+    
+    mutating func attemptHandlingMultipleValuesUsingRatio(_ validRatio: Double, for row: ExtractedRow) -> Bool {
+        guard let valuesText1 = row.valuesTexts[0], let valuesText2 = row.valuesTexts[1] else {
+            return false
+        }
+        
+        /// If we have one value in the first column, and two in the second
+        if valuesText1.values.count == 1, valuesText2.values.count > 1, let value1 = valuesText1.values.first {
+            
+            /// Pick whichever value from `valuesText2` results in the ratio closest to `ratio`
+            var closestValue: Value? = nil
+            for value in valuesText2.values {
+                guard let closest = closestValue else {
+                    closestValue = value
+                    continue
+                }
+                let closestRatio = value1.amount/closest.amount
+                let ratio = value1.amount/value.amount
+                if abs(ratio - validRatio) < abs(closestRatio - validRatio) {
+                    closestValue = value
+                }
+            }
+            guard let closestValue = closestValue else {
+                return false
+            }
+
+            modify(row, with: (value1, closestValue))
+            return true
+        }
+
+        /// If we have two values in the first column, and one in the second
+        if valuesText2.values.count == 1, valuesText1.values.count > 1, let value2 = valuesText2.values.first {
+            
+            /// Pick whichever value from `valuesText1` results in the ratio closest to `ratio`
+            var closestValue: Value? = nil
+            for value in valuesText1.values {
+                guard let closest = closestValue else {
+                    closestValue = value
+                    continue
+                }
+                let closestRatio = closest.amount/value2.amount
+                let ratio = value.amount/value2.amount
+                if abs(ratio - validRatio) < abs(closestRatio - validRatio) {
+                    closestValue = value
+                }
+            }
+            guard let closestValue = closestValue else {
+                return false
+            }
+
+            modify(row, with: (closestValue, value2))
+            return true
+        }
+
+        return false
     }
 
     mutating func attemptHandlingMultipleValuesByDistributingAcrossValues(for row: ExtractedRow) -> Bool {
@@ -523,12 +582,30 @@ extension ExtractedGrid {
         //TODO: Do this when a test case requires us to
     }
     
+    mutating func convertMismatchedEnergyUnits() {
+        guard let row = row(for: .energy), row.hasMismatchedUnits,
+              let value1 = row.value1, let value2 = row.value2
+        else {
+            return
+        }
+        
+        if value1.unit == .kj, value2.unit == .kcal {
+            /// Convert unit2 to kj
+            let newValue2 = Value(amount: value2.amount * KcalsPerKilojule, unit: .kj)
+            modify(row, withNewValues: (value1, newValue2))
+        } else if value1.unit == .kcal, value2.unit == .kj {
+            /// Convert unit1 to kj
+            let newValue1 = Value(amount: value1.amount * KcalsPerKilojule, unit: .kj)
+            modify(row, withNewValues: (newValue1, value2))
+        }
+    }
+    
     mutating func fillInMissingUnits() {
         columns.fillInMissingUnits()
     }
 
-    mutating func handleMultipleValues() {
-        columns.handleMultipleValues()
+    mutating func handleMultipleValues(using ratio: Double?) {
+        columns.handleMultipleValues(using: ratio)
     }
     
     mutating func handleReusedValueTexts() {
@@ -829,12 +906,19 @@ extension ExtractedGrid {
     }
     
     mutating func correct(_ row: ExtractedRow, for validRatio: Double) {
+        guard row.attributeText.attribute != .energy else {
+            //TODO: instead of this, provide all rows to correctionMadeUsingAlternativeValues so that alternative energy values may also be selected as long as they also fit in the equation (within the error threshold)
+            return
+        }
+
         print("3️⃣ Correcting: \(row.desc)")
+
         guard !correctionMadeUsingAlternativeValues(row, for: validRatio) else {
             print("3️⃣ Correction was made using alternative values for: \(row.desc)")
             return
         }
         
+        //TODO: Write this when needed
         guard !correctionMadeUsingParentNutrientHeuristics(row, for: validRatio) else {
             print("3️⃣ Correction was made using parent nutrient heuristics for: \(row.desc)")
             return
@@ -850,9 +934,16 @@ extension ExtractedGrid {
 
     mutating func correctionMadeUsingAlternativeValues(_ row: ExtractedRow, for validRatio: Double) -> Bool {
         /// Try and use the alternative text candidates to see if one satisfies the ratio requirement (of being within an error margin of it)
-        guard let valuesText1 = row.valuesTexts[0], let valuesText2 = row.valuesTexts[1] else {
+        guard let valuesText1 = row.valuesTexts[0], let valuesText2 = row.valuesTexts[1],
+              let value1 = valuesText1.values.first, let value2 = valuesText2.values.first
+        else {
             return false
         }
+        
+        let currentRatio = value1.amount/value2.amount
+        
+        var closestAltValue1: Value? = nil
+        var closestAltValue2: Value? = nil
         
         for c1 in valuesText1.text.candidates {
             for c2 in valuesText2.text.candidates {
@@ -865,13 +956,40 @@ extension ExtractedGrid {
 
                 let ratio = altValue1.amount/altValue2.amount
                 
+                /// If it satisfies the threshold, return this immediately
                 if ratio.errorPercentage(with: validRatio) <= RatioErrorPercentageThreshold {
                     modify(row, withNewValues: (altValue1, altValue2))
                     return true
                 }
+                
+                
+                /// Otherwise, if the ratio is closer to the valid ratio than the current one (and substantailly different from it—to account for cases where `0.07/0.01 == 6.999999999999` and `0.7/0.1 = 7.000000000001`
+                guard abs(ratio - validRatio) < abs(currentRatio - validRatio),
+                      abs(ratio - currentRatio) > 0.01
+                else {
+                    continue
+                }
+                
+                /// Keep storing the closest alt values to return once we've run through all of them
+                if let closest1 = closestAltValue1, let closest2 = closestAltValue2 {
+                    let closestRatio = closest1.amount/closest2.amount
+                    if abs(ratio - validRatio) < abs(closestRatio - validRatio) {
+                        closestAltValue1 = altValue1
+                        closestAltValue2 = altValue2
+                    }
+                } else {
+                    closestAltValue1 = altValue1
+                    closestAltValue2 = altValue2
+                }
             }
         }
-        return false
+        if let closestAltValue1 = closestAltValue1, let closestAltValue2 = closestAltValue2 {
+            modify(row, withNewValues: (closestAltValue1, closestAltValue2))
+            return true
+        } else {
+            return false
+        }
+//        return false
     }
 
     

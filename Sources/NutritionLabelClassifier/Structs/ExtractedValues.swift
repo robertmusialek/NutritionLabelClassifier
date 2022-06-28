@@ -370,8 +370,14 @@ extension Array where Element == ValuesTextColumn {
             return
         }
         
+        /// Remove columns with too few rows
         self = filter {
             Double($0.valuesTexts.count) > 0.1 * Double(highestNumberOfRows)
+        }
+        
+        /// Remove columns that contain all attribute texts
+        self = filter { column in
+            column.valuesTexts.count > column.valuesTexts.filter { Attribute.detect(in: $0.text.string).count > 0 }.count
         }
     }
     

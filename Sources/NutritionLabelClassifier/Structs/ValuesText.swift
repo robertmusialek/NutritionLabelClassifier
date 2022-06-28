@@ -14,6 +14,9 @@ struct ValuesText {
         self.text = text
         
         /// Previously—if only value has a unit, pick that one and discard the rest
+        if let singleValue = values.singleValueAfterRemovingPercentageValues {
+            self.values = [singleValue]
+        } else
         if values.containingUnit.count == 1 {
             self.values = values.containingUnit
         } else {
@@ -48,6 +51,12 @@ struct ValuesText {
         values.containsValueWithKcalUnit
     }
 
+    func closestAttributeText(in attributeTexts: [AttributeText]) -> AttributeText? {
+        attributeTexts.sorted(by: {
+            $0.yDistanceTo(valuesText: self) < $1.yDistanceTo(valuesText: self)
+        }).first
+    }
+    
     var isSingularPercentValue: Bool {
         if values.count == 1, let first = values.first, first.unit == .p {
             return true
@@ -112,18 +121,33 @@ extension Array where Element == ValuesText {
         filter({ $0.containsValueWithKcalUnit })
     }
     
-    func closestValueText(to attributeText: AttributeText, requiringOverlap: Bool = false) -> ValuesText? {
+    func closestValueText(to attributeText: AttributeText, in attributes: [AttributeText]? = nil, requiringOverlap: Bool = false) -> ValuesText? {
         let sorted = self.sorted(by: {
             attributeText.yDistanceTo(valuesText: $0) < attributeText.yDistanceTo(valuesText: $1)
 //            $0.text.rect.yDistanceToTopOf(text.rect) < $1.text.rect.yDistanceToTopOf(text.rect)
         })
         
-        guard requiringOverlap else {
-            return sorted.first
+        guard let closest = sorted.first else {
+            return nil
         }
         
-        if let _ = sorted.first?.text.rect.rectWithXValues(of: attributeText.text.rect).ratioOfIntersection(with: attributeText.text.rect) {
-            return sorted.first
+        /// If attributes were provided—make sure that there isn't another attribute closer to this `ValueText`
+        if let attributes = attributes {
+            guard let closestAttribute = closest.closestAttributeText(in: attributes),
+                  closestAttribute.attribute == attributeText.attribute else {
+                return nil
+            }
+        }
+        
+        guard requiringOverlap else {
+            return closest
+        }
+        
+        if let _ = closest.text.rect
+            .rectWithXValues(of: attributeText.text.rect)
+            .ratioOfIntersection(with: attributeText.text.rect)
+        {
+            return closest
         } else {
             return nil
         }

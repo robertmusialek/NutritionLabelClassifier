@@ -47,6 +47,21 @@ struct ExtractedRow {
         singleMissingValueIndex != nil
     }
     
+    var hasMismatchedUnits: Bool {
+        guard let value1 = value1, let value2 = value2 else {
+            return false
+        }
+        return value1.unit != value2.unit
+    }
+    
+    var value1: Value? {
+        valuesTexts[0]?.values.first
+    }
+    var value2: Value? {
+        guard valuesTexts.count > 1 else { return nil }
+        return valuesTexts[1]?.values.first
+    }
+
     var singleMissingValueIndex: Int? {
         guard valuesTexts.count == 2 else { return nil }
         if valuesTexts[0] != nil && valuesTexts[1] == nil {

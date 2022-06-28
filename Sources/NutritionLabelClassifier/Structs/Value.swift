@@ -71,7 +71,9 @@ public struct Value {
     }
     
     static var DisqualifyingTexts: [String] = [
-        "contributes to a daily diet"
+        "contributes to a daily diet",
+        "daily value",
+        "produced for"
     ]
     
     var hasEnergyUnit: Bool {
@@ -110,7 +112,7 @@ extension Value {
 //        }
 
         for disqualifyingText in Value.DisqualifyingTexts {
-            guard !(string.contains(disqualifyingText)) else {
+            guard !(string.lowercased().contains(disqualifyingText)) else {
                 return []
             }
         }
