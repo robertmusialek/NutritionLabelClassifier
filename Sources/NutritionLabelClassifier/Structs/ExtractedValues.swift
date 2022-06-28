@@ -53,11 +53,6 @@ struct ExtractedValues {
         columns.pickTopColumns(using: extractedAttributes)
         columns.removeColumnsWithServingAttributes()
 
-//        columns.removeColumnsWithSingleValuesNotInColumnWithAllOtherSingleValues()
-//        columns.cleanupEnergyValues(using: extractedAttributes)
-//        columns.removeInvalidColumns()
-//        columns.sort()
-
         columns.removeColumnsWithSingleValuesNotInColumnWithAllOtherSingleValues()
         columns.sort()
         columns.cleanupEnergyValues(using: extractedAttributes)

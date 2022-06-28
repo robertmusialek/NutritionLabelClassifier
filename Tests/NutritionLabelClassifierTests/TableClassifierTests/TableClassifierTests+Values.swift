@@ -259,7 +259,6 @@ let valueExpectations: [String: [[[Value?]]]?] = [
         ]
     ],
     
-    //MARK: - Failing
     "31D0CA8B-5069-4AB3-B865-47CD1D15D879": [
         [
             [v(423.9, .kj), v(1413, .kj)], /// failed to read in 424 so it's calculated using the ratio
@@ -277,7 +276,22 @@ let valueExpectations: [String: [[[Value?]]]?] = [
         ]
     ],
 
+    "233BE115-FB25-42CC-BCF5-A2E34CC473B6": [
+        [
+            [v(19.0, .kcal), v(48.0, .kcal)],
+            [v(0.0, .g), v(0.0, .g)],
+            [v(0.0, .g), v(0.0, .g)],
+            [v(4.8, .g), v(12.0, .g)],
+            [v(4.8, .g), v(12.0, .g)],
+            [v(43.0, .mg), v(108.0, .mg)],
+            [v(1.4, .mg), v(3.5, .mg)],
+            [v(0.2, .mg), v(0.5, .mg)],
+            [v(0.3, .mcg), v(0.8, .mcg)],
+        ]
+    ],
     
+    //MARK: - Failing
+
 //    "99D1A080-19CF-4A08-B8B7-1BD5E4D9CB40": nil,
 //    "3C53CC91-34D1-46EE-92BE-328ABDC20342": nil,
 //    "15C9C2C9-5012-43A3-835A-3FB0A2DD1E2D": nil,

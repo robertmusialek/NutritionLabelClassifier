@@ -26,6 +26,10 @@ public struct Value {
         var cleanedAmount = groups[1]
             .replacingOccurrences(of: ":", with: ".") /// Fix Vision errors of misreading decimal places as `:`
         
+        /// Special case when we misread something like `0.8 ug` as `08 ug`
+        if let singleDigitPrefixedByZero = cleanedAmount.firstCapturedGroup(using: #"^0([0-9])$"#) {
+            cleanedAmount = "0.\(singleDigitPrefixedByZero)"
+        }
         
         if cleanedAmount.matchesRegex(NumberRegex.usingCommaAsDecimalPlace) {
             cleanedAmount = cleanedAmount.replacingOccurrences(of: ",", with: ".")
