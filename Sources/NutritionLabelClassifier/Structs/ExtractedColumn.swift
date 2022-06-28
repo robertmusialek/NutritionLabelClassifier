@@ -52,13 +52,19 @@ struct ExtractedColumn {
 }
 
 extension Array where Element == ValuesText {
+    
+    var singleValues: [ValuesText] {
+        filter { Value.detect(in: $0.text.string).count == 1 }
+    }
+    
     var rectOfSingleValues: CGRect? {
         var rect: CGRect? = nil
-        for valuesText in self {
-            /// Only use single-valued `ValuesText`s to calculate the rect
-            guard valuesText.values.count == 1 else {
-                continue
-            }
+//        for valuesText in self {
+//            /// Only use single-valued `ValuesText`s to calculate the rect
+//            guard valuesText.values.count == 1 else {
+//                continue
+//            }
+        for valuesText in singleValues {
             guard let unionRect = rect else {
                 rect = valuesText.text.rect
                 continue

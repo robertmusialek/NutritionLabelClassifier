@@ -251,7 +251,17 @@ extension CGRect {
         }
         return ratio > SubstantialOverlapRatioThreshold
     }
-    
+
+    func ratioOfXIntersection(with rect: CGRect) -> Double? {
+        let yNormalizedRect = self.rectWithYValues(of: rect)
+        return rect.ratioOfIntersection(with: yNormalizedRect)
+    }
+
+    func ratioOfYIntersection(with rect: CGRect) -> Double? {
+        let xNormalizedRect = self.rectWithXValues(of: rect)
+        return rect.ratioOfIntersection(with: xNormalizedRect)
+    }
+
     func ratioOfIntersection(with rect: CGRect) -> Double? {
         let intersection = rect.intersection(self)
         guard !intersection.isNull else {

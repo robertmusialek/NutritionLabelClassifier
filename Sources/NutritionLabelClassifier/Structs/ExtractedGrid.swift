@@ -34,7 +34,7 @@ struct ExtractedGrid {
         self.numberOfValues = columns.first?.rows.first?.valuesTexts.count ?? 0
 
         removeValuesOutsideColumnRects()
-        removeExtraneousValues()
+         removeExtraneousValues()
 
         handleReusedValueTexts()
         handleMultipleValues()
@@ -358,10 +358,11 @@ extension ExtractedRow {
             return
         }
         
-        let distanceTo1 = abs(valuesText.text.rect.midX - columnRect1.midX)
-        let distanceTo2 = abs(valuesText.text.rect.midX - columnRect2.midX)
-        
-        if distanceTo1 > distanceTo2 {
+        /// We're comparing the middle of the values text to the start of each column rect (instead of their middle) to account for columns that may overlap each other. This was mainly to alleviate case `31D0CA8B-5069-4AB3-B865-47CD1D15D879`.
+        let distanceToStart1 = abs(valuesText.text.rect.midX - columnRect1.minX)
+        let distanceToStart2 = abs(valuesText.text.rect.midX - columnRect2.minX)
+
+        if distanceToStart1 > distanceToStart2 {
             valuesTexts[0] = nil
         } else {
             valuesTexts[1] = nil
