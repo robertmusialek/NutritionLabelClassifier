@@ -9,11 +9,6 @@ struct ExtractedColumn {
     init(attributesColumn: [AttributeText], valueColumns: [ValuesTextColumn]) {
         var attributesColumn = attributesColumn
         
-        /// If the first set of values contain energy values and we seem to have missed creating an attribute for it (possibly due to a typo such as in `3EDD65E5-6363-42E3-8358-21A520ED21CC`, then manually insert a `AttributeText` for it so that it's correctly assigned
-        if valueColumns.firstSetOfValuesContainsEnergy, !attributesColumn.contains(.energy) {
-            let attributeText = AttributeText(attribute: .energy, text: defaultText)
-            attributesColumn.insert(attributeText, at: 0)
-        }
         self.rows = attributesColumn.extractedRows(using: valueColumns)
         
         insertNilValues()
@@ -190,7 +185,7 @@ extension Array where Element == AttributeText {
                     continue
                 }
                 
-                /// Using this breaks a lot of other cases, so possibly just remove it when presetting 
+                /// Using this breaks a lot of other cases, so possibly just remove it when presetting
 //                let remainingValuesTexts = column.valuesTexts.filter { !rows.allValuesTexts.contains($0) }
 //                guard let closest = remainingValuesTexts.closestValueText(to: attributeText)
                 guard let closest = column.valuesTexts.closestValueText(to: attributeText)
@@ -244,25 +239,39 @@ extension Array where Element == AttributeText {
         return rows
     }
     
-    func extractedRows(using valueColumns: [ValuesTextColumn]) -> [ExtractedRow] {
+    mutating func extractedRows(using valueColumns: [ValuesTextColumn]) -> [ExtractedRow] {
+        
+        var rows: [ExtractedRow] = []
+        var valueColumns = valueColumns
+        
+        /// Special case where we may have only 1 value missing. If either side is short by just 1 value from the attribute count (**possibly increase this and handle greater missing values later**)—then go through the column(s) that's short until we hit the first value that's not inline with an the expected attribute—and insert nil there, and then continue adding the rest.
+        if valueColumns.hasSingleColumnMissingOnlyOneValue(forAttributeCount: self.count),
+           !containsManuallyAddedAttributeTexts
+        {
+            return rows + extractedRowsAfterInsertingNilInSingleMissingValuesPlace(using: valueColumns)
+        }
+        
+        /// If the first set of values contain energy values and we seem to have missed creating an attribute for it (possibly due to a typo such as in `3EDD65E5-6363-42E3-8358-21A520ED21CC`, then manually insert a `AttributeText` for it so that it's correctly assigned
+        if !contains(.energy),
+           let energyValuesTexts = valueColumns.firstSetOfValuesTextsContainingEnergy {
+            let attributeText = AttributeText(attribute: .energy, text: defaultText)
+//            self.insert(attributeText, at: 0)
+            let energyRow = ExtractedRow(attributeText: attributeText, valuesTexts: energyValuesTexts)
+            rows.append(energyRow)
+            valueColumns.removeFirstSetOfValues()
+        }
+        
         /// If we have a common count and it matches the count of attributes, go ahead and map them 1-1
         if let commonCount = valueColumns.commonCount, commonCount == self.count {
-            return indices.map { i in
+            return rows + indices.map { i in
                 ExtractedRow(attributeText: self[i],
                              valuesTexts: valueColumns.map { $0.valuesTexts[i] }
                 )
             }
         }
         
-        /// Special case where we may have only 1 value missing. If either side is short by just 1 value from the attribute count (**possibly increase this and handle greater missing values later**)—then go through the column(s) that's short until we hit the first value that's not inline with an the expected attribute—and insert nil there, and then continue adding the rest.
-        if valueColumns.hasSingleColumnMissingOnlyOneValue(forAttributeCount: self.count),
-           !containsManuallyAddedAttributeTexts
-        {
-            return extractedRowsAfterInsertingNilInSingleMissingValuesPlace(using: valueColumns)
-        }
-        
         /// As a fallback—map rows to attributes based on how in-line they are
-        return extractedRowsWithMissingValues(using: valueColumns)
+        return rows + extractedRowsWithMissingValues(using: valueColumns)
     }
     
     var containsManuallyAddedAttributeTexts: Bool {

@@ -281,13 +281,28 @@ extension Array where Element == ValuesTextColumn {
         return shortestTexts.sorted(by: { $0.rect.width < $1.rect.width }).first
     }
     
-    var firstSetOfValuesContainsEnergy: Bool {
-        allSatisfy { column in
-            guard let firstValuesText = column.valuesTexts.first else {
-                return false
-            }
-            return firstValuesText.containsValueWithEnergyUnit
+    mutating func removeFirstSetOfValues() {
+        for i in indices {
+            var column = self[i]
+            column.valuesTexts.remove(at: 0)
+            self[i] = column
         }
+    }
+    
+    var firstSetOfValuesTextsContainingEnergy: [ValuesText]? {
+        var valuesTexts: [ValuesText?] = []
+        for column in self {
+            guard let firstValuesText = column.valuesTexts.first else {
+                valuesTexts.append(nil)
+                continue
+            }
+            if firstValuesText.containsValueWithEnergyUnit {
+                valuesTexts.append(firstValuesText)
+            }
+        }
+        
+        let nonNilValuesTexts = valuesTexts.compactMap { $0 }
+        return valuesTexts.count == nonNilValuesTexts.count ? nonNilValuesTexts : nil
     }
 }
 
