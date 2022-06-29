@@ -332,6 +332,10 @@ extension ExtractedColumn {
 }
 
 extension Array where Element == ExtractedRow {
+    var desc: [String] {
+        map { $0.desc }
+    }
+    
     mutating func modify(_ rowToModify: ExtractedRow, with newValues: (Value, Value)) {
         for i in indices {
             var row = self[i]

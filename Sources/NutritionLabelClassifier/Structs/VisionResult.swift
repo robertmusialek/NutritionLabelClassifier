@@ -274,6 +274,13 @@ extension CGRect {
         return intersection.area / area
     }
 
+    func heightThatIsInline(with rect: CGRect) -> Double? {
+        let xNormalizedRect = self.rectWithXValues(of: rect)
+        let intersection = xNormalizedRect.intersection(rect)
+        guard !intersection.isNull else { return nil }
+        return intersection.height
+    }
+
     func ratioOfIntersection(with rect: CGRect) -> Double? {
         let intersection = rect.intersection(self)
         guard !intersection.isNull else {

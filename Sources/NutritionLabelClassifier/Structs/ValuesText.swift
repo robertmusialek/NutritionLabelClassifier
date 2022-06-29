@@ -55,17 +55,35 @@ struct ValuesText {
         attributeTexts.sorted(by: {
 //            return $0.yDistanceTo(valuesText: self) < $1.yDistanceTo(valuesText: self)
             
-//            /// Since $0 is always below $1, we use its minY
-//            let distance1 = abs(text.rect.midY - $0.allTextsRect.minY)
-//            /// Since $1 is always above $0, we use its maxY
-//            let distance2 = abs(text.rect.midY - $1.allTextsRect.maxY)
-//            return distance1 < distance2
 
             let inlineRatio1 = text.rect.ratioThatIsInline(with: $0.allTextsRect) ?? 0
             let inlineRatio2 = text.rect.ratioThatIsInline(with: $1.allTextsRect) ?? 0
             print("6️⃣ Checking: \($0.attribute.rawValue) (\(inlineRatio1)) and \($1.attribute.rawValue) (\(inlineRatio2))")
+            
             /// The more the `text` intersects with an `attributeText`—the more `inline` it is with it
-            return inlineRatio1 > inlineRatio2
+            guard inlineRatio1 > inlineRatio2 else {
+                return false
+            }
+
+            print("6️⃣    Further checking inlineHeights: \(inlineRatio1) and \(inlineRatio2)")
+            let inlineHeight1 = text.rect.heightThatIsInline(with: $0.allTextsRect) ?? 0
+            let inlineHeight2 = text.rect.heightThatIsInline(with: $1.allTextsRect) ?? 0
+            
+            let difference = abs(inlineHeight1-inlineHeight2)
+            let differenceRatio = difference / (inlineHeight1 > inlineHeight2 ? inlineHeight1 : inlineHeight2)
+            
+            /// If the difference between the two inline heights is less than 5%, use the other heuristic of the distance from the mid point of `text` to the `minY` or `maxY` of the `AttributeText`, depending on which one is on top.
+            guard differenceRatio > 0.05 else {
+
+                /// Since $0 is always below $1, we use its minY
+                let distance1 = abs(text.rect.midY - $0.allTextsRect.minY)
+                /// Since $1 is always above $0, we use its maxY
+                let distance2 = abs(text.rect.midY - $1.allTextsRect.maxY)
+                return distance1 < distance2
+
+            }
+            
+            return true
             
         }).first
     }
