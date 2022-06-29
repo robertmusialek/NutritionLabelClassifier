@@ -151,6 +151,10 @@ extension ValuesTextColumn {
     
     mutating func removeOverlappingTextsWithSameString() {
         guard valuesTexts.count > 1 else { return }
+        
+        /// Crashing with `E3BAC0B0-8E46-4C97-A67A-9AFBE5E8ACF7` due to `i` being 8 and out of range of `valuesText` since we've probably removed an overlapping text (we knew this would happen)
+        /// Try using `valuesTexts.removeAll(where: )` instead and run tests straight after
+        
         for i in 1..<valuesTexts.count {
             let valuesText = valuesTexts[i]
             let previousValuesTexts = valuesTexts[0..<i]
