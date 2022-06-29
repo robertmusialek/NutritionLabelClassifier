@@ -53,7 +53,20 @@ struct ValuesText {
 
     func closestAttributeText(in attributeTexts: [AttributeText]) -> AttributeText? {
         attributeTexts.sorted(by: {
-            $0.yDistanceTo(valuesText: self) < $1.yDistanceTo(valuesText: self)
+//            return $0.yDistanceTo(valuesText: self) < $1.yDistanceTo(valuesText: self)
+            
+//            /// Since $0 is always below $1, we use its minY
+//            let distance1 = abs(text.rect.midY - $0.allTextsRect.minY)
+//            /// Since $1 is always above $0, we use its maxY
+//            let distance2 = abs(text.rect.midY - $1.allTextsRect.maxY)
+//            return distance1 < distance2
+
+            let inlineRatio1 = text.rect.ratioThatIsInline(with: $0.allTextsRect) ?? 0
+            let inlineRatio2 = text.rect.ratioThatIsInline(with: $1.allTextsRect) ?? 0
+            print("6️⃣ Checking: \($0.attribute.rawValue) (\(inlineRatio1)) and \($1.attribute.rawValue) (\(inlineRatio2))")
+            /// The more the `text` intersects with an `attributeText`—the more `inline` it is with it
+            return inlineRatio1 > inlineRatio2
+            
         }).first
     }
     
@@ -144,8 +157,8 @@ extension Array where Element == ValuesText {
         }
         
         if let _ = closest.text.rect
-            .rectWithXValues(of: attributeText.text.rect)
-            .ratioOfIntersection(with: attributeText.text.rect)
+            .rectWithXValues(of: attributeText.allTextsRect)
+            .ratioOfIntersection(with: attributeText.allTextsRect)
         {
             return closest
         } else {

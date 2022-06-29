@@ -251,6 +251,7 @@ extension Array where Element == AttributeText {
             return rows + extractedRowsAfterInsertingNilInSingleMissingValuesPlace(using: valueColumns)
         }
         
+        //TODO: Clean this up
         /// If the first set of values contain energy values and we seem to have missed creating an attribute for it (possibly due to a typo such as in `3EDD65E5-6363-42E3-8358-21A520ED21CC`, then manually insert a `AttributeText` for it so that it's correctly assigned
         if !contains(.energy),
            let energyValuesTexts = valueColumns.firstSetOfValuesTextsContainingEnergy {
@@ -259,6 +260,14 @@ extension Array where Element == AttributeText {
             let energyRow = ExtractedRow(attributeText: attributeText, valuesTexts: energyValuesTexts)
             rows.append(energyRow)
             valueColumns.removeFirstSetOfValues()
+            
+            /// Try this again after removing first set of values from the value column
+            //TODO: Clean this up
+            if valueColumns.hasSingleColumnMissingOnlyOneValue(forAttributeCount: self.count),
+               !containsManuallyAddedAttributeTexts
+            {
+                return rows + extractedRowsAfterInsertingNilInSingleMissingValuesPlace(using: valueColumns)
+            }
         }
         
         /// If we have a common count and it matches the count of attributes, go ahead and map them 1-1
