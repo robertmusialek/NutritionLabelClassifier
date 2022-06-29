@@ -73,7 +73,7 @@ struct ValuesText {
             let differenceRatio = difference / (inlineHeight1 > inlineHeight2 ? inlineHeight1 : inlineHeight2)
             
             /// If the difference between the two inline heights is less than 5%, use the other heuristic of the distance from the mid point of `text` to the `minY` or `maxY` of the `AttributeText`, depending on which one is on top.
-            guard differenceRatio > 0.05 else {
+            guard differenceRatio > 0.25 else {
 
                 /// Since $0 is always below $1, we use its minY
                 let distance1 = abs(text.rect.midY - $0.allTextsRect.minY)
