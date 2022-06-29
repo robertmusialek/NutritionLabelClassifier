@@ -44,7 +44,6 @@ struct ExtractedValues {
 
         var columns = valuesTextColumns
 
-
         columns.removeTextsAboveEnergy(for: extractedAttributes)
         columns.removeTextsBelowLastAttribute(of: extractedAttributes)
 
@@ -57,6 +56,8 @@ struct ExtractedValues {
         columns.sort()
         columns.cleanupEnergyValues(using: extractedAttributes)
         columns.removeInvalidColumns()
+
+        columns.removeOverlappingTextsWithSameString()
 
         var groupedColumns = groupByAttributes(columns)
         groupedColumns.removeColumnsInSameColumnAsAttributes(in: extractedAttributes)
@@ -349,6 +350,14 @@ extension Array where Element == ValuesTextColumn {
             return top
         }
         return nil
+    }
+    
+    mutating func removeOverlappingTextsWithSameString() {
+        for i in indices {
+            var column = self[i]
+            column.removeOverlappingTextsWithSameString()
+            self[i] = column
+        }
     }
     
     mutating func removeTextsAboveEnergy(for attributes: ExtractedAttributes) {

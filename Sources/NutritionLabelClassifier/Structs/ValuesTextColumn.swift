@@ -148,6 +148,23 @@ extension ValuesTextColumn {
     mutating func removeValueTextsAbove(_ text: RecognizedText) {
         valuesTexts.removeAll(where: { $0.text.rect.minY < text.rect.minY })
     }
+    
+    mutating func removeOverlappingTextsWithSameString() {
+        guard valuesTexts.count > 1 else { return }
+        for i in 1..<valuesTexts.count {
+            let valuesText = valuesTexts[i]
+            let previousValuesTexts = valuesTexts[0..<i]
+            
+            /// if any of the previous valuesTexts contains
+            if previousValuesTexts.contains(where: {
+                $0.text.rect == valuesText.text.rect
+                &&
+                $0.text.string == valuesText.text.string
+            }) {
+                valuesTexts.remove(at: i)
+            }
+        }
+    }
 }
 
 extension ValuesTextColumn {
@@ -262,6 +279,15 @@ extension Array where Element == ValuesTextColumn {
     var shortestText: RecognizedText? {
         let shortestTexts = compactMap { $0.shortestText }
         return shortestTexts.sorted(by: { $0.rect.width < $1.rect.width }).first
+    }
+    
+    var firstSetOfValuesContainsEnergy: Bool {
+        allSatisfy { column in
+            guard let firstValuesText = column.valuesTexts.first else {
+                return false
+            }
+            return firstValuesText.containsValueWithEnergyUnit
+        }
     }
 }
 

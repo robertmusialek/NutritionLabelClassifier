@@ -380,6 +380,12 @@ extension Array where Element == ExtractedRow {
             self[rowIndex] = row
         }
     }
+    
+    var allValuesTexts: [ValuesText] {
+        map { row in
+            row.valuesTexts.compactMap{ $0 }
+        }.reduce([], +)
+    }
 }
 
 extension ExtractedRow {
@@ -674,7 +680,7 @@ extension ExtractedGrid {
         if attribute == .energy && unit == .kj {
             return Value(amount: (amount * KcalsPerKilojule).rounded(toPlaces: 0), unit: unit)
         } else {
-            return Value(amount: amount, unit: unit)
+            return Value(amount: amount.roundedNutrientAmount, unit: unit)
         }
     }
     

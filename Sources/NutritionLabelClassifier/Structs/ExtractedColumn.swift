@@ -7,11 +7,16 @@ struct ExtractedColumn {
     var rows: [ExtractedRow]
     
     init(attributesColumn: [AttributeText], valueColumns: [ValuesTextColumn]) {
+        var attributesColumn = attributesColumn
+        
+        /// If the first set of values contain energy values and we seem to have missed creating an attribute for it (possibly due to a typo such as in `3EDD65E5-6363-42E3-8358-21A520ED21CC`, then manually insert a `AttributeText` for it so that it's correctly assigned
+        if valueColumns.firstSetOfValuesContainsEnergy, !attributesColumn.contains(.energy) {
+            let attributeText = AttributeText(attribute: .energy, text: defaultText)
+            attributesColumn.insert(attributeText, at: 0)
+        }
         self.rows = attributesColumn.extractedRows(using: valueColumns)
         
         insertNilValues()
-        
-        print("We here")
     }
     
     mutating func insertNilValues() {
@@ -179,6 +184,15 @@ extension Array where Element == AttributeText {
             //TODO: Check why some test cases fail when added again?
             
             for column in valueColumns {
+                
+                if i == 0, attributeText.text == defaultText, let firstValuesText = column.valuesTexts.first {
+                    valuesTexts.append(firstValuesText)
+                    continue
+                }
+                
+                /// Using this breaks a lot of other cases, so possibly just remove it when presetting 
+//                let remainingValuesTexts = column.valuesTexts.filter { !rows.allValuesTexts.contains($0) }
+//                guard let closest = remainingValuesTexts.closestValueText(to: attributeText)
                 guard let closest = column.valuesTexts.closestValueText(to: attributeText)
                 else {
                     valuesTexts.append(nil)
@@ -241,17 +255,24 @@ extension Array where Element == AttributeText {
         }
         
         /// Special case where we may have only 1 value missing. If either side is short by just 1 value from the attribute count (**possibly increase this and handle greater missing values later**)—then go through the column(s) that's short until we hit the first value that's not inline with an the expected attribute—and insert nil there, and then continue adding the rest.
-        if valueColumns.hasSingleColumnMissingOnlyOneValue(forAttributeCount: self.count) {
+        if valueColumns.hasSingleColumnMissingOnlyOneValue(forAttributeCount: self.count),
+           !containsManuallyAddedAttributeTexts
+        {
             return extractedRowsAfterInsertingNilInSingleMissingValuesPlace(using: valueColumns)
         }
         
         /// As a fallback—map rows to attributes based on how in-line they are
         return extractedRowsWithMissingValues(using: valueColumns)
     }
+    
+    var containsManuallyAddedAttributeTexts: Bool {
+        contains(where: { $0.text.id == defaultText.id })
+    }
 }
 
 
 extension Array where Element == ValuesTextColumn {
+    
     /// This heuristic only works when not more than one column has 1 value missing
     func hasSingleColumnMissingOnlyOneValue(forAttributeCount count: Int) -> Bool {
         guard self.count == 2 else {

@@ -80,7 +80,8 @@ extension Array where Element == RecognizedText {
             $0.isInSameColumnAs(startingText)
             && (preceding ? $0.rect.maxY < startingText.rect.maxY : $0.rect.minY > startingText.rect.minY)
         }.sorted {
-            preceding ? $0.rect.minY > $1.rect.minY : $0.rect.minY < $1.rect.minY
+//            preceding ? $0.rect.minY > $1.rect.minY : $0.rect.minY < $1.rect.minY
+            preceding ? $0.rect.midY > $1.rect.midY : $0.rect.midY < $1.rect.midY
         }
     }
     
