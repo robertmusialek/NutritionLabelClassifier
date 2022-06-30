@@ -80,6 +80,16 @@ public struct Value {
         guard let unit = unit else { return false }
         return unit.isEnergy
     }
+    
+    var isReferenceEnergyValue: Bool {
+        if amount == 8400, unit == .kj {
+            return true
+        }
+        if amount == 2000, unit == .kcal {
+            return true
+        }
+        return false
+    }
 }
 
 extension Value {
@@ -116,6 +126,12 @@ extension Value {
                 return []
             }
         }
+        
+        /// If we encouner strings such as `(%5 (A pall clues )) a` — which is usually how daily values in arabic is read—don't extract values from it
+//        guard !string.matchesRegex("%[0-9]+") else {
+//            return []
+//        }
+        
         
         var array: [(value: Value, positionOfMatch: Int)] = []
         print("🔢      👁 detecting values in: \(string)")

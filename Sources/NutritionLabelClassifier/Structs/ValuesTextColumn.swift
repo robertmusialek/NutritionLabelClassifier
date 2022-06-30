@@ -31,6 +31,16 @@ extension ValuesTextColumn: Hashable {
     }
 }
 
+extension Array where Element == ValuesTextColumn {
+    func containsNoValuesTexts(from column: ValuesTextColumn) -> Bool {
+        !contains { c in
+            c.valuesTexts.contains {
+                column.valuesTexts.contains($0)
+            }
+        }
+    }
+}
+
 /// Helpers for `ExtractedValues.removeTextsAboveEnergy(_:)`
 extension ValuesTextColumn {
     
@@ -154,6 +164,7 @@ extension ValuesTextColumn {
         
         /// Crashing with `E3BAC0B0-8E46-4C97-A67A-9AFBE5E8ACF7` due to `i` being 8 and out of range of `valuesText` since we've probably removed an overlapping text (we knew this would happen)
         /// Try using `valuesTexts.removeAll(where: )` instead and run tests straight after
+        /// Also crashing with `364EDBD7-004B-4A97-83AA-F6404DE5EEB4`
         
         for i in 1..<valuesTexts.count {
             let valuesText = valuesTexts[i]
@@ -234,40 +245,24 @@ extension ValuesTextColumn {
             return false
         }
 
-//        let rect = topGroupColumn.columnRect
-//        let yNormalizedRect = columnRect.rectWithYValues(of: rect)
         let rect = topGroupColumn.columnRectOfSingleValuesNotWithinOrVerticallyOutsideOf(attributes)
         let yNormalizedRect = columnRectOfSingleValuesNotWithinOrVerticallyOutsideOf(attributes).rectWithYValues(of: rect)
-        return !rect.intersection(yNormalizedRect).isNull
-
-        let belongsTo = group.contains {
-            let rect = $0.columnRect
-            let yNormalizedRect = columnRect.rectWithYValues(of: rect)
-//            let rect = $0.columnRectOfSingleValuesNotWithinOrVerticallyOutsideOf(attributes)
-//            let yNormalizedRect = columnRectOfSingleValuesNotWithinOrVerticallyOutsideOf(attributes).rectWithYValues(of: rect)
-            return !rect.intersection(yNormalizedRect).isNull
-        }
-        return belongsTo
         
-//        guard let midX = valuesTexts.compactMap({ $0.text }).midXOfShortestText,
-//              let shortestText = group.shortestText
-//        else {
-//            return false
-//        }
-//
-//        return midX >= shortestText.rect.minX && midX <= shortestText.rect.maxX
-    }
-
-    func belongsTo_legacy(_ group: [ValuesTextColumn]) -> Bool {
-        /// Use `midX` of shortest text, checking if it lies within the shortest text of any column in each group
-        //TODO-NEXT (2): Belongs to needs to be modified to recognize columns in spicy chips
-        guard let midX = valuesTexts.compactMap({ $0.text }).midXOfShortestText,
-              let shortestText = group.shortestText
-        else {
+        guard let intersectionRatio = rect.ratioOfIntersection(with: yNormalizedRect) else {
             return false
         }
 
-        return midX >= shortestText.rect.minX && midX <= shortestText.rect.maxX
+        /// We chose `0.43` because `0.423` was needed to identify a column as not belonging to in case `21AB8151-540A-41A9-BAB2-8674FD3A46E7` (check for one that starts with a value with amount 297) and `0.45` was needed to identify a column as belonging to the group in case `31D0CA8B-5069-4AB3-B865-47CD1D15D879` (check for one that starts with a value with amount 5).
+        let intersectionRatioIsSubstantial = intersectionRatio >= 0.43
+        let intersects = rect.intersects(yNormalizedRect)
+        
+        /// We added this check because `31D0CA8B-5069-4AB3-B865-47CD1D15D879` fails the `intersectionRatio` check. This makes sure that none of the `ValuesText`'s in this column exists in any of the group before continuing.
+        if  group.containsNoValuesTexts(from: self) {
+            /// We added this after case `21AB8151-540A-41A9-BAB2-8674FD3A46E7` where both columns overlapped by each other slightly (the intersection ratio—the width of the intersection as a proportion of the width of the smaller column's width was `2.9%`
+            return intersectionRatioIsSubstantial
+        } else {
+            return intersects
+        }
     }
     
     var shortestText: RecognizedText? {

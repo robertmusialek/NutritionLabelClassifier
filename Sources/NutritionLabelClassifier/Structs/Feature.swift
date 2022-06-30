@@ -59,4 +59,14 @@ extension RecognizedText {
             return attribute.isServingAttribute
         })
     }
+    
+    var containsHeaderAttribute: Bool {
+        //TODO: Make this more general purpose
+        /// This is currently only targeting the header strings in `21AB8151-540A-41A9-BAB2-8674FD3A46E7`, as its not needed by any other case—but make this more general purpose after adding all test cases to make sure that previous ones pass.
+        var headerStrings = [
+            "Per Serving Per 100 ml",
+            "Par Portion Pour 100 ml"
+        ]
+        return headerStrings.contains(string)
+    }
 }

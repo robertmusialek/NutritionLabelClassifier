@@ -43,6 +43,10 @@ struct ValuesText {
         values.containsValueWithEnergyUnit
     }
     
+    var containsReferenceEnergyValue: Bool {
+        values.containsReferenceEnergyValue
+    }
+    
     var containsValueWithKjUnit: Bool {
         values.containsValueWithKjUnit
     }
@@ -140,6 +144,9 @@ extension Array where Element == ValuesText {
         contains(where: { $0.containsValueWithEnergyUnit })
     }
     
+    var containsReferenceEnergyValue: Bool {
+        contains { $0.containsReferenceEnergyValue }
+    }
     var containsServingAttribute: Bool {
         contains(where: { $0.text.containsServingAttribute })
     }

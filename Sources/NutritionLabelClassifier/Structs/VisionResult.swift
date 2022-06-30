@@ -122,13 +122,21 @@ extension VisionResult {
     
     func columnOfValueTexts(startingFrom startingText: RecognizedText, preceding: Bool) -> [ValuesText] {
         
-        let columnOfTexts = column(startingFrom: startingText, preceding: preceding, textSet: .accurate)
+        /// Only include texts that are a minimum of 5% overlapping (in the x-axis) with the starting text
+        //TODO: Make this a parameter on the column(startingFrom:...) function instead of filtering the values it returns
+        let columnOfTexts = column(startingFrom: startingText, preceding: preceding, textSet: .accurate).filter {
+            guard let intersectionRatio = startingText.rect.ratioOfXIntersection(with: $0.rect), intersectionRatio >= 0.05 else {
+                return false
+            }
+            return true
+        }
+        
         var column: [ValuesText] = []
         var discarded: [RecognizedText] = []
         
         /// Now go through the texts
         for text in columnOfTexts {
-
+            
             guard !discarded.contains(text) else {
                 continue
             }
@@ -184,9 +192,10 @@ extension VisionResult {
     }
     
     func valuesText(for pickedText: RecognizedText) -> ValuesText? {
-        guard !pickedText.string.containsServingAttribute else {
+        guard !pickedText.string.containsServingAttribute, !pickedText.containsHeaderAttribute else {
             return nil
         }
+        
         
         /// First try and get a valid `ValuesText` here
         if let valuesText = ValuesText(pickedText), !valuesText.isSingularPercentValue {
@@ -195,7 +204,7 @@ extension VisionResult {
         
         /// If this failed, check the other arrays of the VisionResult by grabbing any texts in those that overlap with this one and happen to have a non-singular percent value within it.
         for overlappingText in alternativeTexts(overlapping: pickedText) {
-            guard !overlappingText.string.containsServingAttribute else {
+            guard !overlappingText.string.containsServingAttribute, !overlappingText.containsHeaderAttribute else {
                 continue
             }
             if let valuesText = ValuesText(overlappingText), valuesText.isSingularNutritionUnitValue {

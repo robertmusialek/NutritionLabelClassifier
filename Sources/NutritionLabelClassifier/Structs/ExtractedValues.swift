@@ -21,6 +21,11 @@ struct ExtractedValues {
                     continue
                 }
                 
+                guard !text.containsHeaderAttribute else {
+                    print("1️⃣   ↪️ Contains header attribute")
+                    continue
+                }
+                
                 guard let column = ValuesTextColumn(startingFrom: text, in: visionResult) else {
                     print("1️⃣   Did not get a ValuesTextColumn")
                     continue
@@ -59,6 +64,8 @@ struct ExtractedValues {
 
         columns.removeOverlappingTextsWithSameString()
 
+        columns.removeReferenceColumns()
+        
         var groupedColumns = groupByAttributes(columns)
         groupedColumns.removeColumnsInSameColumnAsAttributes(in: extractedAttributes)
         groupedColumns.removeExtraneousColumns()
@@ -360,6 +367,10 @@ extension Array where Element == ValuesTextColumn {
         }
     }
     
+    mutating func removeReferenceColumns() {
+        removeAll { $0.valuesTexts.containsReferenceEnergyValue }
+    }
+    
     mutating func removeTextsAboveEnergy(for attributes: ExtractedAttributes) {
         guard let topMostEnergyValueText = topMostEnergyValueText(for: attributes) else {
             return
@@ -381,7 +392,7 @@ extension Array where Element == ValuesTextColumn {
         
         /// Remove columns with too few rows
         self = filter {
-            Double($0.valuesTexts.count) > 0.1 * Double(highestNumberOfRows)
+            $0.valuesTexts.count > Int(ceil(0.1 * Double(highestNumberOfRows)))
         }
         
         /// Remove columns that contain all attribute texts
