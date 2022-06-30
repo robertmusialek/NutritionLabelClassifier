@@ -955,8 +955,8 @@ extension ExtractedGrid {
         var closestAltValue1: Value? = nil
         var closestAltValue2: Value? = nil
         
-        for c1 in valuesText1.text.candidates {
-            for c2 in valuesText2.text.candidates {
+        for c1 in valuesText1.alternateStrings {
+            for c2 in valuesText2.alternateStrings {
                 
                 guard let altValue1 = Value.detectSingleValue(in: c1),
                       let altValue2 = Value.detectSingleValue(in: c2),
@@ -1127,15 +1127,28 @@ extension ExtractedGrid {
     }
 }
 
-extension RecognizedText {
+extension ValuesText {
+    /// For the first value only
     var alternateStrings: [String] {
-        //TODO: Return Candidates + if its a two-digit number, insertingDecimalPlaceBetweenTwoDigitNumber as a string, + more as we think of them
+        guard let value = values.first else { return [] }
+        if let altValueWithDecimalPlace = value.amount.insertingDecimalPlaceBetweenTwoDigitNumber {
+            return text.candidates + [altValueWithDecimalPlace.clean]
+        } else {
+            return text.candidates
+        }
     }
 }
 
 extension Double {
     var insertingDecimalPlaceBetweenTwoDigitNumber: Double? {
-        nil
+        guard self < 100, isInteger else { return nil }
+        var string = "\(Int(self))"
+        string.insert(".", at: string.index(string.startIndex, offsetBy: 1))
+        return Double(string)
+    }
+    
+    var isInteger: Bool {
+        floor(self) == self
     }
 }
 
