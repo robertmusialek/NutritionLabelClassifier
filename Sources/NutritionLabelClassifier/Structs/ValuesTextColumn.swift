@@ -60,7 +60,7 @@ extension ValuesTextColumn {
     
     var indexOfFirstEnergyValue: Int? {
         for i in valuesTexts.indices {
-            if valuesTexts[i].containsValueWithEnergyUnit {
+            if valuesTexts[i].containsValueWithEnergyUnit, !valuesTexts[i].containsNutrientUnit {
                 return i
             }
         }
@@ -153,6 +153,18 @@ extension ValuesTextColumn {
     mutating func removeValueTextsAbove(_ attributeText: AttributeText) {
         guard let index = indexOfFirstValueTextInline(with: attributeText) else { return }
         valuesTexts.removeFirst(index)
+    }
+    
+    mutating func removeTextsWithMultipleNutrientValues() {
+        valuesTexts.removeAll { valuesText in
+            valuesText.values.filter { $0.hasNutrientUnit }.count > 2
+        }
+    }
+
+    mutating func removeTextsWithExtraLargeValues() {
+        valuesTexts.removeAll { valuesText in
+            valuesText.values.contains(where: { $0.amount > 15_000 })
+        }
     }
 
     mutating func removeValueTextsAbove(_ text: RecognizedText) {

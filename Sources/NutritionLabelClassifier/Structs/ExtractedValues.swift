@@ -51,8 +51,11 @@ struct ExtractedValues {
 
         columns.removeTextsAboveEnergy(for: extractedAttributes)
         columns.removeTextsBelowLastAttribute(of: extractedAttributes)
+        columns.removeTextsWithMultipleNutrientValues()
+        columns.removeTextsWithExtraLargeValues()
 
         columns.removeDuplicateColumns()
+//        columns.removeColumnsWithMultipleNutrientValues()
         columns.removeEmptyColumns()
         columns.pickTopColumns(using: extractedAttributes)
         columns.removeColumnsWithServingAttributes()
@@ -370,15 +373,21 @@ extension Array where Element == ValuesTextColumn {
     mutating func removeReferenceColumns() {
         removeAll { $0.valuesTexts.containsReferenceEnergyValue }
     }
-    
+
     mutating func removeTextsAboveEnergy(for attributes: ExtractedAttributes) {
-        guard let topMostEnergyValueText = topMostEnergyValueText(for: attributes) else {
+        guard let energyText = topMostEnergyValueText(for: attributes)?.text else {
             return
         }
         
+        print("7️⃣ \(energyText.string)")
+        
+//        guard let energyText = attributes.energyAttributeText?.text ?? topMostEnergyValueText(for: attributes)?.text else {
+//            return
+//        }
+        
         for i in indices {
             var column = self[i]
-            column.removeValueTextsAbove(topMostEnergyValueText.text)
+            column.removeValueTextsAbove(energyText)
             self[i] = column
         }
     }
@@ -392,7 +401,8 @@ extension Array where Element == ValuesTextColumn {
         
         /// Remove columns with too few rows
         self = filter {
-            $0.valuesTexts.count > Int(ceil(0.1 * Double(highestNumberOfRows)))
+//            $0.valuesTexts.count > Int(ceil(0.1 * Double(highestNumberOfRows)))
+            $0.valuesTexts.count > Int(ceil(0.15 * Double(highestNumberOfRows)))
         }
         
         /// Remove columns that contain all attribute texts
@@ -427,6 +437,30 @@ extension Array where Element == ValuesTextColumn {
 
     mutating func removeDuplicateColumns() {
         self = self.uniqued()
+    }
+    
+    mutating func removeTextsWithMultipleNutrientValues() {
+        for i in self.indices {
+            var column = self[i]
+            column.removeTextsWithMultipleNutrientValues()
+            self[i] = column
+        }
+    }
+    
+    mutating func removeTextsWithExtraLargeValues() {
+        for i in self.indices {
+            var column = self[i]
+            column.removeTextsWithExtraLargeValues()
+            self[i] = column
+        }
+    }
+    
+    mutating func removeColumnsWithMultipleNutrientValues() {
+        removeAll { column in
+            column.valuesTexts.contains { valuesText in
+                valuesText.values.filter { $0.hasNutrientUnit }.count > 3
+            }
+        }
     }
     
     mutating func removeEmptyColumns() {

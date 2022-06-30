@@ -43,6 +43,10 @@ struct ValuesText {
         values.containsValueWithEnergyUnit
     }
     
+    var containsNutrientUnit: Bool {
+        values.containsValueWithNutrientUnit
+    }
+        
     var containsReferenceEnergyValue: Bool {
         values.containsReferenceEnergyValue
     }

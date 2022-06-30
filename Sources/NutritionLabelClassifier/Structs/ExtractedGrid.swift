@@ -46,6 +46,7 @@ struct ExtractedGrid {
         fixSingleInvalidMacroOrEnergyRow()
         removeEmptyValues()
         removeRowsWithMultipleValues()
+        removeRowsWithNotInlineValues()
 
         fillInMissingUnits()
 
@@ -145,6 +146,14 @@ extension Array where Element == ExtractedColumn {
         }
     }
     
+    mutating func removeRowsWithNotInlineValues() {
+        for columnIndex in indices {
+            var column = self[columnIndex]
+            column.removeRowsWithNotInlineValues()
+            self[columnIndex] = column
+        }
+    }
+    
     mutating func handleReusedValueTexts() {
         for columnIndex in indices {
             var column = self[columnIndex]
@@ -180,6 +189,18 @@ extension ExtractedColumn {
     
     mutating func removeRowsWithMultipleValues() {
         rows.removeRowsWithMultipleValues()
+    }
+    
+    mutating func removeRowsWithNotInlineValues() {
+        rows.removeAll { row in
+            let attributeRect = row.attributeText.allTextsRect
+            guard let value1Rect = row.valuesTexts[0]?.text.rect else {
+                return false
+            }
+            return attributeRect.minY < value1Rect.minY
+            &&
+            attributeRect.minX > value1Rect.minX
+        }
     }
     
     mutating func handleMultipleValues(using ratio: Double?) {
@@ -626,6 +647,10 @@ extension ExtractedGrid {
         columns.removeRowsWithMultipleValues()
     }
 
+    mutating func removeRowsWithNotInlineValues() {
+        columns.removeRowsWithNotInlineValues()
+    }
+    
     mutating func fillInRowsWithOneMissingValue() {
         guard let validRatio = validRatio else {
             return

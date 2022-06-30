@@ -81,6 +81,11 @@ public struct Value {
         return unit.isEnergy
     }
     
+    var hasNutrientUnit: Bool {
+        guard let unit = unit else { return false }
+        return unit.isNutrientUnit
+    }
+    
     var isReferenceEnergyValue: Bool {
         if amount == 8400, unit == .kj {
             return true
