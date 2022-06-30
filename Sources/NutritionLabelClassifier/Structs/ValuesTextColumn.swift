@@ -167,6 +167,10 @@ extension ValuesTextColumn {
         /// Also crashing with `364EDBD7-004B-4A97-83AA-F6404DE5EEB4`
         
         for i in 1..<valuesTexts.count {
+            guard i < valuesTexts.count else {
+                continue
+            }
+            
             let valuesText = valuesTexts[i]
             let previousValuesTexts = valuesTexts[0..<i]
             
