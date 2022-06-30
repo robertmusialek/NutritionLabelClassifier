@@ -79,7 +79,13 @@ extension ValuesTextColumn {
     
     func indexOfLastValueTextInline(with attributeText: AttributeText) -> Int? {
         let thresholdY = attributeText.text.rect.height
+        let aRect = attributeText.text.rect
         for i in valuesTexts.indices {
+            let vRect = valuesTexts[i].text.rect
+            
+            guard !(vRect.minX < aRect.minX && vRect.minY > aRect.maxY) else {
+                return i
+            }
             if valuesTexts[i].text.rect.minY > attributeText.text.rect.maxY + thresholdY {
                 return i
             }
