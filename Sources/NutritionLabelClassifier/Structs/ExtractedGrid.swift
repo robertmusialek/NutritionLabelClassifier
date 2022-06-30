@@ -993,6 +993,7 @@ extension ExtractedGrid {
                 }
             }
         }
+        
         if let closestAltValue1 = closestAltValue1, let closestAltValue2 = closestAltValue2 {
             modify(row, withNewValues: (closestAltValue1, closestAltValue2))
             return true
@@ -1123,6 +1124,18 @@ extension ExtractedGrid {
         let calculatedEnergy = (carb * KcalsPerGramOfCarb) + (protein * KcalsPerGramOfProtein) + (fat * KcalsPerGramOfFat)
         let errorPercentage = (abs(energyInKcal - calculatedEnergy) / calculatedEnergy) * 100.0
         return errorPercentage <= ErrorPercentageThresholdEnergyCalculation
+    }
+}
+
+extension RecognizedText {
+    var alternateStrings: [String] {
+        //TODO: Return Candidates + if its a two-digit number, insertingDecimalPlaceBetweenTwoDigitNumber as a string, + more as we think of them
+    }
+}
+
+extension Double {
+    var insertingDecimalPlaceBetweenTwoDigitNumber: Double? {
+        nil
     }
 }
 
