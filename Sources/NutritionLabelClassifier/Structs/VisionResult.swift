@@ -128,6 +128,12 @@ extension VisionResult {
             guard let intersectionRatio = startingText.rect.ratioOfXIntersection(with: $0.rect), intersectionRatio >= 0.05 else {
                 return false
             }
+            
+//            let percentageIncreaseOfWidth = $0.rect.percentageOfIncreaseOfWidth(with: startingText.rect)
+//            print("8️⃣ \(percentageIncreaseOfWidth.rounded()) % — \"\($0.string)\" and \"\(startingText.string)\"")
+//            guard percentageIncreaseOfWidth < 1.5 else {
+//                return false
+//            }
             return true
         }
         
@@ -169,8 +175,12 @@ extension VisionResult {
             guard !text.string.isSkippableValueElement else {
                 continue
             }
+            
+            guard !pickedText.string.containsHeaderAttribute else {
+                continue
+            }
 
-            guard let valuesText = valuesText(for: pickedText) else {
+            guard let valuesText = valuesText(for: pickedText, from: startingText) else {
                 continue
             }
             
@@ -191,11 +201,10 @@ extension VisionResult {
         return column
     }
     
-    func valuesText(for pickedText: RecognizedText) -> ValuesText? {
+    func valuesText(for pickedText: RecognizedText, from startingText: RecognizedText) -> ValuesText? {
         guard !pickedText.string.containsServingAttribute, !pickedText.containsHeaderAttribute else {
             return nil
         }
-        
         
         /// First try and get a valid `ValuesText` here
         if let valuesText = ValuesText(pickedText), !valuesText.isSingularPercentValue {
@@ -203,7 +212,7 @@ extension VisionResult {
         }
         
         /// If this failed, check the other arrays of the VisionResult by grabbing any texts in those that overlap with this one and happen to have a non-singular percent value within it.
-        for overlappingText in alternativeTexts(overlapping: pickedText) {
+        for overlappingText in alternativeTexts(overlapping: pickedText, for: startingText) {
             guard !overlappingText.string.containsServingAttribute, !overlappingText.containsHeaderAttribute else {
                 continue
             }
@@ -215,7 +224,7 @@ extension VisionResult {
     }
     
     /// Be default, we will search the arrays other than `.accurate` as we're assuming that the to be the primary one we're searching through (during which this function is used to find alternatives)
-    func alternativeTexts(overlapping text: RecognizedText, in textSets: [TextSet] = [.accurateWithoutLanguageCorrection, .fast]) -> [RecognizedText] {
+    func alternativeTexts(overlapping text: RecognizedText, in textSets: [TextSet] = [.accurateWithoutLanguageCorrection, .fast], for startingText: RecognizedText) -> [RecognizedText] {
         var texts: [RecognizedText] = []
         for textSet in textSets {
             guard let array = array(for: textSet) else {
@@ -238,7 +247,9 @@ extension VisionResult {
                 let smallerRect = CGRect.smaller(of: arrayText.rect, and: text.rect)
                 let ratioOfIntersectionToSmallerRect = intersection.area / smallerRect.area
                 
-                if ratioOfIntersectionToSmallerRect > 0.9 {
+                let ratioOfXIntersectionToStartingText = arrayText.rect.ratioOfXIntersection(with: startingText.rect)
+                
+                if ratioOfIntersectionToSmallerRect > 0.9, let ratio = ratioOfXIntersectionToStartingText, ratio > 0 {
                     texts.append(arrayText)
                 }
             }

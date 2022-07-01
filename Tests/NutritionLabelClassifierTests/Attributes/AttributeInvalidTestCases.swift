@@ -27,4 +27,7 @@ let invalidAttributeTestCases: [Attribute: [String]] = [
         "Riboflavin (Vitamin E",
     ],
 
+    .salt: [
+        ". Servlng slzel Salz hidangan- 30g (114 cup)",
+    ]
 ]

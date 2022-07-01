@@ -61,12 +61,30 @@ extension RecognizedText {
     }
     
     var containsHeaderAttribute: Bool {
-        //TODO: Make this more general purpose
-        /// This is currently only targeting the header strings in `21AB8151-540A-41A9-BAB2-8674FD3A46E7`, as its not needed by any other case—but make this more general purpose after adding all test cases to make sure that previous ones pass.
-        var headerStrings = [
-            "Per Serving Per 100 ml",
-            "Par Portion Pour 100 ml"
+//        //TODO: Make this more general purpose
+//        /// This is currently only targeting the header strings in `21AB8151-540A-41A9-BAB2-8674FD3A46E7`, as its not needed by any other case—but make this more general purpose after adding all test cases to make sure that previous ones pass.
+//        var headerStrings = [
+//            "Per Serving Per 100 ml",
+//            "Par Portion Pour 100 ml",
+//        ]
+//        return headerStrings.contains(string)
+        
+        return string.containsHeaderAttribute
+    }
+}
+
+extension String {
+    var containsHeaderAttribute: Bool {
+        var regexes = [
+            "per 100[ ]?ml",
+            "pour 100[ ]?ml",
+            "per 100[ ]?g"
         ]
-        return headerStrings.contains(string)
+        for regex in regexes {
+            if matchesRegex(regex) {
+                return true
+            }
+        }
+        return false
     }
 }

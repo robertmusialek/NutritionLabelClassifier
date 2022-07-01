@@ -50,7 +50,8 @@ extension Attribute {
             return Regex.cholesterol
             
         case .salt:
-            return #"(?<!less of )(salt|salz|[^A-z]sel|sare)([^,]|\/|$)"#
+            /// Include `hidangan` because "Serving Size" in Malay is `Saiz Hidangan` which may be misread as `Salz Hidangan`, so this rules it out.
+            return #"(?<!less of )(salt|salz|[^A-z]sel|sare)(?! hidangan)([^,]|\/|$)"#
         case .sodium:
             return #"sodium"#
         case .sugar:
