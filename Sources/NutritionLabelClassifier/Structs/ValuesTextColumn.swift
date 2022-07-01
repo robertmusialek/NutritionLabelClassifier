@@ -192,12 +192,30 @@ extension ValuesTextColumn {
         })
     }
     
-    mutating func removeOverlappingTextsWithSameString() {
+    mutating func removeFullyOverlappingTexts() {
         guard valuesTexts.count > 1 else { return }
         
-        /// Crashing with `E3BAC0B0-8E46-4C97-A67A-9AFBE5E8ACF7` due to `i` being 8 and out of range of `valuesText` since we've probably removed an overlapping text (we knew this would happen)
-        /// Try using `valuesTexts.removeAll(where: )` instead and run tests straight after
-        /// Also crashing with `364EDBD7-004B-4A97-83AA-F6404DE5EEB4`
+        for i in 1..<valuesTexts.count {
+            guard i < valuesTexts.count else {
+                continue
+            }
+
+            let valuesText = valuesTexts[i]
+
+            let fullyOverlappingAndTaller = valuesTexts.filter {
+                guard $0 != valuesText else { return false }
+                return $0.text.rect.minY < valuesText.text.rect.minY
+                && $0.text.rect.maxY > valuesText.text.rect.maxY
+            }
+            
+            if !fullyOverlappingAndTaller.isEmpty {
+                valuesTexts.remove(at: i)
+            }
+        }
+    }
+    
+    mutating func removeOverlappingTextsWithSameString() {
+        guard valuesTexts.count > 1 else { return }
         
         for i in 1..<valuesTexts.count {
             guard i < valuesTexts.count else {

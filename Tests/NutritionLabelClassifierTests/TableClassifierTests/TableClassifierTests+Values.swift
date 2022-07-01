@@ -942,8 +942,7 @@ let valueExpectations: [String: [[[Value?]]]?] = [
             [v(0.38, .g), v(0.08, .g)],
         ]
     ],
-    
-    //MARK: - TestBed
+
     "43F947A2-4E96-496B-884B-DF7C960F82FE": [
         [
             [v(1557.0, .kj)],
@@ -960,7 +959,49 @@ let valueExpectations: [String: [[[Value?]]]?] = [
             [v(0.4, .mg)],
             [v(0.4, .mcg)],
         ]
-    ]
+    ],
+
+    "024A0939-FF3D-4312-868F-F82565C58ED9": [
+        [
+            [v(344.0, .kj)],
+            [v(8.3, .g)],
+            [v(1.5, .g)],
+            [v(0.0, .g)],
+            [v(0.0, .g)],
+            [v(2.0, .g)],
+            [v(1.0, .g)],
+            [v(1.5, .g)],
+        ]
+    ],
+
+    "7A686ECF-A383-4ACF-9868-A290701D92F3": [
+        [
+            [v(344.0, .kj)],
+            [v(8.3, .g)],
+            [v(1.5, .g)],
+            [v(0.0, .g)],
+            [v(0.0, .g)],
+            [v(2.0, .g)],
+            [v(1.0, .g)],
+            [v(1.5, .g)],
+        ]
+    ],
+    
+    //MARK: - TestBed
+
+    "81344E05-FDC0-44D3-AA58-61259F3D2AE6": [
+        [
+            [v(344.0, .kj)],
+            [v(8.3, .g)],
+            [v(1.5, .g)],
+            [v(0.0, .g)],
+            [v(0.0, .g)],
+            [v(2.0, .g)],
+            [v(1.0, .g)],
+            [v(1.5, .g)],
+        ]
+    ],
+
     
     //MARK: - Failing
     
@@ -1078,4 +1119,4 @@ let valueExpectations: [String: [[[Value?]]]?] = [
 
 let SingledOutTestCase: UUID? = UUID(uuidString: "024A0939-FF3D-4312-868F-F82565C58ED9")!
 
-let TestPassingTestCases = false
+let TestPassingTestCases = true
