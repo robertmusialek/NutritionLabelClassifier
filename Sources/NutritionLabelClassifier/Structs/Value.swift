@@ -125,6 +125,11 @@ extension Value {
 //        if string.matchesRegex("(trace)") {
 //            return [(Value(amount: 0.05), 0)]
 //        }
+        
+        /// Invalidates strings like `20 g = 3`
+        if string.matchesRegex(#"[0-9]+[ ]*[A-z]*[ ]*=[ ]*[0-9]+"#) {
+            return []
+        }
 
         for disqualifyingText in Value.DisqualifyingTexts {
             guard !(string.lowercased().contains(disqualifyingText)) else {

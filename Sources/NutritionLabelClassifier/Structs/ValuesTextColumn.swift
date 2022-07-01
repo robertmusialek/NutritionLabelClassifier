@@ -39,6 +39,15 @@ extension Array where Element == ValuesTextColumn {
             }
         }
     }
+    
+    func containsNoSingleValuesTexts(from column: ValuesTextColumn) -> Bool {
+        !contains { c in
+            c.valuesTexts.contains {
+                column.singleValuesTexts.contains($0)
+            }
+        }
+    }
+
 }
 
 /// Helpers for `ExtractedValues.removeTextsAboveEnergy(_:)`
@@ -282,7 +291,7 @@ extension ValuesTextColumn {
         let intersects = rect.intersects(yNormalizedRect)
         
         /// We added this check because `31D0CA8B-5069-4AB3-B865-47CD1D15D879` fails the `intersectionRatio` check. This makes sure that none of the `ValuesText`'s in this column exists in any of the group before continuing.
-        if  group.containsNoValuesTexts(from: self) {
+        if group.containsNoSingleValuesTexts(from: self) {
             /// We added this after case `21AB8151-540A-41A9-BAB2-8674FD3A46E7` where both columns overlapped by each other slightly (the intersection ratio—the width of the intersection as a proportion of the width of the smaller column's width was `2.9%`
             return intersectionRatioIsSubstantial
         } else {
