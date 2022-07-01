@@ -1130,6 +1130,62 @@ let valueExpectations: [String: [[[Value?]]]?] = [
         ]
     ],
     
+    "C6FA0D87-4B38-4D8F-9408-26725BB8D463": [
+        [
+            [v(460.0, .kj), v(2218.0, .kj)],
+            [v(6.0, .g), v(28.0, .g)],
+            [v(2.5, .g), v(13.0, .g)],
+            [v(0.0, .g), v(0.0, .g)],
+            [v(0.0, .g), v(2.0, .g)],
+            [v(13.0, .g), v(66.0, .g)],
+            [v(3.0, .g), v(15.0, .g)],
+            [v(1.0, .g), v(5.0, .g)],
+            [v(130.0, .mg), v(650.0, .mg)],
+        ]
+    ],
+    
+    "EB754683-ECF4-4DC4-9978-0B6258581172": [
+        [
+            [v(460.0, .kj), v(2218.0, .kj)],
+            [v(6.0, .g), v(28.0, .g)],
+            [v(2.5, .g), v(13.0, .g)],
+            [v(0.0, .g), v(0.0, .g)],
+            [v(0.0, .g), v(2.0, .g)],
+            [v(13.0, .g), v(66.0, .g)],
+            [v(3.0, .g), v(15.0, .g)],
+            [v(1.0, .g), v(5.0, .g)],
+            [v(130.0, .mg), v(650.0, .mg)],
+        ]
+    ],
+
+    "A221A0C0-A111-40DF-81BF-C334359B3809": [
+        [
+            [v(460.0, .kj), v(2218.0, .kj)],
+            [v(6.0, .g), v(28.0, .g)],
+            [v(2.5, .g), v(13.0, .g)],
+            [v(0.0, .g), v(0.0, .g)],
+            [v(0.0, .g), v(2.0, .g)],
+            [v(13.0, .g), v(66.0, .g)],
+            [v(3.0, .g), v(15.0, .g)],
+            [v(1.02, .g), v(5.0, .g)],
+            [v(130.0, .mg), v(650.0, .mg)],
+        ]
+    ],
+
+    "C6BDB073-EF44-46DE-864A-9B3E2EAA2BA8": [
+        [
+            [v(460.0, .kj), v(2218.0, .kj)],
+            [v(6.0, .g), v(28.0, .g)],
+            [v(2.5, .g), v(13.0, .g)],
+            [v(0.0, .g), v(0.0, .g)],
+            [v(0.0, .g), v(2.0, .g)],
+            [v(13.0, .g), v(66.0, .g)],
+            [v(3.0, .g), v(15.0, .g)],
+            [v(1.0, .g), v(5.0, .g)],
+            [v(130.0, .mg), v(650.0, .mg)],
+        ]
+    ],
+    
     //MARK: - TestBed
  
     //MARK: - Failing
@@ -1245,6 +1301,6 @@ let valueExpectations: [String: [[[Value?]]]?] = [
 
 //let SingledOutTestCase: UUID? = nil
 
-let SingledOutTestCase: UUID? = UUID(uuidString: "7648338E-8AC8-4C03-AAA1-AC8FC76E7368")!
+let SingledOutTestCase: UUID? = UUID(uuidString: "B7025C67-51CD-4508-91DB-D8EBED32A872")!
 
-let TestPassingTestCases = true
+let TestPassingTestCases = false
