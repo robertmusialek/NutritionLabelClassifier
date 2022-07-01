@@ -206,6 +206,7 @@ extension ValuesTextColumn {
                 guard $0 != valuesText else { return false }
                 return $0.text.rect.minY < valuesText.text.rect.minY
                 && $0.text.rect.maxY > valuesText.text.rect.maxY
+                && $0.text.rect.percentageOfIncreaseOfWidth(with: valuesText.text.rect) < 0.5
             }
             
             if !fullyOverlappingAndTaller.isEmpty {
@@ -234,6 +235,13 @@ extension ValuesTextColumn {
                 valuesTexts.remove(at: i)
             }
         }
+    }
+}
+
+extension CGRect {
+    func percentageOfIncreaseOfWidth(with rect: CGRect) -> Double {
+        let smallerValue = rect.width < width ? rect.width : width
+        return abs(rect.width - width)/smallerValue
     }
 }
 
