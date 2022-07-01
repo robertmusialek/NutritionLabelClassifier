@@ -1060,8 +1060,20 @@ let valueExpectations: [String: [[[Value?]]]?] = [
         ]
     ],
     
-//    "": [
-//    ]
+    "62E8658D-4E82-4FDE-9DB1-14C120267172": [
+        [
+            [v(787.0, .kj), v(1962.0, .kj)],
+            [v(6.6, .g), v(16.6, .g)],
+            [v(2.1, .g), v(5.3, .g)],
+            [v(0.0, .g), v(0.0, .g)],
+            [v(0.0, .mg), v(0.0, .mg)],
+            [v(68.0, .mg), v(170.0, .mg)],
+            [v(28.0, .g), v(69.9, .g)],
+            [v(3.3, .g), v(8.2, .g)],
+            [v(7.9, .g), v(19.7, .g)],
+            [v(4.0, .g), v(10.1, .g)],
+        ]
+    ],
     
     //MARK: - TestBed
 
@@ -1178,6 +1190,6 @@ let valueExpectations: [String: [[[Value?]]]?] = [
 
 //let SingledOutTestCase: UUID? = nil
 
-let SingledOutTestCase: UUID? = UUID(uuidString: "D17C6689-50F3-4A9C-AA03-E6007D9B30F4")!
+let SingledOutTestCase: UUID? = UUID(uuidString: "62E8658D-4E82-4FDE-9DB1-14C120267172")!
 
 let TestPassingTestCases = true

@@ -1268,7 +1268,6 @@ let validAttributeTestCases: [Attribute: [String]] = [
         "(lodiied starch), Milkfat, Beef gelatin, Sweetener (Sucralosel), Frot reag",
         "(palma, girasole), acqua, emulsionante: mono- e digliceridi degli acidi grassi, sale], umidificante: sorbitolo; fibra vegetale (psillio), proteine disoia, amido di riso, addensanti: gomma di",
         ",V&sat Fat Menos de/Less than 2",
-        "- s&Urat￿ fatty acids/Lemak tepul",
         ". Jgtsthl Fatl (￿aS",
         ". te Fettsauren",
         "/ Energie / En'er2Fett I Vetten l Grassi l Grasas",
@@ -1578,6 +1577,7 @@ let validAttributeTestCases: [Attribute: [String]] = [
     
     //MARK: - Saturated Fat
     .saturatedFat: [
+        "- s&Urat￿ fatty acids/Lemak tepul",
         "¥qkn.￿lI1￿jj Saturated Fat Og",
         "(),!.which saturates/",
         "- Of Which Saturates / Dont acides gras saturés / Davon gesättigte Fettsäuren /",

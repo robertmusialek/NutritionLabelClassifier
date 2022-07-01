@@ -22,7 +22,7 @@ extension Attribute {
             return #"(?<!high)(protein|proteine|proteines|eiweiß)(?! (bar|bas))"#
 
         case .carbohydrate:
-            return #".*(carb|glucide(s|)|(h|b)(y|v)drate).*"#
+            return #".*(carb|glucide(s|)|(h|b)(y|v)drate|karbohidrat).*"#
         case .dietaryFibre:
             return Regex.dietaryFibre
         case .solubleFibre:
@@ -148,6 +148,7 @@ extension Attribute {
         static let dietaryFibreOptions = [
             "(dietary |)fib(re|er)", "fibra", "voedingsvezel",
             "ballaststoffe",
+            "serabut diet",
             "ballaststottest", "libre", "libron" /// Vision Errors
         ]
         static let solubleFibreOptions = [
@@ -166,13 +167,14 @@ extension Attribute {
         static let starch = #"^(of which |)starch$"#
         
         static let totalFatOptions = [
-            "(?<!anu)fa(t|i)", "fett", "grassi", "lipidos", "grasa total", "grasimi"
+            "(?<!anu)fa(t|i)", "fett", "grassi", "lipidos", "grasa total", "grasimi", "jumlah lemak"
         ]
 
         static let saturatedFatOptions = [
             "saturated",
             "satuwed", "satu[^ ]+ed", "saturat[^ ]+d", /// Vision typos
             "saturates",
+            "lemak tepu",
             "davon gesattigte",
             "mattat fett",
             "of which saturates", "saturi", "saturados", "gras satures", "sat. fat", "kwasy nasycone", "grasi saturati", "sociosios"
@@ -189,7 +191,7 @@ extension Attribute {
 
         static let fat = #"^(?=\#(totalFat))(?!\#(saturatedFat))(?!\#(transFat))(?!\#(polyunsaturatedFat))(?!\#(monounsaturatedFat)).*$"#
 
-        static let cholesterol = #"cholest"#
+        static let cholesterol = #"(cholest|kolesterol)"#
         
         static func vitamin(_ letter: String) -> String {
             #"vit(amin[ ]+|\.[ ]*|[ ]+)\#(letter)( |$)"#
