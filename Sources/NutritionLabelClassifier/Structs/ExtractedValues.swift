@@ -55,15 +55,17 @@ struct ExtractedValues {
         columns.removeTextsWithExtraLargeValues()
 
         columns.removeDuplicateColumns()
-//        columns.removeColumnsWithMultipleNutrientValues()
         columns.removeEmptyColumns()
+            columns.removeColumnsWithSingleValuesNotInColumnWithAllOtherSingleValues()
+            columns.removeInvalidColumns()
         columns.pickTopColumns(using: extractedAttributes)
         columns.removeColumnsWithServingAttributes()
 
-        columns.removeColumnsWithSingleValuesNotInColumnWithAllOtherSingleValues()
+//        columns.removeColumnsWithSingleValuesNotInColumnWithAllOtherSingleValues()
         columns.sort()
+        columns.removeSubsetColumns()
         columns.cleanupEnergyValues(using: extractedAttributes)
-        columns.removeInvalidColumns()
+        //TODO: Cleanup other overlapping values
 
         columns.removeOverlappingTextsWithSameString()
 
@@ -254,6 +256,52 @@ extension ValuesText {
         values.filter({ $0.hasEnergyUnit }).count > 1
     }
 }
+
+extension ValuesTextColumn {
+    /// Returns true if this column is a subset of a column (ie. containing all the elements in the same order, but with a fewer count) than any of the columns in the provided array
+    func isSubsetOfColumn(in array: [ValuesTextColumn]) -> Bool {
+        array.contains { isSubset(of: $0) }
+    }
+
+    func isSubset_legacy(of column: ValuesTextColumn) -> Bool {
+        guard valuesTexts.count < column.valuesTexts.count else {
+            return false
+        }
+        
+        let set = Set(valuesTexts)
+        let columnSet = Set(column.valuesTexts)
+        return set.isSubset(of: columnSet)
+//        let allElemtsEqual = findListSet.isSubsetOfSet(otherSet: listSet)
+    }
+    
+    func isSubset(of column: ValuesTextColumn) -> Bool {
+        /// If the `valuesTexts` array is not less than the column's one, or we have no elements in this array, or we're unable to find the first element in the column's array, return false immediately.
+        guard valuesTexts.count < column.valuesTexts.count,
+              let first = valuesTexts.first,
+              let startIndex = column.valuesTexts.firstIndex(of: first)
+        else {
+            return false
+        }
+        
+        /// If the `valuesTexts` array has only 1 element and we've already found it, return `true`
+        guard valuesTexts.count > 1 else { return true }
+        
+        /// For all the remaining `valuesTexts`
+        for i in 1..<valuesTexts.count {
+            let columnIndex = startIndex + i
+            
+            /// If the column's array doesn't have an element at the respective index (`i` elements after the `startIndex`), or that element doesn't match the element at `i` of this array, return false immediately.
+            guard columnIndex < column.valuesTexts.count,
+                  valuesTexts[i] == column.valuesTexts[columnIndex] else {
+                return false
+            }
+        }
+        
+        /// If the remaining `valueTexts` passed, return true
+        return true
+    }
+}
+
 extension Array where Element == ValuesTextColumn {
 
     mutating func insertNilForMissingValues() {
@@ -299,15 +347,26 @@ extension Array where Element == ValuesTextColumn {
     }
     
     mutating func removeColumnsWithSingleValuesNotInColumnWithAllOtherSingleValues() {
-        for i in indices {
-            var column = self[i]
-            let number = column.numberOfSingleValuesThatAreInColumnWithOtherSingleValues
-            let portion = column.portionOfSingleValuesThatAreInColumnWithOtherSingleValues
-            print("4️⃣ \(portion) (\(number)/\(column.singleValuesTexts.count)): \(column.desc)")
-        }
-
         removeAll {
-            $0.portionOfSingleValuesThatAreInColumnWithOtherSingleValues != 1.0
+//            $0.portionOfSingleValuesThatAreInColumnWithOtherSingleValues != 1.0
+            
+            if $0.valuesTexts.count == 2 {
+                guard let ratio = $0.valuesTexts[0].text.rect
+                    .ratioOfXIntersection(with: $0.valuesTexts[1].text.rect) else {
+                    return false
+                }
+                return ratio > 0
+            } else {
+                
+                if $0.valuesTexts.count == 3,
+                   $0.singleValuesTexts.count == 1 {
+                    return true
+                }
+                
+                return $0.containsMoreThanOneSingleValue
+                &&
+                $0.portionOfSingleValuesThatAreInColumnWithOtherSingleValues != 1.0
+            }
         }
         
     }
@@ -390,6 +449,12 @@ extension Array where Element == ValuesTextColumn {
             column.removeValueTextsAbove(energyText)
             self[i] = column
         }
+    }
+    
+    mutating func removeSubsetColumns() {
+        /// Remove all columns that are subset of other columns
+        let selfCopy = self
+        removeAll { $0.isSubsetOfColumn(in: selfCopy) }
     }
     
     mutating func removeInvalidColumns() {

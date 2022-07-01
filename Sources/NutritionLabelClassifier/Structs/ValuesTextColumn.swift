@@ -174,7 +174,10 @@ extension ValuesTextColumn {
     }
 
     mutating func removeValueTextsAbove(_ text: RecognizedText) {
-        valuesTexts.removeAll(where: { $0.text.rect.minY < text.rect.minY })
+        valuesTexts.removeAll(where: {
+            let thresholdY = 0.02 * text.rect.height
+            return $0.text.rect.minY + thresholdY < text.rect.minY
+        })
     }
     
     mutating func removeOverlappingTextsWithSameString() {
@@ -367,6 +370,10 @@ extension ValuesTextColumn {
     
     var portionOfSingleValuesThatAreInColumnWithOtherSingleValues: Double {
         Double(numberOfSingleValuesThatAreInColumnWithOtherSingleValues) / Double(singleValuesTexts.count)
+    }
+    
+    var containsMoreThanOneSingleValue: Bool {
+        singleValuesTexts.count > 1
     }
 }
 
