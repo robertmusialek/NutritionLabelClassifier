@@ -26,7 +26,9 @@ struct ExtractedGrid {
             
             let attributesColumn = attributes.attributeTextColumns[i]
             let valueColumns = values.groupedColumns[i]
-            let column = ExtractedColumn(attributesColumn: attributesColumn, valueColumns: valueColumns)
+            let column = ExtractedColumn(attributesColumn: attributesColumn,
+                                         valueColumns: valueColumns,
+                                         isFirstAttributeColumn: i == 0)
             columns.append(column)
         }
         

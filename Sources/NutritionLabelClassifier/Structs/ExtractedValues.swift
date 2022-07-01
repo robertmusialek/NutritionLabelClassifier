@@ -56,16 +56,14 @@ struct ExtractedValues {
 
         columns.removeDuplicateColumns()
         columns.removeEmptyColumns()
-            columns.removeColumnsWithSingleValuesNotInColumnWithAllOtherSingleValues()
-            columns.removeInvalidColumns()
+        columns.removeColumnsWithSingleValuesNotInColumnWithAllOtherSingleValues()
+        columns.removeInvalidColumns()
         columns.pickTopColumns(using: extractedAttributes)
         columns.removeColumnsWithServingAttributes()
 
-//        columns.removeColumnsWithSingleValuesNotInColumnWithAllOtherSingleValues()
         columns.sort()
         columns.removeSubsetColumns()
         columns.cleanupEnergyValues(using: extractedAttributes)
-        //TODO: Cleanup other overlapping values
 
         columns.removeOverlappingTextsWithSameString()
 

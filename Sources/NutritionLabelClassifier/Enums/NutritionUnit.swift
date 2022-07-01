@@ -63,7 +63,7 @@ public enum NutritionUnit: Int, CaseIterable {
     var possibleUnits: [String] {
         switch self {
         case .g:
-            return ["g", "c", "q", "gram", "grams"]
+            return ["g", "c", "q", "gram", "grams", "€"]
         case .oz:
             return ["oz"]
         case .mg:

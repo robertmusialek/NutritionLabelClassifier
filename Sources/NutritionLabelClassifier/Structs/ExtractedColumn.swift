@@ -6,10 +6,10 @@ struct ExtractedColumn {
     
     var rows: [ExtractedRow]
     
-    init(attributesColumn: [AttributeText], valueColumns: [ValuesTextColumn]) {
+    init(attributesColumn: [AttributeText], valueColumns: [ValuesTextColumn], isFirstAttributeColumn: Bool) {
         var attributesColumn = attributesColumn
         
-        self.rows = attributesColumn.extractedRows(using: valueColumns)
+        self.rows = attributesColumn.extractedRows(using: valueColumns, isFirstAttributeColumn: isFirstAttributeColumn)
         
         insertNilValues()
     }
@@ -239,7 +239,7 @@ extension Array where Element == AttributeText {
         return rows
     }
     
-    mutating func extractedRows(using valueColumns: [ValuesTextColumn]) -> [ExtractedRow] {
+    mutating func extractedRows(using valueColumns: [ValuesTextColumn], isFirstAttributeColumn: Bool) -> [ExtractedRow] {
         
         var rows: [ExtractedRow] = []
         var valueColumns = valueColumns
@@ -253,7 +253,7 @@ extension Array where Element == AttributeText {
         
         //TODO: Clean this up
         /// If the first set of values contain energy values and we seem to have missed creating an attribute for it (possibly due to a typo such as in `3EDD65E5-6363-42E3-8358-21A520ED21CC`, then manually insert a `AttributeText` for it so that it's correctly assigned
-        if !contains(.energy),
+        if isFirstAttributeColumn, !contains(.energy),
            let energyValuesTexts = valueColumns.firstSetOfValuesTextsContainingEnergy {
             let attributeText = AttributeText(attribute: .energy, text: defaultText)
 //            self.insert(attributeText, at: 0)
