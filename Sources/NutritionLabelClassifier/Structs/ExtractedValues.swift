@@ -71,7 +71,7 @@ struct ExtractedValues {
 
         columns.removeReferenceColumns()
         
-        var groupedColumns = groupByAttributes(columns)
+        var groupedColumns = groupByAttributes(columns, attributes: extractedAttributes)
         groupedColumns.removeColumnsInSameColumnAsAttributes(in: extractedAttributes)
         groupedColumns.removeExtraneousColumns()
 //        groupedColumns.removeInvalidValueTexts()
@@ -80,56 +80,61 @@ struct ExtractedValues {
     }
 
     /// - Group columns if `attributeTextColumns.count > 1`
-    static func groupByAttributes(_ initialColumnsOfTexts: [ValuesTextColumn]) -> [[ValuesTextColumn]] {
-        return [initialColumnsOfTexts]
-//        guard let attributeTextColumns = attributeTextColumns else { return [] }
-//
-//        var columnsOfTexts = initialColumnsOfTexts
-//        var groups: [[[RecognizedText]]] = []
-//
-//        /// For each Attribute Column
-//        for i in attributeTextColumns.indices {
-//            let attributeTextColumn = attributeTextColumns[i]
-//
-//            /// Get the minX of the shortest attribute
-//            guard let attributeColumnMinX = attributeTextColumn.shortestText?.rect.minX else { continue }
-//
-//            var group: [[RecognizedText]] = []
-//            while group.count < 2 && !columnsOfTexts.isEmpty {
-//                let column = columnsOfTexts.removeFirst()
-//
-//                /// Skip columns that are clearly to the left of this `attributeTextColumn`
-//                guard let columnMaxX = column.shortestText?.rect.maxX,
-//                      columnMaxX > attributeColumnMinX else {
-//                    continue
-//                }
-//
-//                /// If we have another attribute column
-//                if i < attributeTextColumns.count - 1 {
-//                    /// If we have reached columns that is to the right of it
-//                    guard let nextAttributeColumnMinX = attributeTextColumns[i+1].shortestText?.rect.minX,
-//                          columnMaxX < nextAttributeColumnMinX else
-//                    {
-//                        /// Make sure we re-insert the column so that it's extracted by that column
-//                        columnsOfTexts.insert(column, at: 0)
-//
-//                        /// Stop the loop so that the next attribute column is focused on
-//                        break
-//                    }
-//                }
-//
-//                /// Skip columns that contain all nutrient attributes
+    static func groupByAttributes(_ initialColumnsOfTexts: [ValuesTextColumn], attributes: ExtractedAttributes) -> [[ValuesTextColumn]] {
+        
+        let attributeColumns = attributes.attributeTextColumns
+        guard attributeColumns.count > 1 else {
+            return [initialColumnsOfTexts]
+        }
+        
+        var columnsOfTexts = initialColumnsOfTexts
+        var groups: [[ValuesTextColumn]] = []
+
+        /// For each Attribute Column
+        for i in attributeColumns.indices {
+            let attributeColumn = attributeColumns[i]
+
+            /// Get the minX of the shortest attribute
+            guard let attributeColumnMinX = attributeColumn.shortestText?.rect.minX else { continue }
+
+            var group: [ValuesTextColumn] = []
+            while group.count < 2 && !columnsOfTexts.isEmpty {
+                let column = columnsOfTexts.removeFirst()
+
+                /// Skip columns that are clearly to the left of this `attributeTextColumn`
+                guard let columnMaxX = column.shortestText?.rect.maxX,
+                      columnMaxX > attributeColumnMinX else {
+                    continue
+                }
+
+                /// If we have another attribute column
+                if i < attributeColumns.count - 1 {
+                    /// If we have reached columns that is to the right of it
+                    guard let nextAttributeColumnMinX = attributeColumns[i+1].shortestText?.rect.minX,
+                          columnMaxX < nextAttributeColumnMinX else
+                    {
+                        /// Make sure we re-insert the column so that it's extracted by that column
+                        columnsOfTexts.insert(column, at: 0)
+
+                        /// Stop the loop so that the next attribute column is focused on
+                        break
+                    }
+                }
+
+                group.append(column)
+
+                /// Skip columns that contain all nutrient attributes
 //                guard !column.allElementsContainNutrientAttributes else {
 //                    continue
 //                }
-//
-//                /// Skip columns that contain all percentage values
+
+                /// Skip columns that contain all percentage values
 //                guard !column.allElementsArePercentageValues else {
 //                    continue
 //                }
-//
-//                //TODO: Write this
-//                /// If this column has more elements than the existing (first) column and contains any texts belonging to it, replace it
+
+                //TODO: Write this
+                /// If this column has more elements than the existing (first) column and contains any texts belonging to it, replace it
 //                if let existing = group.first,
 //                    column.count > existing.count,
 //                    column.containsTextsFrom(existing)
@@ -138,12 +143,14 @@ struct ExtractedValues {
 //                } else {
 //                    group.append(column)
 //                }
-//            }
-//
-//            groups.append(group)
-//        }
-//
-//        return groups
+            }
+
+            groups.append(group)
+        }
+
+        return groups
+        
+//        return [initialColumnsOfTexts]
     }
 }
 
