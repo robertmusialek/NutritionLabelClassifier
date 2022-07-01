@@ -41,6 +41,8 @@ struct ExtractedGrid {
         removeExtraneousValues()
 
         handleReusedValueTexts()
+        replaceNilMacroAndChildrenValuesIfZero()
+
         handleMultipleValues(using: validRatio)
 
         fillInRowsWithOneMissingValue()
@@ -439,13 +441,21 @@ extension ExtractedRow {
     mutating func fillInMissingUnits() {
         if valuesTexts.count > 0, let valuesText = valuesTexts[0], valuesText.values.first?.unit == nil {
             var new = valuesText
-            new.values[0].unit = attributeText.attribute.defaultUnit
+            if attributeText.attribute == .energy, attributeText.text.string.contains("kcal") {
+                new.values[0].unit = .kcal
+            } else {
+                new.values[0].unit = attributeText.attribute.defaultUnit
+            }
             valuesTexts[0] = new
         }
 
         if valuesTexts.count == 2, let valuesText = valuesTexts[1], valuesText.values.first?.unit == nil {
             var new = valuesText
-            new.values[0].unit = attributeText.attribute.defaultUnit
+            if attributeText.attribute == .energy, attributeText.text.string.contains("kcal") {
+                new.values[0].unit = .kcal
+            } else {
+                new.values[0].unit = attributeText.attribute.defaultUnit
+            }
             valuesTexts[1] = new
         }
     }
@@ -779,6 +789,59 @@ extension ExtractedGrid {
             fixSingleInvalidMacroOrEnergyRowForOneValue()
         } else {
             fixSingleInvalidMacroOrEnergyRowForTwoValues()
+        }
+    }
+
+    mutating func replaceNilMacroAndChildrenValuesIfZero() {
+        guard let missingAttribute = allRows.missingMacroAttribute,
+              let energyValue = row(for: .energy)?.firstValue,
+              let missingRow = row(for: missingAttribute),
+              missingRow.value1 == nil,
+              missingRow.value2 == nil
+        else {
+            return
+        }
+        
+        var energy = energyValue.amount
+        if energyValue.unit == .kj {
+            energy = energy / KcalsPerKilojule
+        }
+
+        let isValid: Bool
+        switch missingAttribute {
+        case .carbohydrate:
+            guard let fat = row(for: .fat)?.firstValue?.amount,
+                  let protein = row(for: .protein)?.firstValue?.amount else {
+                return
+            }
+            isValid = macroAndEnergyValuesAreValid(energyInKcal: energy, carb: 0, fat: fat, protein: protein)
+        case .fat:
+            guard let carb = row(for: .carbohydrate)?.firstValue?.amount,
+                  let protein = row(for: .protein)?.firstValue?.amount else {
+                return
+            }
+            isValid = macroAndEnergyValuesAreValid(energyInKcal: energy, carb: carb, fat: 0, protein: protein)
+        case .protein:
+            guard let carb = row(for: .carbohydrate)?.firstValue?.amount,
+                  let fat = row(for: .fat)?.firstValue?.amount else {
+                return
+            }
+            isValid = macroAndEnergyValuesAreValid(energyInKcal: energy, carb: carb, fat: fat, protein: 0)
+        default:
+            isValid = false
+        }
+        
+        guard isValid else { return }
+        
+        let zeroValue = Value(amount: 0, unit: .g)
+        modify(missingRow, withNewValues: (zeroValue, zeroValue))
+        
+        for childAttribute in missingAttribute.childrenAttributes {
+            if let childRow = row(for: childAttribute),
+               childRow.value1 == nil,
+               childRow.value2 == nil {
+                modify(childRow, withNewValues: (zeroValue, zeroValue))
+            }
         }
     }
 

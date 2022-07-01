@@ -77,3 +77,38 @@ struct ExtractedRow {
         valuesTexts.allSatisfy({ $0?.values.first?.amount == 0 })
     }
 }
+
+extension Array where Element == ExtractedRow {
+    var missingMacroAttribute: Attribute? {
+        guard containsRowWithValues(for: .energy) else {
+            return nil
+        }
+        if containsRowWithValues(for: .carbohydrate),
+           containsRowWithValues(for: .fat),
+           !containsRowWithValues(for: .protein) {
+            return .protein
+        }
+        if !containsRowWithValues(for: .carbohydrate),
+           containsRowWithValues(for: .fat),
+           containsRowWithValues(for: .protein) {
+            return .carbohydrate
+        }
+        if containsRowWithValues(for: .carbohydrate),
+           !containsRowWithValues(for: .fat),
+           containsRowWithValues(for: .protein) {
+            return .fat
+        }
+        return nil
+    }
+    
+    func containsRowWithValues(for attribute: Attribute) -> Bool {
+        contains(where: {
+            $0.attributeText.attribute == attribute
+            && $0.valuesTexts.contains { valuesText in valuesText != nil }
+        })
+    }
+    
+    func row(for attribute: Attribute) -> ExtractedRow? {
+        first(where: { $0.attributeText.attribute == attribute })
+    }
+}

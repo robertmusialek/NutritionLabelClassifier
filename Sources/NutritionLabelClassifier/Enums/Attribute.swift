@@ -222,6 +222,10 @@ public enum Attribute: String, CaseIterable {
         !isHeaderAttribute && !isServingAttribute && !isTableAttribute
     }
 
+    var childrenAttributes: [Attribute] {
+        Self.allCases.filter { $0.parentAttribute == self }
+    }
+    
     var parentAttribute: Attribute? {
         switch self {
         case .saturatedFat, .polyunsaturatedFat, .monounsaturatedFat, .transFat, .cholesterol:
@@ -234,6 +238,7 @@ public enum Attribute: String, CaseIterable {
             return nil
         }
     }
+    
     func supportsUnit(_ unit: NutritionUnit) -> Bool {
         supportedUnits.contains(unit)
     }
