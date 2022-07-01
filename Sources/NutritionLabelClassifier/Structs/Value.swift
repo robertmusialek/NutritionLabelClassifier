@@ -130,6 +130,11 @@ extension Value {
         if string.matchesRegex(#"[0-9]+[ ]*[A-z]*[ ]*=[ ]*[0-9]+"#) {
             return []
         }
+        
+        /// Invalidates strings like `5 x 3`
+        if string.matchesRegex(#"[0-9]+[ ]*x[ ]*[0-9]+"#) {
+            return []
+        }
 
         for disqualifyingText in Value.DisqualifyingTexts {
             guard !(string.lowercased().contains(disqualifyingText)) else {

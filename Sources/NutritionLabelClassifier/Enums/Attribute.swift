@@ -275,8 +275,11 @@ public enum Attribute: String, CaseIterable {
         case .dietaryFibre, .solubleFibre, .insolubleFibre, .saturatedFat, .polyunsaturatedFat, .monounsaturatedFat, .transFat, .sugar, .addedSugar, .gluten, .starch, .polyols:
             return [.g, .mg, .mcg]
             
-        case .cholesterol, .sodium, .calcium, .iron, .potassium, .cobalamin, .vitaminA, .vitaminC, .vitaminD, .vitaminB6, .zinc, .iodine, .selenium, .magnesium, .manganese, .chromium, .thiamin, .folate, .folicAcid, .biotin, .pantothenicAcid, .riboflavin, .niacin, .vitaminB1, .vitaminB3, .vitaminB12, .vitaminE, .vitaminK, .vitaminK2:
+        case .cholesterol, .sodium, .calcium, .iron, .potassium, .cobalamin, .vitaminA, .vitaminC, .vitaminD, .vitaminB6, .zinc, .iodine, .selenium, .magnesium, .manganese, .chromium, .thiamin, .folate, .biotin, .pantothenicAcid, .riboflavin, .niacin, .vitaminB1, .vitaminB3, .vitaminE, .vitaminK, .vitaminK2:
             return [.mg, .mcg, .p, .g]
+            
+        case .folicAcid, .vitaminB12:
+            return [.mcg, .mg, .p, .g]
             
         case .servingAmount:
             return [.cup, .g, .mcg, .mg]

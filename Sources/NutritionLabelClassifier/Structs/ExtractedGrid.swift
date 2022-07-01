@@ -35,6 +35,8 @@ struct ExtractedGrid {
         self.columns = columns
         self.numberOfValues = columns.first?.rows.first?.valuesTexts.count ?? 0
 
+        insertMissingColumnForMultipleValuedColumns()
+        
         removeValuesOutsideColumnRects()
         removeExtraneousValues()
 
@@ -145,6 +147,15 @@ extension Array where Element == ExtractedColumn {
             var column = self[columnIndex]
             column.removeRowsWithMultipleValues()
             self[columnIndex] = column
+        }
+    }
+    
+    mutating func insertMissingColumnForMultipleValuedColumns() {
+        for columnIndex in indices {
+//            if column.
+//            var column = self[columnIndex]
+//            column.insertMissingColumnForMultipleValuedColumns()
+//            self[columnIndex] = column
         }
     }
     
@@ -649,6 +660,10 @@ extension ExtractedGrid {
         columns.removeRowsWithMultipleValues()
     }
 
+    mutating func insertMissingColumnForMultipleValuedColumns() {
+        columns.insertMissingColumnForMultipleValuedColumns()
+    }
+    
     mutating func removeRowsWithNotInlineValues() {
         columns.removeRowsWithNotInlineValues()
     }
@@ -970,6 +985,9 @@ extension ExtractedGrid {
     }
 
     mutating func correctionMadeUsingAlternativeValues(_ row: ExtractedRow, for validRatio: Double) -> Bool {
+        guard row.valuesTexts.count == 2 else {
+            return false
+        }
         /// Try and use the alternative text candidates to see if one satisfies the ratio requirement (of being within an error margin of it)
         guard let valuesText1 = row.valuesTexts[0], let valuesText2 = row.valuesTexts[1],
               let value1 = valuesText1.values.first, let value2 = valuesText2.values.first
@@ -1179,7 +1197,7 @@ extension Double {
     }
 }
 
-let ErrorPercentageThresholdEnergyCalculation = 5.0
+let ErrorPercentageThresholdEnergyCalculation = 7.5
 
 extension Array where Element == ExtractedRow {
     

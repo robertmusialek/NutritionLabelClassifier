@@ -63,6 +63,7 @@ struct ExtractedValues {
 
         columns.sort()
         columns.removeSubsetColumns()
+        columns.splitUpColumnsWithAllMultiColumnedValues()
         columns.cleanupEnergyValues(using: extractedAttributes)
 
         columns.removeOverlappingTextsWithSameString()
@@ -331,6 +332,17 @@ extension Array where Element == ValuesTextColumn {
             }
         }
         return false
+    }
+    
+    mutating func splitUpColumnsWithAllMultiColumnedValues() {
+        for i in indices {
+            let column = self[i]
+            guard let splitColumns = column.splitUpColumnsUsingMultiColumnedValues else {
+                continue
+            }
+            self[i] = splitColumns.0
+            self.insert(splitColumns.1, at: i + 1)
+        }
     }
     
     mutating func cleanupEnergyValues(using extractedAttributes: ExtractedAttributes) {

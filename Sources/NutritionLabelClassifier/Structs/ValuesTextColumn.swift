@@ -14,7 +14,10 @@ struct ValuesTextColumn {
         let above = visionResult.columnOfValueTexts(startingFrom: text, preceding: true).reversed()
         let below = visionResult.columnOfValueTexts(startingFrom: text, preceding: false)
         self.valuesTexts = above + [valuesText] + below
-        print("W ehere")
+    }
+    
+    init(valuesTexts: [ValuesText]) {
+        self.valuesTexts = valuesTexts
     }
 }
 
@@ -271,6 +274,31 @@ extension ValuesTextColumn {
         
         /// Now return the union
         return unionRect ?? .zero
+    }
+    
+    var containsAllMultiColumnedValues: Bool {
+        valuesTexts.allSatisfy { valuesText in
+            valuesText.values.filter {
+                $0.unit != .p
+            }.count == 2
+        }
+    }
+    
+    var splitUpColumnsUsingMultiColumnedValues: (ValuesTextColumn, ValuesTextColumn)? {
+        var valuesTexts1: [ValuesText] = []
+        var valuesTexts2: [ValuesText] = []
+        
+        for valuesText in valuesTexts {
+            let valuesWithoutPercentages = valuesText.values.filter({ $0.unit != .p })
+            guard valuesWithoutPercentages.count == 2 else { return nil }
+            valuesTexts1.append(ValuesText(values: [valuesWithoutPercentages[0]],
+                                           text: valuesText.text))
+            valuesTexts2.append(ValuesText(values: [valuesWithoutPercentages[1]],
+                                           text: valuesText.text))
+        }
+        
+        return (ValuesTextColumn(valuesTexts: valuesTexts1),
+                ValuesTextColumn(valuesTexts: valuesTexts2))
     }
     
     func belongsTo(_ group: [ValuesTextColumn], using attributes: ExtractedAttributes) -> Bool {
