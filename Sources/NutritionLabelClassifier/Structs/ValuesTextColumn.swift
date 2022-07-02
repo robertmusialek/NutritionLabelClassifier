@@ -149,6 +149,30 @@ extension ValuesTextColumn {
         //TODO: Have this a preference where we choose kcal over kj so that it is configurable when using the classifier
         valuesTexts.removeAll(where: { $0.containsValueWithKcalUnit })
     }
+    
+    mutating func removeExtraLongFooterValuesWithNoAttributes(for attributes: ExtractedAttributes) {
+        guard let bottomAttributeText = attributes.bottomAttributeText else {
+            return
+        }
+        valuesTexts.removeAll(where: {
+            guard let attributeColumnBottom = attributes.columnRects.first?.maxY else {
+                return false
+            }
+//            let textMaxY = $0.text.rect.maxY
+//            let textMinY = $0.text.rect.minY
+//            let attributesColumnRectsMaxY = attributes.columnRects[0].maxY
+//            let bottomAttributeTextMaxY = bottomAttributeText.text.rect.maxY
+            
+            let isExtraLongWithNoAttributes = Attribute.detect(in: $0.text.string).isEmpty
+            &&
+            $0.text.rect.width / $0.text.rect.height > 6.4
+            &&
+            $0.text.rect.minY > attributeColumnBottom
+            
+            
+            return isExtraLongWithNoAttributes
+        })
+    }
         
     mutating func pickEnergyValue(from multipleValues: [ValuesText], for energyAttribute: AttributeText?) {
         var array = multipleValues

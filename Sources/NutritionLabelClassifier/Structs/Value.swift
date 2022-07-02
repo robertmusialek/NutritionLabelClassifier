@@ -74,7 +74,10 @@ public struct Value {
     static var DisqualifyingTexts: [String] = [
         "contributes to a daily diet",
         "daily value",
-        "produced for"
+        "produced for",
+        "keep frozen",
+        "best before"
+//        "of which"
     ]
     
     var hasEnergyUnit: Bool {

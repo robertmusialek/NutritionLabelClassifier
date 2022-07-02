@@ -111,7 +111,7 @@ extension Array where Element == AttributeText {
     func extractedRowsAfterInsertingNilInSingleMissingValuesPlace(using valueColumns: [ValuesTextColumn]) -> [ExtractedRow] {
         
         /// First create the empty rows with the attributes in order
-        var rows: [ExtractedRow] = map { ExtractedRow(attributeText: $0, valuesTexts: [nil, nil]) }
+        var rows: [ExtractedRow] = map { ExtractedRow(attributeText: $0, valuesTexts: valueColumns.map { _ in nil }) }
         
         /// Then for each each column
         for columnIndex in valueColumns.indices {

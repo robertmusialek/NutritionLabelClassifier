@@ -39,40 +39,42 @@ struct ExtractedValues {
 
         print("⏱ extracting columns took: \(CFAbsoluteTimeGetCurrent()-start)s")
 
-        let groupedColumns = Self.process(valuesTextColumns: columns, extractedAttributes: extractedAttributes)
+        let groupedColumns = Self.process(valuesTextColumns: columns, attributes: extractedAttributes)
         self.groupedColumns = groupedColumns
     }
     
-    static func process(valuesTextColumns: [ValuesTextColumn], extractedAttributes: ExtractedAttributes) -> [[ValuesTextColumn]] {
+    static func process(valuesTextColumns: [ValuesTextColumn], attributes: ExtractedAttributes) -> [[ValuesTextColumn]] {
 
         let start = CFAbsoluteTimeGetCurrent()
 
         var columns = valuesTextColumns
 
-        columns.removeTextsAboveEnergy(for: extractedAttributes)
-        columns.removeTextsBelowLastAttribute(of: extractedAttributes)
+        columns.removeTextsAboveEnergy(for: attributes)
+        columns.removeTextsBelowLastAttribute(of: attributes)
         columns.removeTextsWithMultipleNutrientValues()
         columns.removeTextsWithExtraLargeValues()
 
         columns.removeDuplicateColumns()
         columns.removeEmptyColumns()
         columns.removeColumnsWithSingleValuesNotInColumnWithAllOtherSingleValues()
+//        columns.removeFooterText(for: attributes)
+        columns.removeExtraLongFooterValuesWithNoAttributes(for: attributes)
         columns.removeInvalidColumns()
-        columns.pickTopColumns(using: extractedAttributes)
+        columns.pickTopColumns(using: attributes)
         columns.removeColumnsWithServingAttributes()
 
         columns.sort()
         columns.removeSubsetColumns()
         columns.splitUpColumnsWithAllMultiColumnedValues()
-        columns.cleanupEnergyValues(using: extractedAttributes)
+        columns.cleanupEnergyValues(using: attributes)
 
         columns.removeOverlappingTextsWithSameString()
         columns.removeFullyOverlappingTexts()
 
         columns.removeReferenceColumns()
         
-        var groupedColumns = groupByAttributes(columns, attributes: extractedAttributes)
-        groupedColumns.removeColumnsInSameColumnAsAttributes(in: extractedAttributes)
+        var groupedColumns = groupByAttributes(columns, attributes: attributes)
+        groupedColumns.removeColumnsInSameColumnAsAttributes(in: attributes)
         groupedColumns.removeExtraneousColumns()
 //        groupedColumns.removeInvalidValueTexts()
          print("⏱ processing columns took: \(CFAbsoluteTimeGetCurrent()-start)s")
@@ -360,6 +362,15 @@ extension Array where Element == ValuesTextColumn {
         }
     }
 
+    mutating func removeExtraLongFooterValuesWithNoAttributes(for attributes: ExtractedAttributes) {
+        for i in indices {
+            var column = self[i]
+            column.removeExtraLongFooterValuesWithNoAttributes(for: attributes)
+            self[i] = column
+        }
+    }
+    
+
     mutating func removeColumnsWithServingAttributes() {
         removeAll { $0.containsServingAttribute }
     }
@@ -483,6 +494,46 @@ extension Array where Element == ValuesTextColumn {
         removeAll { $0.isSubsetOfColumn(in: selfCopy) }
     }
     
+    mutating func removeFirstColumnIfItSpansPastSecondColumn() {
+        guard count == 2 else { return }
+        let threshold = 0.0
+        if self[0].columnRect.maxX - self[1].columnRect.maxX > threshold {
+            self.remove(at: 0)
+        }
+    }
+    
+    mutating func removeFooterText(for attributes: ExtractedAttributes) {
+        /// if we have a common text amongst all columns, and its maxY is past the maxY of the last attribute, remove it from all columns
+        guard let valuesText = commonLastValuesText,
+              let bottomAttributeText = attributes.bottomAttributeText,
+              valuesText.text.rect.maxY > bottomAttributeText.text.rect.maxY else {
+            return
+        }
+        
+        for i in self.indices {
+            var column = self[i]
+            column.valuesTexts.removeLast()
+            self[i] = column
+        }
+    }
+    
+    var commonLastValuesText: ValuesText? {
+        var commonLastValuesText: ValuesText? = nil
+        for column in self {
+            guard let lastValuesText = column.valuesTexts.last else {
+                continue
+            }
+            guard let currentValuesText = commonLastValuesText else {
+                commonLastValuesText = lastValuesText
+                continue
+            }
+            guard currentValuesText == lastValuesText else {
+                return nil
+            }
+        }
+        return commonLastValuesText
+    }
+    
     mutating func removeInvalidColumns() {
         guard let highestNumberOfRows = sorted(by: {
             $0.valuesTexts.count > $1.valuesTexts.count
@@ -500,8 +551,35 @@ extension Array where Element == ValuesTextColumn {
         self = filter { column in
             column.valuesTexts.count > column.valuesTexts.filter { Attribute.detect(in: $0.text.string).count > 0 }.count
         }
+        
+        /// Remove columns that contain mostly attribute texts
+//        self = filter { column in
+//            let attributeTextsCount = column.valuesTexts.filter { Attribute.detect(in: $0.text.string).count > 0 }.count
+//            let percentageOfAttributeTexts = Double(attributeTextsCount)/Double(column.valuesTexts.count)
+//            return percentageOfAttributeTexts < 0.65
+//        }
+
     }
-    
+
+    mutating func removeColumnsWithProportionallyLessValues() {
+        guard let highestNumberOfRows = sorted(by: {
+            $0.valuesTexts.count > $1.valuesTexts.count
+        }).first?.valuesTexts.count else {
+            return
+        }
+        
+        /// Remove columns with too few rows
+        self = filter {
+//            $0.valuesTexts.count > Int(ceil(0.1 * Double(highestNumberOfRows)))
+            $0.valuesTexts.count > Int(ceil(0.15 * Double(highestNumberOfRows)))
+        }
+        
+//        /// Remove columns that contain all attribute texts
+//        self = filter { column in
+//            column.valuesTexts.count > column.valuesTexts.filter { Attribute.detect(in: $0.text.string).count > 0 }.count
+//        }
+    }
+
     mutating func removeTextsBelowLastAttribute(of extractedAttributes: ExtractedAttributes) {
         guard let bottomAttributeText = extractedAttributes.bottomAttributeText else {
             return
