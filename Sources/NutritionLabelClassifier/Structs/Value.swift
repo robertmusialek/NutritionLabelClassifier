@@ -13,7 +13,8 @@ public struct Value {
 //            self.unit = .g
             return
         } else if str == "trace" {
-            self.amount = 0.05
+            self.amount = 0.08
+            self.unit = .g
 //            self.unit = .g
             return
         }

@@ -230,7 +230,7 @@ public enum Attribute: String, CaseIterable {
         switch self {
         case .saturatedFat, .polyunsaturatedFat, .monounsaturatedFat, .transFat, .cholesterol:
             return .fat
-        case .dietaryFibre, .gluten, .sugar, .addedSugar, .starch:
+        case .sugar, .addedSugar, .starch:
             return .carbohydrate
         case .sodium:
             return .salt

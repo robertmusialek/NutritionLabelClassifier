@@ -45,6 +45,7 @@ struct ExtractedGrid {
 
         handleMultipleValues(using: validRatio)
 
+        fixInvalidChildRows()
         fillInRowsWithOneMissingValue()
         fixInvalidRows()
         fixInvalidRowsContainingLessThanPrefix()
@@ -58,6 +59,7 @@ struct ExtractedGrid {
 
         addMissingEnergyValuesIfNeededAndAvailable()
         convertMismatchedEnergyUnits()
+        addMissingMacroOrEnergyValuesIfPossible()
     }
     
     var values: [[[Value?]]] {
@@ -636,6 +638,85 @@ extension ExtractedGrid {
         //TODO: Do this when a test case requires us to
     }
     
+    mutating func addMissingMacroOrEnergyValuesIfPossible() {
+        guard let missingAttribute = allRows.missingMacroAttribute else {
+            return
+        }
+        
+        switch missingAttribute {
+        case .energy:
+            guard let amount1 = calculateAmount(for: .energy, in: 0) else {
+                return
+            }
+            let attributeText = AttributeText(attribute: .energy, text: defaultText)
+            let valuesText1 = ValuesText(values: [Value(amount: amount1.roundedNutrientAmount, unit: .kcal)])
+            if numberOfValues == 2 {
+                guard let amount2 = calculateAmount(for: .energy, in: 1) else {
+                    return
+                }
+                let valuesText2 = ValuesText(values: [Value(amount: amount2.roundedNutrientAmount, unit: .g)])
+                let row = ExtractedRow(attributeText: attributeText, valuesTexts: [valuesText1, valuesText2])
+                columns[0].rows.append(row)
+            } else {
+                let row = ExtractedRow(attributeText: attributeText, valuesTexts: [valuesText1])
+                columns[0].rows.append(row)
+            }
+        case .carbohydrate:
+            guard let amount1 = calculateAmount(for: .carbohydrate, in: 0) else {
+                return
+            }
+            let attributeText = AttributeText(attribute: .carbohydrate, text: defaultText)
+            let valuesText1 = ValuesText(values: [Value(amount: amount1.roundedNutrientAmount, unit: .g)])
+            if numberOfValues == 2 {
+                guard let amount2 = calculateAmount(for: .carbohydrate, in: 1) else {
+                    return
+                }
+                let valuesText2 = ValuesText(values: [Value(amount: amount2.roundedNutrientAmount, unit: .g)])
+                let row = ExtractedRow(attributeText: attributeText, valuesTexts: [valuesText1, valuesText2])
+                columns[0].rows.append(row)
+            } else {
+                let row = ExtractedRow(attributeText: attributeText, valuesTexts: [valuesText1])
+                columns[0].rows.append(row)
+            }
+        case .protein:
+            guard let amount1 = calculateAmount(for: .protein, in: 0) else {
+                return
+            }
+            let attributeText = AttributeText(attribute: .protein, text: defaultText)
+            let valuesText1 = ValuesText(values: [Value(amount: amount1.roundedNutrientAmount, unit: .g)])
+            if numberOfValues == 2 {
+                guard let amount2 = calculateAmount(for: .protein, in: 1) else {
+                    return
+                }
+                let valuesText2 = ValuesText(values: [Value(amount: amount2.roundedNutrientAmount, unit: .g)])
+                let row = ExtractedRow(attributeText: attributeText, valuesTexts: [valuesText1, valuesText2])
+                columns[0].rows.append(row)
+            } else {
+                let row = ExtractedRow(attributeText: attributeText, valuesTexts: [valuesText1])
+                columns[0].rows.append(row)
+            }
+        case .fat:
+            guard let amount1 = calculateAmount(for: .fat, in: 0) else {
+                return
+            }
+            let attributeText = AttributeText(attribute: .fat, text: defaultText)
+            let valuesText1 = ValuesText(values: [Value(amount: amount1.roundedNutrientAmount, unit: .g)])
+            if numberOfValues == 2 {
+                guard let amount2 = calculateAmount(for: .fat, in: 1) else {
+                    return
+                }
+                let valuesText2 = ValuesText(values: [Value(amount: amount2.roundedNutrientAmount, unit: .g)])
+                let row = ExtractedRow(attributeText: attributeText, valuesTexts: [valuesText1, valuesText2])
+                columns[0].rows.append(row)
+            } else {
+                let row = ExtractedRow(attributeText: attributeText, valuesTexts: [valuesText1])
+                columns[0].rows.append(row)
+            }
+        default:
+            return
+        }
+    }
+    
     mutating func convertMismatchedEnergyUnits() {
         guard let row = row(for: .energy), row.hasMismatchedUnits,
               let value1 = row.value1, let value2 = row.value2
@@ -742,9 +823,9 @@ extension ExtractedGrid {
     
     func calculateAmount(for attribute: Attribute, in index: Int) -> Double? {
         print("2️⃣ Calculate \(attribute) in column \(index)")
-        guard allRows.containsAllMacrosAndEnergy else {
-            return nil
-        }
+//        guard allRows.containsAllMacrosAndEnergy else {
+//            return nil
+//        }
         
         switch attribute {
         case .carbohydrate:
@@ -976,6 +1057,12 @@ extension ExtractedGrid {
         }
     }
     
+    mutating func fixInvalidChildRows() {
+        for row in invalidChildRows {
+            correctChildRow(row)
+        }
+    }
+    
     var greaterValueIndex: Int? {
         guard let row = validRows.first,
               row.valuesTexts.count == 2,
@@ -1018,6 +1105,67 @@ extension ExtractedGrid {
             let amount = (value1.amount * validRatio).roundedNutrientAmount
             modify(row, withNewValues: (Value(amount: amount, unit: value2.unit), value2))
         }
+    }
+    
+    mutating func correctChildRow(_ childRow: ExtractedRow) {
+        guard let parentAttribute = childRow.attributeText.attribute.parentAttribute,
+            let parentRow = row(for: parentAttribute) else {
+            return
+        }
+        
+        var validValue1: Value? = nil
+        var validValue2: Value? = nil
+        
+        if let parentValue = parentRow.value1,
+           let childValue = childRow.value1,
+           let childAmount = childValue.amountInGramsIfWithUnit,
+           let parentAmount = parentValue.amountInGramsIfWithUnit,
+           childAmount > parentAmount,
+           let alternateValue1s = childRow.valuesTexts[0]?.alternateValues
+        {
+            for altValue in alternateValue1s {
+                guard let altAmount = altValue.amountInGramsIfWithUnit else {
+                    continue
+                }
+                if altAmount <= parentAmount {
+                    validValue1 = altValue
+                    break
+                }
+            }
+        }
+        
+        if let parentValue = parentRow.value2,
+           let childValue = childRow.value2,
+           let childAmount = childValue.amountInGramsIfWithUnit,
+           let parentAmount = parentValue.amountInGramsIfWithUnit,
+           childAmount > parentAmount,
+           let alternateValues = childRow.valuesTexts[1]?.alternateValues
+        {
+            for altValue in alternateValues {
+                guard let altAmount = altValue.amountInGramsIfWithUnit else {
+                    continue
+                }
+                if altAmount <= parentAmount {
+                    validValue2 = altValue
+                    break
+                }
+            }
+        }
+        
+        var newRow = childRow
+        var valuesTexts = childRow.valuesTexts
+        if let validValue1 = validValue1 {
+            var valuesText = valuesTexts[0]
+            valuesText?.values = [validValue1]
+            valuesTexts[0] = valuesText
+        }
+        if let validValue2 = validValue2 {
+            var valuesText = valuesTexts[1]
+            valuesText?.values = [validValue2]
+            valuesTexts[1] = valuesText
+        }
+        newRow.valuesTexts = valuesTexts
+        modify(childRow, with: newRow)
     }
     
     mutating func correct(_ row: ExtractedRow, for validRatio: Double) {
@@ -1141,6 +1289,18 @@ extension ExtractedGrid {
     
     var emptyRows: [ExtractedRow] {
         allRows.filter { $0.hasNilValues }
+    }
+    
+    var invalidChildRows: [ExtractedRow] {
+        allRows.filter {
+            guard let parentAttribute = $0.attributeText.attribute.parentAttribute,
+                  let parentRow = allRows.row(for: parentAttribute)
+            else {
+                return false
+            }
+            
+            return !$0.isValidChild(of: parentRow)
+        }
     }
     
     func invalidRows(using validRatio: Double? = nil, threshold: Double = RatioErrorPercentageThreshold, containingLessThanPrefix: Bool = false) -> [ExtractedRow] {

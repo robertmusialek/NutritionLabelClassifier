@@ -4,6 +4,53 @@ import XCTest
 
 let valueExpectations: [String: [[[Value?]]]?] = [
 
+    "99D1A080-19CF-4A08-B8B7-1BD5E4D9CB40": nil,
+    "3C53CC91-34D1-46EE-92BE-328ABDC20342": nil,
+    "15C9C2C9-5012-43A3-835A-3FB0A2DD1E2D": nil,
+    "0D04AEB7-95B1-4781-AFCA-38BF1036DAAC": nil,
+    "26F3916F-B688-49CC-A0DD-4F757B6735FD": nil,
+    "B3DC8D45-2F10-41C8-ACDF-2A00AFE6E0D3": nil,
+    "0A321001-BD7F-4A8A-8F62-FDE636B64CE3": nil,
+    "749A730F-17B1-47DE-9A5B-129C152D657E": nil,
+    "AE8C75F6-D65E-4F5F-A2D9-47FC81C158B9": nil,
+    "0494F267-A8C9-4796-8D23-DA6098C1AA5B": nil,
+    "BF1EE7E6-96C0-4929-8F9B-C3E4EC7782F2": nil,
+    "DF58E0D9-56BF-404C-8B36-675F797411A6": nil,
+    "0CBD5EF1-01E2-482E-891D-21A32479CFB0": nil,
+    "91F8FEFC-DF56-492D-BAB0-3EC24ADB84F3": nil,
+    "FCA442D0-9F3A-4AF9-9460-D3075C7FB2A0": nil,
+    "D65B73DA-E3E0-4968-83EF-06EA3E629A20": nil,
+    "6C3008A5-A6B0-438D-9332-827B52421643": nil,
+    "CC5957B2-1208-4A85-A728-5EABA1348DB9": nil,
+    "BB071452-B8C0-492D-890E-122BDBBF5909": nil,
+    "D3E7433B-AF49-4ACB-84EC-8366795CE048": nil,
+    "18E7934B-8B75-4E60-A041-7837D1E3DC27": nil,
+    "3A7D1894-FD50-4226-8A97-8471F4E34E89": nil,
+    "4CF0CBA5-C746-4844-BF54-27A92C808280": nil,
+    "5410D64B-4A8D-4183-8C81-EC82ABBFA648": nil,
+    "B789ED71-802F-42EF-85A5-FD9FEED77E6F": nil,
+    "083C5BAA-2DDA-42E5-8A6C-DCD1A3E5B7E1": nil,
+    "CE17DE0B-1480-4195-ACD0-C706FF9EE86F": nil,
+    "9CFDEE5E-005E-408F-B1E5-2EF751747988": nil,
+    "85025F31-4CD8-48D5-8AB0-246D8EAF0465": nil,
+    "9BA54F68-9FC5-430B-90C2-158A2BD1B29D": nil,
+    "90520604-4AF2-4C16-8C5E-F522F2309ECE": nil,
+    "92C3B115-CBED-4E4D-B831-4BF7BF973BCD": nil,
+    "674347E4-7B53-4409-95AF-07FD0560ADBA": nil,
+    "0E6CBF93-F98E-4922-8058-CE987BBD9617": nil,
+    "B362A01E-8762-4BD4-B7E9-ACED4D919B5B": nil,
+    "4527F77A-3514-4EAB-9DC1-214D10BBE9BA": nil,
+    "2E51C3CE-7363-412E-AF68-EB3F3ED9B343": nil,
+    "662AD301-6914-49EE-B8D2-DAFE00AF7F7F": nil,
+    "DE38ABA0-A8D7-46A5-8DBB-7E2DE983F9F4": nil,
+    "180F6D30-B077-4787-BE2C-22D3C4FC00E3": nil,
+    "1B9397C9-27E5-4E9F-BE75-17C878A2F323": nil,
+    "40E7C0B9-E9CC-4FA7-93A3-B3623FAB23FF": nil,
+    "7A7E14B8-EFA8-4140-987F-65439B83D99A": nil,
+    "713A721E-A470-4DA8-B44E-E939FEF9777A": nil,
+    "BD53EFF6-2AF9-4FCA-8865-67CCB4BA9B69": nil,
+    "D8809685-A90E-4756-BCA1-79B2D8C0D090": nil,
+
     "C19F126E-6D6E-464A-B7C4-718AA4384CC2": [
         [
             [v(460, .kj),   v(2218, .kj)],
@@ -270,23 +317,6 @@ let valueExpectations: [String: [[[Value?]]]?] = [
             [v(1.1, .g), v(0.2, .g)],
             [v(3.0, .g), v(0.4, .g)],
             [v(0.48, .g), v(0.07, .g)],
-        ]
-    ],
-
-    "2184C983-5761-4F8F-BE7A-E6771E963FFF": [
-        [
-            [v(422.584, .kj), v(1413, .kj)], /// failed to read in 424 so it's calculated using the ratio
-            [v(0.03, .g), v(0.1, .g)],
-            [v(0.03, .g), v(0.1, .g)],
-            [v(0.0, .g), v(0.0, .g)],
-            [v(0.0, .mg), v(0.8, .mg)],
-            [v(6.0, .mg), v(20.0, .mg)],
-            [v(0.015, .g), v(0.05, .g)],
-            [v(23.4, .g), v(78.0, .g)],
-            [v(0.0, .g), v(0.0, .g)],
-            [v(15.63, .g), v(52.1, .g)],
-            [v(15.63, .g), v(52.1, .g)],
-            [v(2.04, .g), v(6.8, .g)],
         ]
     ],
 
@@ -622,23 +652,6 @@ let valueExpectations: [String: [[[Value?]]]?] = [
             [v(0.5, .g)],
             [v(4.3, .g)],
             [v(0.2, .g)]
-        ]
-    ],
-
-    "31D0CA8B-5069-4AB3-B865-47CD1D15D879": [
-        [
-            [v(423.9, .kj), v(1413, .kj)], /// failed to read in 424 so it's calculated using the ratio
-            [v(0.03, .g), v(0.1, .g)],
-            [v(0.03, .g), v(0.1, .g)],
-            [v(0.0, .g), v(0.0, .g)],
-            [v(0.24, .mg), v(0.8, .mg)], /// failed to read 0.0 so 0.24 is calculated using the ratio
-            [v(6.0, .mg), v(20.0, .mg)],
-            [v(0.015, .g), v(0.05, .g)],
-            [v(23.4, .g), v(78.0, .g)],
-            [v(0.0, .g), v(0.0, .g)],
-            [v(15.63, .g), v(52.1, .g)],
-            [v(15.63, .g), v(52.1, .g)],
-            [v(2.04, .g), v(6.8, .g)],
         ]
     ],
 
@@ -1158,20 +1171,6 @@ let valueExpectations: [String: [[[Value?]]]?] = [
         ]
     ],
 
-    "A221A0C0-A111-40DF-81BF-C334359B3809": [
-        [
-            [v(460.0, .kj), v(2218.0, .kj)],
-            [v(6.0, .g), v(28.0, .g)],
-            [v(2.5, .g), v(13.0, .g)],
-            [v(0.0, .g), v(0.0, .g)],
-            [v(0.0, .g), v(2.0, .g)],
-            [v(13.0, .g), v(66.0, .g)],
-            [v(3.0, .g), v(15.0, .g)],
-            [v(1.02, .g), v(5.0, .g)],
-            [v(130.0, .mg), v(650.0, .mg)],
-        ]
-    ],
-
     "C6BDB073-EF44-46DE-864A-9B3E2EAA2BA8": [
         [
             [v(460.0, .kj), v(2218.0, .kj)],
@@ -1185,7 +1184,7 @@ let valueExpectations: [String: [[[Value?]]]?] = [
             [v(130.0, .mg), v(650.0, .mg)],
         ]
     ],
-    
+
     "A4DC9A58-AE29-4C79-A364-827470D60DD6": [
         [
             [v(460.0, .kj), v(2218.0, .kj)],
@@ -1199,7 +1198,7 @@ let valueExpectations: [String: [[[Value?]]]?] = [
             [v(130.0, .mg), v(650.0, .mg)],
         ]
     ],
-    
+
     "7E6948F3-3CBC-4DE3-8E18-7FD2E9EFD79E": [
         [
             [v(256.0, .kj), v(320.0, .kj)],
@@ -1213,78 +1212,94 @@ let valueExpectations: [String: [[[Value?]]]?] = [
             [v(0.0, .g), v(0.0, .g)],
             [v(0.0, .g), v(0.0, .g)],
             [v(0.2, .g), v(0.3, .g)],
-            [v(0.05, .g), v(0.1, .g)],
+            [v(0.08, .g), v(0.1, .g)],
             [v(168.0, .mg), v(210.0, .mg)],
         ]
     ],
 
-    //MARK: - Failing
-//
-//
-//    "C05EDF6E-BB82-49FB-B745-1B8984987762": [
-//        [
-//            [v(1404.0, .kj), v(351.0, .kj)],
-//            [v(6.8, .g), v(2.0, .g)],
-//            [v(75.0, .g), v(19.0, .g)],
-//            [v(47.3, .g), v(11.8, .g)],
-//            [v(0.1, .g), v(0, .g)],
-//            [v(0.1, .g), v(0, .g)],
-//            [v(0, .g), v(0, .g)],
-//            [v(20.0, .mg), v(5, .mg)],
-//        ]
-//    ],
-//
+    "31D0CA8B-5069-4AB3-B865-47CD1D15D879": [
+        [
+            [v(423.9, .kj), v(1413, .kj)], /// failed to read in 424 so it's calculated using the ratio
+            [v(0.03, .g), v(0.1, .g)],
+            [v(0.03, .g), v(0.1, .g)],
+            [v(0.0, .g), v(0.0, .g)],
+            [v(0.24, .mg), v(0.8, .mg)], /// failed to read 0.0 so 0.24 is calculated using the ratio
+            [v(6.0, .mg), v(20.0, .mg)],
+            [v(0.015, .g), v(0.05, .g)],
+            [v(23.4, .g), v(78.0, .g)],
+            [v(0.0, .g), v(0.0, .g)],
+            [v(15.63, .g), v(52.1, .g)],
+            [v(15.63, .g), v(52.1, .g)],
+            [v(2.04, .g), v(6.8, .g)],
+        ]
+    ],
 
-    "99D1A080-19CF-4A08-B8B7-1BD5E4D9CB40": nil,
-    "3C53CC91-34D1-46EE-92BE-328ABDC20342": nil,
-    "15C9C2C9-5012-43A3-835A-3FB0A2DD1E2D": nil,
-    "0D04AEB7-95B1-4781-AFCA-38BF1036DAAC": nil,
-    "26F3916F-B688-49CC-A0DD-4F757B6735FD": nil,
-    "B3DC8D45-2F10-41C8-ACDF-2A00AFE6E0D3": nil,
-    "0A321001-BD7F-4A8A-8F62-FDE636B64CE3": nil,
-    "749A730F-17B1-47DE-9A5B-129C152D657E": nil,
-    "AE8C75F6-D65E-4F5F-A2D9-47FC81C158B9": nil,
-    "0494F267-A8C9-4796-8D23-DA6098C1AA5B": nil,
-    "BF1EE7E6-96C0-4929-8F9B-C3E4EC7782F2": nil,
-    "DF58E0D9-56BF-404C-8B36-675F797411A6": nil,
-    "0CBD5EF1-01E2-482E-891D-21A32479CFB0": nil,
-    "91F8FEFC-DF56-492D-BAB0-3EC24ADB84F3": nil,
-    "FCA442D0-9F3A-4AF9-9460-D3075C7FB2A0": nil,
-    "D65B73DA-E3E0-4968-83EF-06EA3E629A20": nil,
-    "6C3008A5-A6B0-438D-9332-827B52421643": nil,
-    "CC5957B2-1208-4A85-A728-5EABA1348DB9": nil,
-    "BB071452-B8C0-492D-890E-122BDBBF5909": nil,
-    "D3E7433B-AF49-4ACB-84EC-8366795CE048": nil,
-    "18E7934B-8B75-4E60-A041-7837D1E3DC27": nil,
-    "3A7D1894-FD50-4226-8A97-8471F4E34E89": nil,
-    "4CF0CBA5-C746-4844-BF54-27A92C808280": nil,
-    "5410D64B-4A8D-4183-8C81-EC82ABBFA648": nil,
-    "B789ED71-802F-42EF-85A5-FD9FEED77E6F": nil,
-    "083C5BAA-2DDA-42E5-8A6C-DCD1A3E5B7E1": nil,
-    "CE17DE0B-1480-4195-ACD0-C706FF9EE86F": nil,
-    "9CFDEE5E-005E-408F-B1E5-2EF751747988": nil,
-    "85025F31-4CD8-48D5-8AB0-246D8EAF0465": nil,
-    "9BA54F68-9FC5-430B-90C2-158A2BD1B29D": nil,
-    "90520604-4AF2-4C16-8C5E-F522F2309ECE": nil,
-    "92C3B115-CBED-4E4D-B831-4BF7BF973BCD": nil,
-    "674347E4-7B53-4409-95AF-07FD0560ADBA": nil,
-    "0E6CBF93-F98E-4922-8058-CE987BBD9617": nil,
-    "B362A01E-8762-4BD4-B7E9-ACED4D919B5B": nil,
-    "4527F77A-3514-4EAB-9DC1-214D10BBE9BA": nil,
-    "2E51C3CE-7363-412E-AF68-EB3F3ED9B343": nil,
-    "662AD301-6914-49EE-B8D2-DAFE00AF7F7F": nil,
-    "DE38ABA0-A8D7-46A5-8DBB-7E2DE983F9F4": nil,
-    "180F6D30-B077-4787-BE2C-22D3C4FC00E3": nil,
-    "1B9397C9-27E5-4E9F-BE75-17C878A2F323": nil,
-    "40E7C0B9-E9CC-4FA7-93A3-B3623FAB23FF": nil,
-    "7A7E14B8-EFA8-4140-987F-65439B83D99A": nil,
-    "713A721E-A470-4DA8-B44E-E939FEF9777A": nil,
-    "BD53EFF6-2AF9-4FCA-8865-67CCB4BA9B69": nil,
-    "D8809685-A90E-4756-BCA1-79B2D8C0D090": nil,
+    "2184C983-5761-4F8F-BE7A-E6771E963FFF": [
+        [
+            [v(422.584, .kj), v(1413, .kj)], /// failed to read in 424 so it's calculated using the ratio
+            [v(0.03, .g), v(0.1, .g)],
+            [v(0.03, .g), v(0.1, .g)],
+            [v(0.0, .g), v(0.0, .g)],
+            [v(0.0, .mg), v(0.8, .mg)],
+            [v(6.0, .mg), v(20.0, .mg)],
+            [v(0.015, .g), v(0.05, .g)],
+            [v(23.4, .g), v(78.0, .g)],
+            [v(0.0, .g), v(0.0, .g)],
+            [v(15.63, .g), v(52.1, .g)],
+            [v(15.63, .g), v(52.1, .g)],
+            [v(2.04, .g), v(6.8, .g)],
+        ]
+    ],
+
+    "A221A0C0-A111-40DF-81BF-C334359B3809": [
+        [
+            [v(460.0, .kj), v(2218.0, .kj)],
+            [v(6.0, .g), v(28.0, .g)],
+            [v(2.5, .g), v(13.0, .g)],
+            [v(0.0, .g), v(0.0, .g)],
+            [v(0.0, .g), v(2.0, .g)],
+            [v(13.0, .g), v(66.0, .g)],
+            [v(3.0, .g), v(15.0, .g)],
+            [v(1.01, .g), v(5.0, .g)],
+            [v(130.0, .mg), v(650.0, .mg)],
+        ]
+    ],
+
+    "7648338E-8AC8-4C03-AAA1-AC8FC76E7368": [
+        [
+            [v(468.0, .kcal)],
+            [v(75.1, .g)],
+            [v(70.0, .g)],
+            [v(61.6, .g)],
+            [v(3.6, .g)]
+        ],
+        [
+            [v(17.5, .g)],
+            [v(17.3, .g)],
+            [v(0.2, .g)],
+            [v(3.0, .mg)],
+            [v(74.0, .mg)]
+        ]
+    ],
+    
+    //MARK: - Failing
+    
+    "C05EDF6E-BB82-49FB-B745-1B8984987762": [
+        [
+            [v(1373.0, .kj), v(351.0, .kj)],
+            [v(6.8, .g), v(1.71, .g)],
+            [v(75.0, .g), v(19.0, .g)],
+            [v(47.3, .g), v(11.8, .g)],
+            [v(0.1, .g), v(0.03, .g)],
+            [v(0.1, .g), v(0.03, .g)],
+            [v(20.0, .mg), v(5.03, .mg)],
+        ]
+    ],
+
 ]
 
 //let SingledOutTestCase: UUID? = nil
 
-let SingledOutTestCase: UUID? = UUID(uuidString: "7E6948F3-3CBC-4DE3-8E18-7FD2E9EFD79E")!
+let SingledOutTestCase: UUID? = UUID(uuidString: "7648338E-8AC8-4C03-AAA1-AC8FC76E7368")!
 
-let TestPassingTestCases = false
+let TestPassingTestCases = true

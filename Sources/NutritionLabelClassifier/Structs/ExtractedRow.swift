@@ -76,6 +76,37 @@ struct ExtractedRow {
     var hasZeroValues: Bool {
         valuesTexts.allSatisfy({ $0?.values.first?.amount == 0 })
     }
+    
+    func isValidChild(of parentRow: ExtractedRow) -> Bool {
+        if let amount = value1?.amountInGramsIfWithUnit, let parentAmount = parentRow.value1?.amountInGramsIfWithUnit {
+            guard amount <= parentAmount else {
+                return false
+            }
+        }
+        
+        if let amount = value2?.amountInGramsIfWithUnit, let parentAmount = parentRow.value2?.amountInGramsIfWithUnit {
+            guard amount <= parentAmount else {
+                return false
+            }
+        }
+        
+        return true
+    }
+}
+
+extension Value {
+    var amountInGramsIfWithUnit: Double? {
+        switch unit {
+        case .mcg:
+            return amount * 0.000001
+        case .mg:
+            return amount * 0.001
+        case .g:
+            return amount
+        default:
+            return amount
+        }
+    }
 }
 
 extension Array where Element == ExtractedRow {
