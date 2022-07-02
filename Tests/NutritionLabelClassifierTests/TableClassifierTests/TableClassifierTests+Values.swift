@@ -1041,7 +1041,7 @@ let valueExpectations: [String: [[[Value?]]]?] = [
             [v(0.0, .g)],
         ]
     ],
-    
+
     "D17C6689-50F3-4A9C-AA03-E6007D9B30F4": [
         [
             [v(159.0, .kcal), v(529.0, .kcal)],
@@ -1059,7 +1059,7 @@ let valueExpectations: [String: [[[Value?]]]?] = [
             [v(95.0, .mg), v(316.0, .mg)],
         ]
     ],
-    
+
     "62E8658D-4E82-4FDE-9DB1-14C120267172": [
         [
             [v(787.0, .kj), v(1962.0, .kj)],
@@ -1074,7 +1074,7 @@ let valueExpectations: [String: [[[Value?]]]?] = [
             [v(4.0, .g), v(10.1, .g)],
         ]
     ],
- 
+
     "904EDDD5-A997-4778-A202-0B6A20629058": [
         [
             [v(128.0, .kcal), v(640.0, .kcal)],
@@ -1117,7 +1117,7 @@ let valueExpectations: [String: [[[Value?]]]?] = [
             [v(1000.0, .mg), v(150.0, .mg)],
         ]
     ],
-    
+
     "DEB07FE7-3C3D-44E9-83AD-2234228A4F02": [
         [
             [v(1859.0, .kj), v(279.0, .kj)],
@@ -1129,7 +1129,7 @@ let valueExpectations: [String: [[[Value?]]]?] = [
             [v(5.5, .g), v(0.8, .g)],
         ]
     ],
-    
+
     "C6FA0D87-4B38-4D8F-9408-26725BB8D463": [
         [
             [v(460.0, .kj), v(2218.0, .kj)],
@@ -1143,7 +1143,7 @@ let valueExpectations: [String: [[[Value?]]]?] = [
             [v(130.0, .mg), v(650.0, .mg)],
         ]
     ],
-    
+
     "EB754683-ECF4-4DC4-9978-0B6258581172": [
         [
             [v(460.0, .kj), v(2218.0, .kj)],
@@ -1186,8 +1186,6 @@ let valueExpectations: [String: [[[Value?]]]?] = [
         ]
     ],
     
-    //MARK: - TestBed
- 
     //MARK: - Failing
 //
 //
@@ -1222,20 +1220,6 @@ let valueExpectations: [String: [[[Value?]]]?] = [
 //        ]
 //    ],
 //
-//    "22801297-A39C-4F80-AE1D-858AA6A68DDC": [
-//        [
-//            [v(136.0, .kj), v(754.0, .kj)],
-//            [v(0.0, .g), v(0.0, .g)],
-//            [v(0.0, .g), v(0.0, .g)],
-//            [v(0.0, .g), v(0.0, .g)],
-//            [v(7.8, .g), v(43.5, .g)],
-//            [v(6.8, .g), v(37.9, .g)],
-//            [v(0.2, .g), v(0.8, .g)],
-//            [v(320.0, .mg), v(1790.0, .mg)],
-//            [v(0.8, .mg), v(4.5, .g)],
-//        ]
-//    ],
-//
 //    "A4DC9A58-AE29-4C79-A364-827470D60DD6": [
 //        [
 //            [v(460.0, .kj), v(2218.0, .kj)],
@@ -1250,57 +1234,57 @@ let valueExpectations: [String: [[[Value?]]]?] = [
 //        ]
 //    ],
     
-//
-//    "99D1A080-19CF-4A08-B8B7-1BD5E4D9CB40": nil,
-//    "3C53CC91-34D1-46EE-92BE-328ABDC20342": nil,
-//    "15C9C2C9-5012-43A3-835A-3FB0A2DD1E2D": nil,
-//    "0D04AEB7-95B1-4781-AFCA-38BF1036DAAC": nil,
-//    "26F3916F-B688-49CC-A0DD-4F757B6735FD": nil,
-//    "B3DC8D45-2F10-41C8-ACDF-2A00AFE6E0D3": nil,
-//    "0A321001-BD7F-4A8A-8F62-FDE636B64CE3": nil,
-//    "749A730F-17B1-47DE-9A5B-129C152D657E": nil,
-//    "AE8C75F6-D65E-4F5F-A2D9-47FC81C158B9": nil,
-//    "0494F267-A8C9-4796-8D23-DA6098C1AA5B": nil,
-//    "BF1EE7E6-96C0-4929-8F9B-C3E4EC7782F2": nil,
-//    "DF58E0D9-56BF-404C-8B36-675F797411A6": nil,
-//    "0CBD5EF1-01E2-482E-891D-21A32479CFB0": nil,
-//    "91F8FEFC-DF56-492D-BAB0-3EC24ADB84F3": nil,
-//    "FCA442D0-9F3A-4AF9-9460-D3075C7FB2A0": nil,
-//    "D65B73DA-E3E0-4968-83EF-06EA3E629A20": nil,
-//    "6C3008A5-A6B0-438D-9332-827B52421643": nil,
-//    "CC5957B2-1208-4A85-A728-5EABA1348DB9": nil,
-//    "BB071452-B8C0-492D-890E-122BDBBF5909": nil,
-//    "D3E7433B-AF49-4ACB-84EC-8366795CE048": nil,
-//    "18E7934B-8B75-4E60-A041-7837D1E3DC27": nil,
-//    "3A7D1894-FD50-4226-8A97-8471F4E34E89": nil,
-//    "4CF0CBA5-C746-4844-BF54-27A92C808280": nil,
-//    "5410D64B-4A8D-4183-8C81-EC82ABBFA648": nil,
-//    "B789ED71-802F-42EF-85A5-FD9FEED77E6F": nil,
-//    "083C5BAA-2DDA-42E5-8A6C-DCD1A3E5B7E1": nil,
-//    "CE17DE0B-1480-4195-ACD0-C706FF9EE86F": nil,
-//    "9CFDEE5E-005E-408F-B1E5-2EF751747988": nil,
-//    "85025F31-4CD8-48D5-8AB0-246D8EAF0465": nil,
-//    "9BA54F68-9FC5-430B-90C2-158A2BD1B29D": nil,
-//    "90520604-4AF2-4C16-8C5E-F522F2309ECE": nil,
-//    "92C3B115-CBED-4E4D-B831-4BF7BF973BCD": nil,
-//    "674347E4-7B53-4409-95AF-07FD0560ADBA": nil,
-//    "0E6CBF93-F98E-4922-8058-CE987BBD9617": nil,
-//    "B362A01E-8762-4BD4-B7E9-ACED4D919B5B": nil,
-//    "4527F77A-3514-4EAB-9DC1-214D10BBE9BA": nil,
-//    "2E51C3CE-7363-412E-AF68-EB3F3ED9B343": nil,
-//    "662AD301-6914-49EE-B8D2-DAFE00AF7F7F": nil,
-//    "DE38ABA0-A8D7-46A5-8DBB-7E2DE983F9F4": nil,
-//    "180F6D30-B077-4787-BE2C-22D3C4FC00E3": nil,
-//    "1B9397C9-27E5-4E9F-BE75-17C878A2F323": nil,
-//    "40E7C0B9-E9CC-4FA7-93A3-B3623FAB23FF": nil,
-//    "7A7E14B8-EFA8-4140-987F-65439B83D99A": nil,
-//    "713A721E-A470-4DA8-B44E-E939FEF9777A": nil,
-//    "BD53EFF6-2AF9-4FCA-8865-67CCB4BA9B69": nil,
-//    "D8809685-A90E-4756-BCA1-79B2D8C0D090": nil,
+
+    "99D1A080-19CF-4A08-B8B7-1BD5E4D9CB40": nil,
+    "3C53CC91-34D1-46EE-92BE-328ABDC20342": nil,
+    "15C9C2C9-5012-43A3-835A-3FB0A2DD1E2D": nil,
+    "0D04AEB7-95B1-4781-AFCA-38BF1036DAAC": nil,
+    "26F3916F-B688-49CC-A0DD-4F757B6735FD": nil,
+    "B3DC8D45-2F10-41C8-ACDF-2A00AFE6E0D3": nil,
+    "0A321001-BD7F-4A8A-8F62-FDE636B64CE3": nil,
+    "749A730F-17B1-47DE-9A5B-129C152D657E": nil,
+    "AE8C75F6-D65E-4F5F-A2D9-47FC81C158B9": nil,
+    "0494F267-A8C9-4796-8D23-DA6098C1AA5B": nil,
+    "BF1EE7E6-96C0-4929-8F9B-C3E4EC7782F2": nil,
+    "DF58E0D9-56BF-404C-8B36-675F797411A6": nil,
+    "0CBD5EF1-01E2-482E-891D-21A32479CFB0": nil,
+    "91F8FEFC-DF56-492D-BAB0-3EC24ADB84F3": nil,
+    "FCA442D0-9F3A-4AF9-9460-D3075C7FB2A0": nil,
+    "D65B73DA-E3E0-4968-83EF-06EA3E629A20": nil,
+    "6C3008A5-A6B0-438D-9332-827B52421643": nil,
+    "CC5957B2-1208-4A85-A728-5EABA1348DB9": nil,
+    "BB071452-B8C0-492D-890E-122BDBBF5909": nil,
+    "D3E7433B-AF49-4ACB-84EC-8366795CE048": nil,
+    "18E7934B-8B75-4E60-A041-7837D1E3DC27": nil,
+    "3A7D1894-FD50-4226-8A97-8471F4E34E89": nil,
+    "4CF0CBA5-C746-4844-BF54-27A92C808280": nil,
+    "5410D64B-4A8D-4183-8C81-EC82ABBFA648": nil,
+    "B789ED71-802F-42EF-85A5-FD9FEED77E6F": nil,
+    "083C5BAA-2DDA-42E5-8A6C-DCD1A3E5B7E1": nil,
+    "CE17DE0B-1480-4195-ACD0-C706FF9EE86F": nil,
+    "9CFDEE5E-005E-408F-B1E5-2EF751747988": nil,
+    "85025F31-4CD8-48D5-8AB0-246D8EAF0465": nil,
+    "9BA54F68-9FC5-430B-90C2-158A2BD1B29D": nil,
+    "90520604-4AF2-4C16-8C5E-F522F2309ECE": nil,
+    "92C3B115-CBED-4E4D-B831-4BF7BF973BCD": nil,
+    "674347E4-7B53-4409-95AF-07FD0560ADBA": nil,
+    "0E6CBF93-F98E-4922-8058-CE987BBD9617": nil,
+    "B362A01E-8762-4BD4-B7E9-ACED4D919B5B": nil,
+    "4527F77A-3514-4EAB-9DC1-214D10BBE9BA": nil,
+    "2E51C3CE-7363-412E-AF68-EB3F3ED9B343": nil,
+    "662AD301-6914-49EE-B8D2-DAFE00AF7F7F": nil,
+    "DE38ABA0-A8D7-46A5-8DBB-7E2DE983F9F4": nil,
+    "180F6D30-B077-4787-BE2C-22D3C4FC00E3": nil,
+    "1B9397C9-27E5-4E9F-BE75-17C878A2F323": nil,
+    "40E7C0B9-E9CC-4FA7-93A3-B3623FAB23FF": nil,
+    "7A7E14B8-EFA8-4140-987F-65439B83D99A": nil,
+    "713A721E-A470-4DA8-B44E-E939FEF9777A": nil,
+    "BD53EFF6-2AF9-4FCA-8865-67CCB4BA9B69": nil,
+    "D8809685-A90E-4756-BCA1-79B2D8C0D090": nil,
 ]
 
 //let SingledOutTestCase: UUID? = nil
 
-let SingledOutTestCase: UUID? = UUID(uuidString: "B7025C67-51CD-4508-91DB-D8EBED32A872")!
+let SingledOutTestCase: UUID? = UUID(uuidString: "7E6948F3-3CBC-4DE3-8E18-7FD2E9EFD79E")!
 
-let TestPassingTestCases = false
+let TestPassingTestCases = true
