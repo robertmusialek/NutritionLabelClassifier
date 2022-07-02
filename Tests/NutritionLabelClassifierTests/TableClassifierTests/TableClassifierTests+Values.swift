@@ -1199,6 +1199,24 @@ let valueExpectations: [String: [[[Value?]]]?] = [
             [v(130.0, .mg), v(650.0, .mg)],
         ]
     ],
+    
+    "7E6948F3-3CBC-4DE3-8E18-7FD2E9EFD79E": [
+        [
+            [v(256.0, .kj), v(320.0, .kj)],
+            [v(4.9, .g), v(6.1, .g)],
+            [v(6.9, .g), v(8.6, .g)],
+            [v(6.9, .g), v(8.6, .g)],
+            [v(0.0, .g), v(0.0, .g)],
+            [v(1.5, .g), v(1.9, .g)],
+            [v(0.9, .g), v(1.1, .g)],
+            [v(0.4, .g), v(0.5, .g)],
+            [v(0.0, .g), v(0.0, .g)],
+            [v(0.0, .g), v(0.0, .g)],
+            [v(0.2, .g), v(0.3, .g)],
+            [v(0.05, .g), v(0.1, .g)],
+            [v(168.0, .mg), v(210.0, .mg)],
+        ]
+    ],
 
     //MARK: - Failing
 //
@@ -1216,24 +1234,6 @@ let valueExpectations: [String: [[[Value?]]]?] = [
 //        ]
 //    ],
 //
-//    "7E6948F3-3CBC-4DE3-8E18-7FD2E9EFD79E": [
-//        [
-//            [v(256.0, .kj), v(320.0, .kj)],
-//            [v(4.9, .g), v(6.1, .g)],
-//            [v(6.9, .g), v(8.6, .g)],
-//            [v(6.9, .g), v(8.6, .g)],
-//            [v(0.0, .g), v(0.0, .g)],
-//            [v(1.5, .g), v(1.9, .g)],
-//            [v(0.9, .g), v(1.1, .g)],
-//            [v(0.4, .g), v(0.5, .g)],
-//            [v(0.0, .g), v(0.0, .g)],
-//            [v(0.0, .g), v(0.0, .g)],
-//            [v(0.2, .g), v(0.3, .g)],
-//            [v(0.08, .g), v(0.1, .g)],
-//            [v(168.0, .mg), v(210.0, .mg)],
-//        ]
-//    ],
-
 
     "99D1A080-19CF-4A08-B8B7-1BD5E4D9CB40": nil,
     "3C53CC91-34D1-46EE-92BE-328ABDC20342": nil,
@@ -1285,6 +1285,6 @@ let valueExpectations: [String: [[[Value?]]]?] = [
 
 //let SingledOutTestCase: UUID? = nil
 
-let SingledOutTestCase: UUID? = UUID(uuidString: "A4DC9A58-AE29-4C79-A364-827470D60DD6")!
+let SingledOutTestCase: UUID? = UUID(uuidString: "7E6948F3-3CBC-4DE3-8E18-7FD2E9EFD79E")!
 
 let TestPassingTestCases = false

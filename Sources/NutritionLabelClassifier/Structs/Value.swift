@@ -151,7 +151,13 @@ extension Value {
         var array: [(value: Value, positionOfMatch: Int)] = []
         print("🔢      👁 detecting values in: \(string)")
 
-        let specialValues = #"((?<!not detected )(?:not detected)|(?:not detected)(?! not detected ))"#
+        let specialValuesArray = [
+            "(?<!not detected )(?:not detected)",
+            "(?:not detected)(?! not detected )",
+            "nil",
+            "trace"
+        ]
+        let specialValues = #"(\#(specialValuesArray.joined(separator: "|")))"#
         let regex = #"(?:([0-9]+[0-9.,]*[ ]*(?:\#(Value.Regex.units)|)(?:[^A-z0-9]|]|$))|\#(specialValues))"#
 //        let regex = #"([0-9.,]+[ ]*(?:\#(Value.Regex.units)|))"#
         if let matches = matches(for: regex, in: string), !matches.isEmpty {
