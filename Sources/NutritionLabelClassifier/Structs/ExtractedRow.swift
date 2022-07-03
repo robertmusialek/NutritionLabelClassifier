@@ -110,6 +110,19 @@ extension Value {
 }
 
 extension Array where Element == ExtractedRow {
+    var missingMacroOrEnergyAttribute: Attribute? {
+        if let missingMacroAttribute = missingMacroAttribute {
+            return missingMacroAttribute
+        }
+        if !containsRowWithValues(for: .energy),
+           containsRowWithValues(for: .carbohydrate),
+           containsRowWithValues(for: .fat),
+           containsRowWithValues(for: .protein) {
+            return .energy
+        }
+        return nil
+    }
+    
     var missingMacroAttribute: Attribute? {
         guard containsRowWithValues(for: .energy) else {
             return nil

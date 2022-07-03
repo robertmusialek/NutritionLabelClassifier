@@ -11,7 +11,7 @@ struct ExtractedGrid {
     var columns: [ExtractedColumn]
     let numberOfValues: Int
     
-    init(attributes: ExtractedAttributes, values: ExtractedValues) {
+    init(attributes: ExtractedAttributes, values: ExtractedValues, visionResult: VisionResult) {
         
         var columns: [ExtractedColumn] = []
         
@@ -36,6 +36,8 @@ struct ExtractedGrid {
         self.numberOfValues = columns.first?.rows.first?.valuesTexts.count ?? 0
 
         insertMissingColumnForMultipleValuedColumns()
+        
+        findSingleEnergyValueIfMissing(in: visionResult)
         
         removeValuesOutsideColumnRects()
         removeExtraneousValues()
@@ -639,7 +641,7 @@ extension ExtractedGrid {
     }
     
     mutating func addMissingMacroOrEnergyValuesIfPossible() {
-        guard let missingAttribute = allRows.missingMacroAttribute else {
+        guard let missingAttribute = allRows.missingMacroOrEnergyAttribute else {
             return
         }
         
@@ -656,10 +658,10 @@ extension ExtractedGrid {
                 }
                 let valuesText2 = ValuesText(values: [Value(amount: amount2.roundedNutrientAmount, unit: .g)])
                 let row = ExtractedRow(attributeText: attributeText, valuesTexts: [valuesText1, valuesText2])
-                columns[0].rows.append(row)
+                columns[0].rows.insert(row, at: 0)
             } else {
                 let row = ExtractedRow(attributeText: attributeText, valuesTexts: [valuesText1])
-                columns[0].rows.append(row)
+                columns[0].rows.insert(row, at: 0)
             }
         case .carbohydrate:
             guard let amount1 = calculateAmount(for: .carbohydrate, in: 0) else {
@@ -1039,6 +1041,51 @@ extension ExtractedGrid {
         }
     }
     
+    mutating func findSingleEnergyValueIfMissing(in visionResult: VisionResult) {
+        guard numberOfValues == 1,
+              let row = row(for: .energy),
+              row.valuesTexts[0] == nil,
+              let energyValuesText = findNextEnergyValuesText(nextTo: row.attributeText.text, in: visionResult),
+              let energyValue = energyValuesText.values.first
+        else {
+            return
+        }
+        
+        /// Only continue If we have all the macro rows and the value fits within the error range of the calculate value
+        guard let calculatedEnergy = calculateAmount(for: .energy, in: 0) else {
+            return
+        }
+        
+        var energyInCalories = calculatedEnergy
+        let isKj = energyValue.unit == .kj || (energyValue.unit == nil && !row.attributeText.text.string.matchesRegex("calories"))
+        var valuesTextWithUnit = energyValuesText
+        if isKj {
+            energyInCalories = energyInCalories * 4.184
+        } else {
+            valuesTextWithUnit.values = [Value(amount: energyValue.amount, unit: .kcal)]
+        }
+        let errorPercentage = (abs(energyValue.amount - energyInCalories) / energyInCalories) * 100.0
+        guard errorPercentage <= ErrorPercentageThresholdEnergyCalculation else {
+            return
+        }
+        
+        let newRow = ExtractedRow(attributeText: row.attributeText, valuesTexts: [valuesTextWithUnit])
+        modify(row, with: newRow)
+    }
+    
+    func findNextEnergyValuesText(nextTo text: RecognizedText, in visionResult: VisionResult) -> ValuesText? {
+        for arrayOfTexts in visionResult.arrayOfTexts {
+            guard let nextText = arrayOfTexts.textsOnSameRow(as: text, preceding: false, includeSearchText: false, allowsOverlap: true).first,
+                  let nextValue = Value.detect(in: nextText.string).first,
+                  (nextValue.hasEnergyUnit || nextValue.unit == nil)
+            else {
+                continue
+            }
+            return ValuesText(nextText)
+        }
+        return nil
+    }
+    
     mutating func removeExtraneousValues() {
         for row in allRows {
             if row.containsExtraneousValues {
@@ -1279,7 +1326,12 @@ extension ExtractedGrid {
         guard allRows.containsAllMacrosAndEnergy else { return nil }
         return allRows.filter { $0.attributeText.attribute.isEnergyOrMacro }
     }
-    
+
+    var allMacroRows: [ExtractedRow]? {
+        guard allRows.containsAllMacros else { return nil }
+        return allRows.filter { $0.attributeText.attribute.isMacro }
+    }
+
     var invalidMacroAndEnergyRows: [ExtractedRow] {
         invalidRows(threshold: MacroOrEnergyErrorPercentageThreshold)
             .filter { $0.attributeText.attribute.isEnergyOrMacro }
@@ -1431,14 +1483,22 @@ extension Array where Element == ExtractedRow {
     var containsAllMacrosAndEnergy: Bool {
         filter({ $0.attributeText.attribute.isEnergyOrMacro }).count == 4
     }
+    
+    var containsAllMacros: Bool {
+        filter { $0.attributeText.attribute.isMacro }.count == 3
+    }
 }
 
 extension Attribute {
-    var isEnergyOrMacro: Bool {
-        self == .energy
-        || self == .carbohydrate
+    var isMacro: Bool {
+        self == .carbohydrate
         || self == .fat
         || self == .protein
+    }
+    
+    var isEnergyOrMacro: Bool {
+        self == .energy
+        || isMacro
     }
 }
 

@@ -37,7 +37,7 @@ class TableClassifier {
         values = extractValueTextColumnGroups()
         
         if let attributes = attributes, let values = values {
-            grid = ExtractedGrid(attributes: attributes, values: values)
+            grid = ExtractedGrid(attributes: attributes, values: values, visionResult: visionResult)
         }
         
         return observations

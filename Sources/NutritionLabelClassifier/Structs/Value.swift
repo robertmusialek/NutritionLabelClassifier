@@ -163,7 +163,7 @@ extension Value {
         ]
         let specialValues = #"(\#(specialValuesArray.joined(separator: "|")))"#
         let regex = #"(?:([0-9]+[0-9.,]*[ ]*(?:\#(Value.Regex.units)|)(?:[^A-z0-9]|]|$))|\#(specialValues))"#
-//        let regex = #"([0-9.,]+[ ]*(?:\#(Value.Regex.units)|))"#
+//        let regex = #"(?:([^A-z]|^)([0-9]+[0-9.,]*[ ]*(?:\#(Value.Regex.units)|)(?:[^A-z0-9]|]|$))|\#(specialValues))"#
         if let matches = matches(for: regex, in: string), !matches.isEmpty {
             
             for match in matches {

@@ -85,11 +85,21 @@ extension Array where Element == RecognizedText {
         }
     }
     
-    func textsOnSameRow(as text: RecognizedText) -> [RecognizedText] {
+    func textsOnSameRow(as text: RecognizedText, preceding: Bool = true, includeSearchText: Bool = true, allowsOverlap: Bool = false) -> [RecognizedText] {
         filter {
             let overlapsVertically = $0.rect.minY < text.rect.maxY && $0.rect.maxY > text.rect.minY
-            let isOnSameLine = (overlapsVertically && $0.rect.maxX < text.rect.minX)
-            return isOnSameLine || $0 == text
+            let horizontalCondition: Bool
+            if allowsOverlap {
+                horizontalCondition = preceding ? $0.rect.minX < text.rect.minX : text.rect.minX < $0.rect.minX
+            } else {
+                horizontalCondition = preceding ? $0.rect.maxX < text.rect.minX : text.rect.maxX < $0.rect.minX
+            }
+            let isOnSameLine = (overlapsVertically && horizontalCondition)
+            if includeSearchText {
+                return isOnSameLine || $0 == text
+            } else {
+                return isOnSameLine
+            }
         }.sorted {
             $0.rect.minX < $1.rect.minX
         }
