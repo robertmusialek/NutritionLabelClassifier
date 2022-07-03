@@ -254,7 +254,8 @@ extension Array where Element == AttributeText {
         //TODO: Clean this up
         /// If the first set of values contain energy values and we seem to have missed creating an attribute for it (possibly due to a typo such as in `3EDD65E5-6363-42E3-8358-21A520ED21CC`, then manually insert a `AttributeText` for it so that it's correctly assigned
         if isFirstAttributeColumn, !contains(.energy),
-           let energyValuesTexts = valueColumns.firstSetOfValuesTextsContainingEnergy {
+           let energyValuesTexts = valueColumns.firstSetOfValuesTextsContainingEnergy
+        {
             let attributeText = AttributeText(attribute: .energy, text: defaultText)
 //            self.insert(attributeText, at: 0)
             let energyRow = ExtractedRow(attributeText: attributeText, valuesTexts: energyValuesTexts)

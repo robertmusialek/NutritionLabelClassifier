@@ -413,6 +413,9 @@ extension Array where Element == ValuesTextColumn {
         }
         
         let nonNilValuesTexts = valuesTexts.compactMap { $0 }
+        guard nonNilValuesTexts.count > 0 else {
+            return nil
+        }
         return valuesTexts.count == nonNilValuesTexts.count ? nonNilValuesTexts : nil
     }
 }

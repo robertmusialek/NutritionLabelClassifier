@@ -39,17 +39,20 @@ struct ExtractedValues {
 
         print("⏱ extracting columns took: \(CFAbsoluteTimeGetCurrent()-start)s")
 
-        let groupedColumns = Self.process(valuesTextColumns: columns, attributes: extractedAttributes)
+        let groupedColumns = Self.process(valuesTextColumns: columns,
+                                          attributes: extractedAttributes,
+                                          using: visionResult)
         self.groupedColumns = groupedColumns
     }
     
-    static func process(valuesTextColumns: [ValuesTextColumn], attributes: ExtractedAttributes) -> [[ValuesTextColumn]] {
+    static func process(valuesTextColumns: [ValuesTextColumn], attributes: ExtractedAttributes, using visionResult: VisionResult) -> [[ValuesTextColumn]] {
 
         let start = CFAbsoluteTimeGetCurrent()
 
         var columns = valuesTextColumns
 
         columns.removeTextsAboveEnergy(for: attributes)
+        columns.removeTextsAboveHeader(from: visionResult)
         columns.removeTextsBelowLastAttribute(of: attributes)
         columns.removeTextsWithMultipleNutrientValues()
         columns.removeTextsWithExtraLargeValues()
@@ -476,14 +479,25 @@ extension Array where Element == ValuesTextColumn {
         }
         
         print("7️⃣ \(energyText.string)")
-        
-//        guard let energyText = attributes.energyAttributeText?.text ?? topMostEnergyValueText(for: attributes)?.text else {
-//            return
-//        }
-        
+        removeTextsAbove(energyText)
+    }
+    
+    mutating func removeTextsAboveHeader(from visionResult: VisionResult) {
+        guard let array = visionResult.accurateRecognitionWithLanugageCorrection else {
+            return
+        }
+        for text in array {
+            if text.string.matchesRegex("(supplement|nutrition) facts") {
+                removeTextsAbove(text)
+                return
+            }
+        }
+    }
+    
+    mutating func removeTextsAbove(_ text: RecognizedText) {
         for i in indices {
             var column = self[i]
-            column.removeValueTextsAbove(energyText)
+            column.removeValueTextsAbove(text)
             self[i] = column
         }
     }
@@ -542,9 +556,11 @@ extension Array where Element == ValuesTextColumn {
         }
         
         /// Remove columns with too few rows
-        self = filter {
-//            $0.valuesTexts.count > Int(ceil(0.1 * Double(highestNumberOfRows)))
-            $0.valuesTexts.count > Int(ceil(0.15 * Double(highestNumberOfRows)))
+        if highestNumberOfRows > 1 {
+            self = filter {
+//                $0.valuesTexts.count > Int(ceil(0.1 * Double(highestNumberOfRows)))
+                $0.valuesTexts.count > Int(ceil(0.15 * Double(highestNumberOfRows)))
+            }
         }
         
         /// Remove columns that contain all attribute texts
