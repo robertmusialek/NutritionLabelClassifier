@@ -194,6 +194,22 @@ extension VisionResult {
                 continue
             }
             
+            /// If this `valuesText` has more than one value that aren't energy, and
+            ///     we're able to find texts within the other arrays for each one of them
+            ///     then append them in place of this `valuesText` in the order that they appear vertically,
+            ///         after adding them to the discarded list
+            if valuesText.values.filter({ !$0.hasEnergyUnit }).count > 1,
+               let overlappingSingleValuesTexts = overlappingSingleValuesTextsForValuesIn(valuesText)
+            {
+                for valuesText in overlappingSingleValuesTexts {
+                    if !discarded.contains(where: { $0.id == valuesText.text.id }) {
+                        discarded.append(valuesText.text)
+                    }
+                    column.append(valuesText)
+                }
+                continue
+            }
+            
             /// If we picked an alternate overlapping valuesText, make sure that's added to discarded
             if !discarded.contains(where: { $0.id == valuesText.text.id }) {
                 discarded.append(valuesText.text)
@@ -209,6 +225,42 @@ extension VisionResult {
         }
         
         return column
+    }
+    
+    func overlappingSingleValuesTextsForValuesIn(_ multipleValuesText: ValuesText) -> [ValuesText]? {
+        guard multipleValuesText.values.count > 1 else { return nil }
+        
+        var valuesTexts: [ValuesText] = []
+        for value in multipleValuesText.values {
+            guard let singleValueText = singleValueText(withValue: value, containedWithin: multipleValuesText.text.rect),
+                  let valuesText = ValuesText(singleValueText)
+            else {
+                return nil
+            }
+            valuesTexts.append(valuesText)
+        }
+        return valuesTexts.sorted(by: { $0.text.rect.minY < $1.text.rect.minY })
+    }
+    
+    /// Be default, we will search the arrays other than `.accurate` as we're assuming that the to be the primary one we're searching through (during which this function is used to find alternatives)
+    func singleValueText(withValue value: Value, containedWithin rect: CGRect, in textSets: [TextSet] = [.accurateWithoutLanguageCorrection, .fast]) -> RecognizedText? {
+        for textSet in textSets {
+            guard let array = array(for: textSet) else { continue }
+            for text in array {
+                
+                /// First make sure the rect of this text is contained wihin the rect
+                guard text.rect.intersection(rect).area.rounded() == text.rect.area.rounded() else {
+                    continue
+                }
+                
+                /// Now if we have exactly one value in this text and it equals the value we're looking for, return it
+                let values = Value.detect(in: text.string)
+                if values.count == 1, values.first == value {
+                    return text
+                }
+            }
+        }
+        return nil
     }
     
     func valuesText(for pickedText: RecognizedText, from startingText: RecognizedText) -> ValuesText? {
