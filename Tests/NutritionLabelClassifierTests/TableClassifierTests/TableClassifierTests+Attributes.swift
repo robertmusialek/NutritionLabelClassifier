@@ -369,6 +369,14 @@ let attributeExpectations: [String: [[Attribute]]?] = [
     "62E8658D-4E82-4FDE-9DB1-14C120267172": [
         [.energy, .fat, .saturatedFat, .transFat, .cholesterol, .sodium, .carbohydrate, .dietaryFibre, .sugar, .protein, .iron]
     ],
+    
+    "42269C69-7FC6-4BB5-8871-FAC3E8F2EDE9": [
+        [.energy, .protein, .fat, .carbohydrate, .sugar, .sodium]
+    ],
+    
+    "B7DE546B-6665-48FE-B4FA-2063BC274E05": [
+        [.energy, .protein, .fat, .carbohydrate, .sugar, .sodium]
+    ],
 
     "99D1A080-19CF-4A08-B8B7-1BD5E4D9CB40": nil,
     
