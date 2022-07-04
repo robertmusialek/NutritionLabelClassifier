@@ -25,7 +25,8 @@ public class NutritionLabelClassifier {
     }
     
     //TODO: Handle having no images or contentsize elegantly, throwing errors that informs the client of this service
-    public func classify() {
+    public func classify(onCompletion: ((Output?) -> Void)? = nil) {
+        self.onCompletion = onCompletion
         recognizeTexts {
             let output = self.getOutput()
             self.onCompletion?(output)
