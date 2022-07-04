@@ -3,15 +3,13 @@ import VisionSugar
 
 class TableClassifier {
     
-//    let arrayOfRecognizedTexts: [[RecognizedText]]
     let visionResult: VisionResult
     var observations: [Observation]
-    
-    var pendingObservations: [Observation] = []
-    var observationBeingExtracted: Observation? = nil
 
-    /// Holds onto those that are single `Value`s that have already been used
-    var discarded: [RecognizedText] = []
+//    let arrayOfRecognizedTexts: [[RecognizedText]]
+//    var pendingObservations: [Observation] = []
+//    var observationBeingExtracted: Observation? = nil
+//    var discarded: [RecognizedText] = []
 
     init(visionResult: VisionResult, observations: [Observation] = []) {
 //        self.arrayOfRecognizedTexts = arrayOfRecognizedTexts
@@ -36,11 +34,14 @@ class TableClassifier {
         attributes = extractAttributeTextColumns()
         values = extractValueTextColumnGroups()
         
-        if let attributes = attributes, let values = values {
-            grid = ExtractedGrid(attributes: attributes, values: values, visionResult: visionResult)
+        guard let attributes = attributes,
+              let values = values
+        else {
+            return []
         }
-        
-        return observations
+
+        let grid = ExtractedGrid(attributes: attributes, values: values, visionResult: visionResult)
+        return observations + grid.observations
 //        /// Identify column of labels
 //        if let attributeRecognizedTexts = getColumnsOfAttributes() {
 ////            let attributes = getUniqueAttributeTextsFrom(attributeRecognizedTexts)

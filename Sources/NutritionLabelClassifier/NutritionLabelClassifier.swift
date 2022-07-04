@@ -93,6 +93,15 @@ public class NutritionLabelClassifier {
         dataFrameOfObservations().classifierOutput
     }
     
+    /**
+     - Stop using DataFrame as an intermediary between NutritionLabelClassifier and its Output as its adding unnecessary overhead
+
+     - Stop appending observations to a pre-existing array with each Classifier
+         - Instead, have each classifier (NutrientsTable, NutrientsInline, Serving, Header, (possibly EdgeCases) return an optional [Observations]?
+         - Only append the contents to our main observations array if we do have a non-nil return value
+         - Use this optionality to indicate whether the NutrientsTableClassifier returned a result—and only resort to the NutrientsInlineClassifier if not
+         - Finally, convert the array of Observations to the Classifier Output
+     */
     public func dataFrameOfObservations() -> DataFrame {
         if IsTestingNewAlgorithm {
             observations = TableClassifier.observations(
