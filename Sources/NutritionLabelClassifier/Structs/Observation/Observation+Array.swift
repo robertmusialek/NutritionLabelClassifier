@@ -98,3 +98,4 @@ extension Array where Element == Observation {
         filterContainingSeparateValues.filter { $0.valueText2 != nil }
     }
 }
+

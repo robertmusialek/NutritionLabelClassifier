@@ -16,6 +16,10 @@ class ServingClassifier: Classifier {
         self.arrayOfRecognizedTexts = arrayOfRecognizedTexts
     }
 
+    static func observations(from recognizedTexts: [RecognizedText]) -> [Observation] {
+        []
+    }
+
     static func observations(from recognizedTexts: [RecognizedText],
                              priorObservations observations: [Observation]) -> [Observation] {
         Self.observations(from: recognizedTexts, arrayOfRecognizedTexts: [], priorObservations: observations)

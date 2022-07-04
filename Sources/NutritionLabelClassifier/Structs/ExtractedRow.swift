@@ -156,3 +156,20 @@ extension Array where Element == ExtractedRow {
         first(where: { $0.attributeText.attribute == attribute })
     }
 }
+
+extension ExtractedRow {
+    var observation: Observation {
+        let valueText1 = valuesTexts.count > 0 ? valuesTexts[0]?.valueText : nil
+        let valueText2 = valuesTexts.count > 1 ? valuesTexts[1]?.valueText : nil
+        return Observation(attributeText: attributeText,
+                    valueText1: valueText1,
+                    valueText2: valueText2)
+    }
+}
+
+extension ValuesText {
+    var valueText: ValueText? {
+        guard let firstValue = values.first else { return nil }
+        return ValueText(value: firstValue, text: text)
+    }
+}

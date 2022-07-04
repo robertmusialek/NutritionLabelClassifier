@@ -82,6 +82,7 @@ func prepareTestCases() throws {
 }
 
 func prepareTestCaseImages() throws {
+    //TODO: Handle missing zip file
     let filePath = Bundle.module.url(forResource: "NutritionClassifier-TestImages", withExtension: "zip")!
     let destinationUrl = testImagesDirectory
     

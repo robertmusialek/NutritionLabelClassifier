@@ -22,6 +22,10 @@ class EdgeCasesClassifier: Classifier {
         self.observations = observations
     }
     
+    static func observations(from recognizedTexts: [RecognizedText]) -> [Observation] {
+        []
+    }
+
     static func observations(from recognizedTexts: [RecognizedText], priorObservations observations: [Observation]) -> [Observation] {
         EdgeCasesClassifier(recognizedTexts: recognizedTexts, observations: observations)
             .getObservations()

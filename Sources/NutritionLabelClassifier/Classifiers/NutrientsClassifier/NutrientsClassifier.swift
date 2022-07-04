@@ -17,6 +17,10 @@ class NutrientsClassifier: Classifier {
         self.observations = observations
     }
     
+    static func observations(from recognizedTexts: [RecognizedText]) -> [Observation] {
+        return []
+    }
+    
     static func observations(from recognizedTexts: [RecognizedText], priorObservations observations: [Observation]) -> [Observation] {
         NutrientsClassifier(recognizedTexts: recognizedTexts, observations: observations).getObservations()
     }
