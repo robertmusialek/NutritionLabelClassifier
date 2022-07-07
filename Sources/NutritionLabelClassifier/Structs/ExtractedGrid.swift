@@ -45,6 +45,7 @@ struct ExtractedGrid {
         handleReusedValueTexts()
         replaceNilMacroAndChildrenValuesIfZero()
 
+//        handleMultipleEnergyValuesWithinColumn(using: attributes)
         handleMultipleValues(using: validRatio)
 
         fixInvalidChildRows()

@@ -62,8 +62,11 @@ final class TableClassifierTests: XCTestCase {
         print("🔥4️⃣ Testing: \(id)")
         
         let classifier = NutritionLabelClassifier(image: image, contentSize: image.size)
-        classifier.onCompletion = { output in
-            
+//        classifier.onCompletion = { output in
+//        
+//        }
+        
+        classifier.classify { output in
             let tableClassifier = TableClassifier(visionResult: classifier.visionResult)
             let _ = tableClassifier.getObservations()
             
@@ -80,8 +83,6 @@ final class TableClassifierTests: XCTestCase {
                 print("🤖✅ \(id)")
             }
         }
-        
-        classifier.classify()
     }
     
     func testAttributes(_ extractedAttributes: ExtractedAttributes?, forTestCase id: UUID) -> Bool {

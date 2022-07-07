@@ -56,16 +56,18 @@ struct ExtractedValues {
         columns.removeTextsBelowLastAttribute(of: attributes)
         columns.removeTextsWithMultipleNutrientValues()
         columns.removeTextsWithExtraLargeValues()
+//        columns.removeTextsWithHeaderAttributes()
 
         columns.removeDuplicateColumns()
         columns.removeEmptyColumns()
         columns.removeColumnsWithSingleValuesNotInColumnWithAllOtherSingleValues()
-//        columns.removeFooterText(for: attributes)
         columns.removeExtraLongFooterValuesWithNoAttributes(for: attributes)
         columns.removeInvalidColumns()
         columns.pickTopColumns(using: attributes)
         columns.removeColumnsWithServingAttributes()
 
+//        columns.removeColumnsWithNoValuesPastFirstAttributesColumn(in: attributes)
+        
         columns.sort()
         columns.removeSubsetColumns()
         columns.splitUpColumnsWithAllMultiColumnedValues()
@@ -378,6 +380,23 @@ extension Array where Element == ValuesTextColumn {
         removeAll { $0.containsServingAttribute }
     }
     
+    mutating func removeColumnsWithNoValuesPastFirstAttributesColumn(in attributes: ExtractedAttributes) {
+        guard let attributesRect = attributes.columnRects.first else {
+            return
+        }
+
+        removeAll {
+            $0.valuesTexts.filter { valuesText in
+                let valuesTextRect = valuesText.text.rect
+                let attributesRect = attributesRect
+                
+                let thresholdPercentage = 0.05
+                let distance = valuesTextRect.maxX - attributesRect.maxX
+                return distance / attributesRect.width >= thresholdPercentage
+            }.isEmpty
+        }
+    }
+    
     mutating func removeColumnsWithSingleValuesNotInColumnWithAllOtherSingleValues() {
         removeAll {
 //            $0.portionOfSingleValuesThatAreInColumnWithOtherSingleValues != 1.0
@@ -636,6 +655,14 @@ extension Array where Element == ValuesTextColumn {
         for i in self.indices {
             var column = self[i]
             column.removeTextsWithExtraLargeValues()
+            self[i] = column
+        }
+    }
+    
+    mutating func removeTextsWithHeaderAttributes() {
+        for i in self.indices {
+            var column = self[i]
+            column.removeTextsWithHeaderAttributes()
             self[i] = column
         }
     }

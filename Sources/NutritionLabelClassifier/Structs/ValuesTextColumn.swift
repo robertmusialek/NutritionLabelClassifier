@@ -208,6 +208,12 @@ extension ValuesTextColumn {
             valuesText.values.contains(where: { $0.amount > 15_000 })
         }
     }
+    
+    mutating func removeTextsWithHeaderAttributes() {
+        valuesTexts.removeAll { valuesText in
+            valuesText.text.string.contains("100 g")
+        }
+    }
 
     mutating func removeValueTextsAbove(_ text: RecognizedText) {
         valuesTexts.removeAll(where: {
