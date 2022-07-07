@@ -92,6 +92,8 @@ extension Attribute {
             return Regex.vitamin("(b6|86)")
         case .vitaminB1:
             return Regex.vitamin("(b1|81)")
+        case .vitaminB2:
+            return Regex.vitamin("(b2|82)")
         case .vitaminB12:
             return Regex.vitamin("(b12|812)")
         case .vitaminB3:
@@ -116,6 +118,11 @@ extension Attribute {
         case .vitaminK2:
             return Regex.vitamin("k2")
 
+        case .taurine:
+            return #"taurine"#
+        case .caffeine:
+            return #"caffeine"#
+            
         default:
             return nil
         }

@@ -29,18 +29,32 @@ class TableClassifier {
     var values: ExtractedValues? = nil
     var grid: ExtractedGrid? = nil
     
-    func getObservations() -> [Observation] {
-
+    func extractValues() -> [[[Value?]]] {
+        extractTable()
+        guard let grid = grid else {
+            return []
+        }
+        return grid.values
+    }
+    
+    func extractTable() {
         attributes = extractAttributeTextColumns()
         values = extractValueTextColumnGroups()
         
         guard let attributes = attributes,
               let values = values
         else {
-            return []
+            return
         }
 
-        let grid = ExtractedGrid(attributes: attributes, values: values, visionResult: visionResult)
+        self.grid = ExtractedGrid(attributes: attributes, values: values, visionResult: visionResult)
+    }
+    
+    func getObservations() -> [Observation] {
+        extractTable()
+        guard let grid = grid else {
+            return []
+        }
         return observations + grid.observations
 //        /// Identify column of labels
 //        if let attributeRecognizedTexts = getColumnsOfAttributes() {

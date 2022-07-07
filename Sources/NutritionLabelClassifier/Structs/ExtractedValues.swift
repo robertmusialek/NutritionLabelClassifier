@@ -56,7 +56,7 @@ struct ExtractedValues {
         columns.removeTextsBelowLastAttribute(of: attributes)
         columns.removeTextsWithMultipleNutrientValues()
         columns.removeTextsWithExtraLargeValues()
-//        columns.removeTextsWithHeaderAttributes()
+        columns.removeTextsWithHeaderAttributes()
 
         columns.removeDuplicateColumns()
         columns.removeEmptyColumns()
@@ -66,7 +66,7 @@ struct ExtractedValues {
         columns.pickTopColumns(using: attributes)
         columns.removeColumnsWithServingAttributes()
 
-//        columns.removeColumnsWithNoValuesPastFirstAttributesColumn(in: attributes)
+        columns.removeColumnsWithNoValuesPastFirstAttributesColumn(in: attributes)
         
         columns.sort()
         columns.removeSubsetColumns()

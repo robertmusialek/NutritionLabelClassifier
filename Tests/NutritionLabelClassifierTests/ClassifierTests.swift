@@ -9,7 +9,7 @@ final class NutritionLabelClassifierTests: XCTestCase {
     
     var currentTestCaseId: UUID = defaultUUID
     
-    func testClassifier() throws {
+    func _testClassifier() throws {
         
         try prepareTestCaseImages()
         

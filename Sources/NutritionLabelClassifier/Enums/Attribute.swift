@@ -83,13 +83,17 @@ public enum Attribute: String, CaseIterable {
     case vitaminB1
     case vitaminB3
     case vitaminB6
+    case vitaminB2
     case vitaminB12
     case vitaminE
     case vitaminK
     case vitaminK2
     
+    case taurine
+    case caffeine
+    
     static var vitamins: [Attribute] {
-        [.vitaminA, .vitaminC, .vitaminD, .vitaminB1, .vitaminB3, .vitaminB6, .vitaminB12, .vitaminE, .vitaminK, .vitaminK2]
+        [.vitaminA, .vitaminC, .vitaminD, .vitaminB1, .vitaminB2, .vitaminB3, .vitaminB6, .vitaminB12, .vitaminE, .vitaminK, .vitaminK2]
     }
     
     static var vitaminChemicalNames: [Attribute] {
@@ -280,7 +284,7 @@ public enum Attribute: String, CaseIterable {
         case .dietaryFibre, .solubleFibre, .insolubleFibre, .saturatedFat, .polyunsaturatedFat, .monounsaturatedFat, .transFat, .sugar, .addedSugar, .gluten, .starch, .polyols:
             return [.g, .mg, .mcg]
             
-        case .cholesterol, .sodium, .calcium, .iron, .potassium, .cobalamin, .vitaminA, .vitaminC, .vitaminD, .vitaminB6, .zinc, .iodine, .selenium, .magnesium, .manganese, .chromium, .thiamin, .folate, .biotin, .pantothenicAcid, .riboflavin, .niacin, .vitaminB1, .vitaminB3, .vitaminE, .vitaminK, .vitaminK2:
+        case .cholesterol, .sodium, .calcium, .iron, .potassium, .cobalamin, .vitaminA, .vitaminC, .vitaminD, .vitaminB6, .zinc, .iodine, .selenium, .magnesium, .manganese, .chromium, .thiamin, .folate, .biotin, .pantothenicAcid, .riboflavin, .niacin, .vitaminB1, .vitaminB3, .vitaminE, .vitaminK, .vitaminK2, .taurine, .caffeine, .vitaminB2:
             return [.mg, .mcg, .p, .g]
             
         case .folicAcid, .vitaminB12:
@@ -525,6 +529,8 @@ extension Attribute: CustomStringConvertible {
             return "Folic Acid"
         case .vitaminB1:
             return "Vitamin B1"
+        case .vitaminB2:
+            return "Vitamin B2"
         case .vitaminB12:
             return "Vitamin B12"
         case .solubleFibre:
@@ -550,6 +556,11 @@ extension Attribute: CustomStringConvertible {
             return "Vitamin K"
         case .vitaminK2:
             return "Vitamin K2"
+            
+        case .taurine:
+            return "Taurine"
+        case .caffeine:
+            return "Caffeine"
         }
     }
 }

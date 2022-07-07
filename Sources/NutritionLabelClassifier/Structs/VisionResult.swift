@@ -391,7 +391,7 @@ extension VisionResult {
         
         print("Getting column starting from: \(startingText.string)")
 
-        let BoundingBoxMinXDeltaThreshold = 0.20
+        let BoundingBoxMinXDeltaThreshold = 0.26
         var array: [RecognizedText] = [startingText]
         
         for recognizedTexts in arrayOfTexts {

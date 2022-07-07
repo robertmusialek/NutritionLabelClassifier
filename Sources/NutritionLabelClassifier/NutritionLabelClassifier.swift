@@ -32,7 +32,16 @@ public class NutritionLabelClassifier {
             self.onCompletion?(output)
         }
     }
+
+    //TODO: Rename and move this
+    func getTableClassifier(onCompletion: ((TableClassifier?) -> Void)? = nil) {
+        recognizeTexts {
+            let tableClassifier = TableClassifier(visionResult: self.visionResult)
+            onCompletion?(tableClassifier)
+        }
+    }
     
+    //TODO: Return VisionResult from this
     public func recognizeTexts(completion: @escaping () -> Void) {
         guard let image = image, let contentSize = contentSize else { return }
 

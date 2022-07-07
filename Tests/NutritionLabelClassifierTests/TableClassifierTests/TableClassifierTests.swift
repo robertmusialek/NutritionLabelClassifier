@@ -62,21 +62,20 @@ final class TableClassifierTests: XCTestCase {
         print("🔥4️⃣ Testing: \(id)")
         
         let classifier = NutritionLabelClassifier(image: image, contentSize: image.size)
-//        classifier.onCompletion = { output in
-//        
-//        }
-        
-        classifier.classify { output in
-            let tableClassifier = TableClassifier(visionResult: classifier.visionResult)
-            let _ = tableClassifier.getObservations()
+        classifier.getTableClassifier { classifier in
+            guard let classifier = classifier else {
+                return
+            }
+//            let classifier = TableClassifier(visionResult: classifier.visionResult)
+            classifier.extractTable()
             
-            let attributesPassed = self.testAttributes(tableClassifier.attributes, forTestCase: id)
+            let attributesPassed = self.testAttributes(classifier.attributes, forTestCase: id)
             
             let valuesPassed: Bool
             if attributesOnly {
                 valuesPassed = true
             } else {
-                valuesPassed = self.testValues(tableClassifier.grid?.values, forTestCase: id)
+                valuesPassed = self.testValues(classifier.grid?.values, forTestCase: id)
             }
 
             if attributesPassed && valuesPassed {

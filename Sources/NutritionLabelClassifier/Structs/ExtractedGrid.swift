@@ -45,7 +45,7 @@ struct ExtractedGrid {
         handleReusedValueTexts()
         replaceNilMacroAndChildrenValuesIfZero()
 
-//        handleMultipleEnergyValuesWithinColumn(using: attributes)
+        handleMultipleEnergyValuesWithinColumn()
         handleMultipleValues(using: validRatio)
 
         fixInvalidChildRows()
@@ -744,6 +744,31 @@ extension ExtractedGrid {
 
     mutating func handleMultipleValues(using ratio: Double?) {
         columns.handleMultipleValues(using: ratio)
+    }
+    
+    mutating func handleMultipleEnergyValuesWithinColumn() {
+        /// if we have 1 column, with two values—pick the larger value assuing it to be kJ
+        guard numberOfValues == 1,
+              let energyRow = row(for: .energy),
+              let values = energyRow.valuesTexts[0]?.values,
+              /// Only check that the first two values alone are unitless and pick the larger value between them, to support cases where artefacts of other languages may be read in as incorrect values
+              values.count > 1,
+              values[0].unit == nil,
+              values[1].unit == nil,
+              let valuesText = energyRow.valuesTexts[0]
+        else {
+            return
+        }
+
+        let amount1 = values[0].amount
+        let amount2 = values[1].amount
+
+        let kjAmount = max(amount1, amount2)
+        var newValuesText = valuesText
+        newValuesText.values = [Value(amount: kjAmount, unit: .kj)]
+        var newRow = energyRow
+        newRow.valuesTexts = [newValuesText]
+        modify(energyRow, with: newRow)
     }
     
     mutating func handleReusedValueTexts() {
