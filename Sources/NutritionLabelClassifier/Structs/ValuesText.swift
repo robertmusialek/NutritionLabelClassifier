@@ -43,6 +43,10 @@ struct ValuesText {
         values.containsValueWithEnergyUnit
     }
     
+    var containsEnergyDisqualifyingTexts: Bool {
+        text.string.lowercased().contains("based on a")
+    }
+    
     var containsNutrientUnit: Bool {
         values.containsValueWithNutrientUnit
     }

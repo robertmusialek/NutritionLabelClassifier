@@ -76,7 +76,8 @@ public struct Value {
         "daily value",
         "produced for",
         "keep frozen",
-        "best before"
+        "best before",
+        "ingredients"
 //        "of which"
     ]
     
@@ -150,7 +151,6 @@ extension Value {
 //        guard !string.matchesRegex("%[0-9]+") else {
 //            return []
 //        }
-        
         
         var array: [(value: Value, positionOfMatch: Int)] = []
         print("🔢      👁 detecting values in: \(string)")

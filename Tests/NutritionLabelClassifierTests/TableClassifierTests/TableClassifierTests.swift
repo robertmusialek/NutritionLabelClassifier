@@ -71,6 +71,8 @@ final class TableClassifierTests: XCTestCase {
             
             let attributesPassed = self.testAttributes(classifier.attributes, forTestCase: id)
             
+            let desc = classifier.grid?.desc
+            
             let valuesPassed: Bool
             if attributesOnly {
                 valuesPassed = true

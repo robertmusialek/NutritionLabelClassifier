@@ -446,7 +446,7 @@ extension ExtractedRow {
     mutating func fillInMissingUnits() {
         if valuesTexts.count > 0, let valuesText = valuesTexts[0], valuesText.values.first?.unit == nil {
             var new = valuesText
-            if attributeText.attribute == .energy, attributeText.text.string.contains("kcal") {
+            if attributeText.attribute == .energy, attributeText.text.string.contains("cal") {
                 new.values[0].unit = .kcal
             } else {
                 new.values[0].unit = attributeText.attribute.defaultUnit

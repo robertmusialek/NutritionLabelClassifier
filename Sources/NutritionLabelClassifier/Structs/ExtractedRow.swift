@@ -55,7 +55,8 @@ struct ExtractedRow {
     }
     
     var value1: Value? {
-        valuesTexts[0]?.values.first
+        guard valuesTexts.count > 0 else { return nil }
+        return valuesTexts[0]?.values.first
     }
     var value2: Value? {
         guard valuesTexts.count > 1 else { return nil }

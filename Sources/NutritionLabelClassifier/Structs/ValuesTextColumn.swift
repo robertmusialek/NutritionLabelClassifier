@@ -72,7 +72,10 @@ extension ValuesTextColumn {
     
     var indexOfFirstEnergyValue: Int? {
         for i in valuesTexts.indices {
-            if valuesTexts[i].containsValueWithEnergyUnit, !valuesTexts[i].containsNutrientUnit {
+            if valuesTexts[i].containsValueWithEnergyUnit,
+               !valuesTexts[i].containsNutrientUnit,
+               !valuesTexts[i].containsEnergyDisqualifyingTexts
+            {
                 return i
             }
         }

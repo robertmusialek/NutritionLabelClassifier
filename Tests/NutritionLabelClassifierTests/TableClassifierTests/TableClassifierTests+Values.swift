@@ -1401,11 +1401,40 @@ let valueExpectations: [String: [[[Value?]]]?] = [
             [v(0.2, .mcg)],
         ]
     ],
+    
+    "2DF5AAE0-57A5-4900-8E60-6AC1DB346BDB": [
+        [
+            [v(181.75, .kcal)],
+            [v(1.86, .g)],
+            [v(26.05, .g)],
+            [v(7.79, .g)],
+            [v(6.79, .g)],
+            [v(0.06, .mg)],
+            [v(60.58, .mg)],
+        ]
+    ],
+    
+    "4B42CEA2-C1A3-4810-A411-984A1DA76798": [
+        [
+            [v(41.5, .kcal)],
+            [v(3.0, .g)],
+            [v(1.5, .g)],
+            [v(0.9, .g)],
+            [v(4.5, .mg)],
+            [v(42.2, .mg)],
+            [v(133.0, .mg)],
+            [v(4.09, .g)],
+        ]
+    ],
+    
+//    "": [
+//        [
+//        ]
+//    ],
 ]
 
 //let SingledOutTestCase: UUID? = nil
 
-/// Cake
-let SingledOutTestCase: UUID? = UUID(uuidString: "DC3CCF66-FB66-4334-AE93-9BA6BF95E6D1")!
+let SingledOutTestCase: UUID? = UUID(uuidString: "82A7FEC8-8C3D-4F63-A849-2E3998AEA004")!
 
-let TestPassingTestCases = true
+let TestPassingTestCases = false
