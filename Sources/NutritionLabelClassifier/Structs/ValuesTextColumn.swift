@@ -381,6 +381,7 @@ extension ValuesTextColumn {
         if group.containsNoSingleValuesTexts(from: self) {
             /// We added this after case `21AB8151-540A-41A9-BAB2-8674FD3A46E7` where both columns overlapped by each other slightly (the intersection ratio—the width of the intersection as a proportion of the width of the smaller column's width was `2.9%`
 
+            
             if intersectionRatioIsSubstantial {
                 print("""
 \(self.desc)
