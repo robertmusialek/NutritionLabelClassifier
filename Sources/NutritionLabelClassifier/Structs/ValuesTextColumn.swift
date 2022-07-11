@@ -366,22 +366,74 @@ extension ValuesTextColumn {
             return false
         }
 
-        let rect = topGroupColumn.columnRectOfSingleValuesNotWithinOrVerticallyOutsideOf(attributes)
-        let yNormalizedRect = columnRectOfSingleValuesNotWithinOrVerticallyOutsideOf(attributes).rectWithYValues(of: rect)
+        let groupRect = topGroupColumn.columnRectOfSingleValuesNotWithinOrVerticallyOutsideOf(attributes)
+        let yNormalizedRect = columnRectOfSingleValuesNotWithinOrVerticallyOutsideOf(attributes).rectWithYValues(of: groupRect)
         
-        guard let intersectionRatio = rect.ratioOfIntersection(with: yNormalizedRect) else {
+        guard let intersectionRatio = groupRect.ratioOfIntersection(with: yNormalizedRect) else {
             return false
         }
 
         /// We chose `0.43` because `0.423` was needed to identify a column as not belonging to in case `21AB8151-540A-41A9-BAB2-8674FD3A46E7` (check for one that starts with a value with amount 297) and `0.45` was needed to identify a column as belonging to the group in case `31D0CA8B-5069-4AB3-B865-47CD1D15D879` (check for one that starts with a value with amount 5).
         let intersectionRatioIsSubstantial = intersectionRatio >= 0.43
-        let intersects = rect.intersects(yNormalizedRect)
+        let intersects = groupRect.intersects(yNormalizedRect)
         
         /// We added this check because `31D0CA8B-5069-4AB3-B865-47CD1D15D879` fails the `intersectionRatio` check. This makes sure that none of the `ValuesText`'s in this column exists in any of the group before continuing.
         if group.containsNoSingleValuesTexts(from: self) {
             /// We added this after case `21AB8151-540A-41A9-BAB2-8674FD3A46E7` where both columns overlapped by each other slightly (the intersection ratio—the width of the intersection as a proportion of the width of the smaller column's width was `2.9%`
+
+            if intersectionRatioIsSubstantial {
+                print("""
+\(self.desc)
+--- belongs to
+\(group.desc)
+--- because
+groupRect: \(groupRect)
+--- has a substantial intersection ratio: \(intersectionRatio)
+yNormalizedRect: \(yNormalizedRect)
+=============================================
+
+""")
+            } else {
+                    print("""
+\(self.desc)
+--- doesn't belong to
+\(group.desc)
+--- because
+groupRect: \(groupRect)
+--- doesn't have a substantial intersection ratio: \(intersectionRatio)
+yNormalizedRect: \(yNormalizedRect)
+=============================================
+
+""")
+            }
+
             return intersectionRatioIsSubstantial
         } else {
+            if intersects {
+                print("""
+\(self.desc)
+--- belongs to
+\(group.desc)
+--- because
+groupRect: \(groupRect)
+--- intersects
+yNormalizedRect: \(yNormalizedRect)
+=============================================
+
+""")
+            } else {
+                    print("""
+\(self.desc)
+--- doesn't belong to
+\(group.desc)
+--- because
+groupRect: \(groupRect)
+--- doesn't intersect
+yNormalizedRect: \(yNormalizedRect)
+=============================================
+
+""")
+            }
             return intersects
         }
     }
