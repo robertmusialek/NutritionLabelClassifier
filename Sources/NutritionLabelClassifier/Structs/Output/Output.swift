@@ -2,6 +2,7 @@ import Foundation
 import VisionSugar
 
 public struct Output {
+    public let id = UUID()
     public let serving: Serving?
     public let nutrients: Nutrients
 }
