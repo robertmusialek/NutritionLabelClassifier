@@ -50,7 +50,7 @@ extension Output {
 public struct ValueText {
     public var value: Value
     public let text: RecognizedText
-    public let attributeText: RecognizedText? = nil
+    public let attributeText: RecognizedText? = nil    
 }
 
 extension ValueText: Hashable {
