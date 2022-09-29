@@ -5,11 +5,20 @@ public struct Output: Codable {
     public let id: UUID
     public let serving: Serving?
     public let nutrients: Nutrients
+    public let texts: Texts
     
-    init(id: UUID = UUID(), serving: Serving?, nutrients: Nutrients) {
+    init(id: UUID = UUID(), serving: Serving?, nutrients: Nutrients, texts: Texts) {
         self.id = id
         self.serving = serving
         self.nutrients = nutrients
+        self.texts = texts
+    }
+}
+extension Output {
+    public struct Texts: Codable {
+        public let accurate: [RecognizedText]
+        public let accurateWithoutLanguageCorrection: [RecognizedText]
+        public let fast: [RecognizedText]
     }
 }
 

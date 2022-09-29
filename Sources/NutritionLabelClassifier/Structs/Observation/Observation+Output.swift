@@ -2,11 +2,7 @@ import Foundation
 
 // MARK: - Output
 extension Array where Element == Observation {
-    
-    var output: Output? {
-        Output(serving: serving, nutrients: nutrients)
-    }
-    
+   
     var serving: Output.Serving? {
         nil
     }

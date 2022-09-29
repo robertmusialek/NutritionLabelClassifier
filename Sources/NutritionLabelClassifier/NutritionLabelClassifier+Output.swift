@@ -2,6 +2,15 @@ import SwiftUI
 import VisionSugar
 import TabularData
 
+extension VisionResult {
+    var texts: Output.Texts {
+        Output.Texts(
+            accurate: accurateRecognitionWithLanugageCorrection ?? [],
+            accurateWithoutLanguageCorrection: accurateRecognitionWithoutLanugageCorrection ?? [],
+            fast: fastRecognition ?? []
+        )
+    }
+}
 extension NutritionLabelClassifier {
     /**
      - Stop using DataFrame as an intermediary between NutritionLabelClassifier and its Output as its adding unnecessary overhead
@@ -14,7 +23,11 @@ extension NutritionLabelClassifier {
      */
     func getOutput() -> Output? {
         let observations = TableClassifier.observations(from: visionResult)
-        return observations.output
+        return Output(
+            serving: observations.serving,
+            nutrients: observations.nutrients,
+            texts: visionResult.texts
+        )
     }
 
     func getOutput_legacy() -> Output {

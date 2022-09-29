@@ -185,7 +185,8 @@ extension DataFrame {
     var classifierOutput: Output {
         Output(
             serving: serving,
-            nutrients: nutrients
+            nutrients: nutrients,
+            texts: Output.Texts(accurate: [], accurateWithoutLanguageCorrection: [], fast: [])
         )
     }
 }
