@@ -15,7 +15,7 @@ public class NutritionLabelClassifier {
     
     var image: UIImage? = nil
     var contentSize: CGSize? = nil
-    var onCompletion: ((Output?) -> Void)? = nil
+    var onCompletion: ((Output?, [RecognizedText]) -> Void)? = nil
 
     var observations: [Observation] = []
 
@@ -25,11 +25,12 @@ public class NutritionLabelClassifier {
     }
     
     //TODO: Handle having no images or contentsize elegantly, throwing errors that informs the client of this service
-    public func classify(onCompletion: ((Output?) -> Void)? = nil) {
+    public func classify(onCompletion: ((Output?, [RecognizedText]) -> Void)? = nil) {
         self.onCompletion = onCompletion
         recognizeTexts {
             let output = self.getOutput()
-            self.onCompletion?(output)
+            let texts = self.visionResult.accurateRecognitionWithLanugageCorrection ?? []
+            self.onCompletion?(output, texts)
         }
     }
 
