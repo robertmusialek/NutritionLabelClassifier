@@ -243,11 +243,11 @@ public enum Attribute: String, CaseIterable, Codable {
         }
     }
     
-    func supportsUnit(_ unit: NutritionUnit) -> Bool {
+    public func supportsUnit(_ unit: NutritionUnit) -> Bool {
         supportedUnits.contains(unit)
     }
     
-    var defaultUnit: NutritionUnit? {
+    public var defaultUnit: NutritionUnit? {
         supportedUnits.first
     }
     
