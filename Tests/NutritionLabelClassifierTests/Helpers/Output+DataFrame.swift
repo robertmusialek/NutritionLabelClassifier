@@ -6,7 +6,9 @@ import TabularData
 extension Output {
     init?(fromExpectedDataFrame dataFrame: DataFrame) {
         self.init(serving: Serving(fromExpectedDataFrame: dataFrame),
-                  nutrients: Nutrients(fromExpectedDataFrame: dataFrame))
+                  nutrients: Nutrients(fromExpectedDataFrame: dataFrame),
+                  texts: Texts(accurate: [], accurateWithoutLanguageCorrection: [], fast: [])
+        )
     }
 }
 
