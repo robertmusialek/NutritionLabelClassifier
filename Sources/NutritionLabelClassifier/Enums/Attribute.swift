@@ -1,6 +1,6 @@
 import Foundation
 
-public enum Attribute: String, CaseIterable {
+public enum Attribute: String, CaseIterable, Codable {
     
     case tableElementNutritionFacts
     case tableElementSkippable

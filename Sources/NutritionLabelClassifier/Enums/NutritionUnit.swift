@@ -1,6 +1,6 @@
 import Foundation
 
-public enum NutritionUnit: Int, CaseIterable {
+public enum NutritionUnit: Int, CaseIterable, Codable {
     case kcal
     case cup
     case mcg //TODO: Recognize `ug` as an alternative and remove it

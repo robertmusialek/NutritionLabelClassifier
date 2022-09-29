@@ -1,6 +1,6 @@
 import Foundation
 
-public struct Value {
+public struct Value: Codable {
     public let amount: Double
     public var unit: NutritionUnit?
     
