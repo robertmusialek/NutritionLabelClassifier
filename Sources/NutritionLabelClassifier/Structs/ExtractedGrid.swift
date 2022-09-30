@@ -1503,7 +1503,12 @@ let ErrorPercentageThresholdEnergyCalculation = 7.5
 extension Array where Element == ExtractedRow {
     
     func valueFor(_ attribute: Attribute, valueIndex: Int) -> Value? {
-        first(where: { $0.attributeText.attribute == attribute })?.valuesTexts[valueIndex]?.values.first
+//        first(where: { $0.attributeText.attribute == attribute })?.valuesTexts[valueIndex]?.values.first
+        guard let valueTexts = first(where: { $0.attributeText.attribute == attribute })?.valuesTexts,
+              valueIndex < valueTexts.count else {
+            return nil
+        }
+        return valueTexts[valueIndex]?.values.first
     }
     
     var containsAllMacrosAndEnergy: Bool {
